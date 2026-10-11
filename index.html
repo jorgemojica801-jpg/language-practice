@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="es" class="dark h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOIZ - Unconventional Career Advice (Business English)</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            voiz: {
+              50: '#f0f6ff',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+              accent: '#06b6d4'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Estilos personalizados para animaciones e interfaces */
+    .timeline-line {
+      background: linear-gradient(180deg, #3b82f6 0%, #06b6d4 100%);
+    }
+    .timer-svg circle {
+      transition: stroke-dashoffset 0.1s linear;
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #020617;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col font-sans antialiased selection:bg-blue-500 selection:text-white">
+
+  <!-- Header Navigation -->
+  <header class="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="bg-gradient-to-tr from-blue-600 to-cyan-400 p-2 rounded-xl text-white shadow-lg shadow-blue-500/20">
+          <i class="fa-solid font-black text-xl fa-microphone-lines"></i>
+        </div>
+        <span class="text-xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300">
+          VOIZ <span class="text-xs px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-400 font-normal">Business B2+/C1</span>
+        </span>
+      </div>
+      
+      <!-- Nav Tabs -->
+      <nav class="flex space-x-1 sm:space-x-2">
+        <button onclick="switchTab('glossary')" id="tab-glossary" class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 bg-blue-600 text-white shadow-md shadow-blue-600/30">
+          <i class="fa-solid fa-book-bookmark"></i>
+          <span class="hidden sm:inline">1. Glossary</span>
+        </button>
+        <button onclick="switchTab('grammar')" id="tab-grammar" class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+          <i class="fa-solid fa-diagram-project"></i>
+          <span class="hidden sm:inline">2. Grammar</span>
+        </button>
+        <button onclick="switchTab('speaking')" id="tab-speaking" class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800">
+          <i class="fa-solid fa-bolt"></i>
+          <span class="hidden sm:inline">3. Voiz Sprint</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- =================================================================== -->
+    <!-- SECTION 1: GLOSSARY                                                -->
+    <!-- =================================================================== -->
+    <section id="sec-glossary" class="space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-slate-800 pb-5">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Key Business Glossary</h1>
+          <p class="text-slate-400 text-sm mt-1">12 essential terms and structures extracted from "Unconventional Career Advice".</p>
+        </div>
+        <!-- Search & Filter -->
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"></i>
+            <input type="text" id="glossary-search" oninput="filterGlossary()" placeholder="Search terms, IPA, definition..." class="pl-9 pr-4 py-2 bg-slate-900 border border-slate-800 rounded-lg text-sm text-slate-200 focus:outline-none focus:border-blue-500 w-full sm:w-64">
+          </div>
+          <select id="glossary-filter" onchange="filterGlossary()" class="bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-blue-500">
+            <option value="all">All Categories</option>
+            <option value="Vocabulary">Vocabulary</option>
+            <option value="Grammar">Grammar Structure</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Glossary Grid -->
+      <div id="glossary-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- JS populated cards -->
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 2: GRAMMAR IN PRACTICE                                     -->
+    <!-- =================================================================== -->
+    <section id="sec-grammar" class="space-y-8 hidden">
+      <div class="border-b border-slate-800 pb-5">
+        <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">Giving Advice & Recommendations</h1>
+        <p class="text-slate-400 text-sm mt-1">Master the 5 structural levels of delivering strategic career advice in executive contexts.</p>
+      </div>
+
+      <!-- Visual Formulas Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- 2nd Conditional -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-semibold uppercase tracking-wider text-blue-400 bg-blue-950/60 border border-blue-800/50 px-2.5 py-1 rounded">2nd Conditional</span>
+            <span class="text-xs text-slate-500">Hypothetical / Soft</span>
+          </div>
+          <div class="font-mono text-sm bg-slate-950 p-2.5 rounded border border-slate-800/80 text-cyan-300 mb-3">
+            If + Subject + Past Simple, Subject + WOULD + Verb
+          </div>
+          <p class="text-xs text-slate-400 mb-2">Used for advisory distancing ("If I were you...").</p>
+          <p class="text-sm text-slate-200 italic bg-slate-900 p-2 rounded border-l-2 border-blue-500">"If I were in your position, I would go for a career in IT."</p>
+        </div>
+
+        <!-- Had Better -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-semibold uppercase tracking-wider text-amber-400 bg-amber-950/60 border border-amber-800/50 px-2.5 py-1 rounded">'d Better (Had Better)</span>
+            <span class="text-xs text-slate-500">Urgent / Warning</span>
+          </div>
+          <div class="font-mono text-sm bg-slate-950 p-2.5 rounded border border-slate-800/80 text-amber-300 mb-3">
+            Subject + 'D BETTER + Bare Infinitive
+          </div>
+          <p class="text-xs text-slate-400 mb-2">Strong advice with potential negative consequences if ignored.</p>
+          <p class="text-sm text-slate-200 italic bg-slate-900 p-2 rounded border-l-2 border-amber-500">"You'd better analyze your weaknesses before switching roles."</p>
+        </div>
+
+        <!-- Imperative -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-semibold uppercase tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/50 px-2.5 py-1 rounded">Imperative</span>
+            <span class="text-xs text-slate-500">Direct / Actionable</span>
+          </div>
+          <div class="font-mono text-sm bg-slate-950 p-2.5 rounded border border-slate-800/80 text-emerald-300 mb-3">
+            [Base Verb] + Direct Object / Action
+          </div>
+          <p class="text-xs text-slate-400 mb-2">Direct action-oriented directives common in coaching & leadership.</p>
+          <p class="text-sm text-slate-200 italic bg-slate-900 p-2 rounded border-l-2 border-emerald-500">"Play to your strengths and address employer challenges."</p>
+        </div>
+
+        <!-- Modals -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-semibold uppercase tracking-wider text-purple-400 bg-purple-950/60 border border-purple-800/50 px-2.5 py-1 rounded">Modal Verbs</span>
+            <span class="text-xs text-slate-500">Standard / Professional</span>
+          </div>
+          <div class="font-mono text-sm bg-slate-950 p-2.5 rounded border border-slate-800/80 text-purple-300 mb-3">
+            Subject + SHOULD / OUGHT TO + Base Verb
+          </div>
+          <p class="text-xs text-slate-400 mb-2">Standard recommendation level in professional conversations.</p>
+          <p class="text-sm text-slate-200 italic bg-slate-900 p-2 rounded border-l-2 border-purple-500">"You should look for a role you feel passionate about."</p>
+        </div>
+
+        <!-- Questions -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-xs font-semibold uppercase tracking-wider text-cyan-400 bg-cyan-950/60 border border-cyan-800/50 px-2.5 py-1 rounded">Coaching Question</span>
+            <span class="text-xs text-slate-500">Socratic / Consultative</span>
+          </div>
+          <div class="font-mono text-sm bg-slate-950 p-2.5 rounded border border-slate-800/80 text-cyan-300 mb-3">
+            WHY DON'T YOU + Base Verb...?
+          </div>
+          <p class="text-xs text-slate-400 mb-2">Invites self-reflection without forcing a direction.</p>
+          <p class="text-sm text-slate-200 italic bg-slate-900 p-2 rounded border-l-2 border-cyan-500">"Why don't you consider relocating to boost growth?"</p>
+        </div>
+      </div>
+
+      <!-- Interactive Grammar Drill -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+        <h2 class="text-xl font-bold text-white mb-1 flex items-center gap-2">
+          <i class="fa-solid fa-list-check text-blue-500"></i> Interactive Grammar Practice
+        </h2>
+        <p class="text-slate-400 text-sm mb-6">Select the correct advice structure based on the PDF career scenarios.</p>
+
+        <div id="grammar-drills-container" class="space-y-6">
+          <!-- JS dynamic insertion of drills -->
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================== -->
+    <!-- SECTION 3: VOIZ 25 SPEAKING PROMPTS & SPRINT                       -->
+    <!-- =================================================================== -->
+    <section id="sec-speaking" class="space-y-8 hidden">
+      <div class="border-b border-slate-800 pb-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center gap-2">
+            VOIZ Sprint Engine <span class="text-xs font-normal text-cyan-400 bg-cyan-950 border border-cyan-800 px-2 py-0.5 rounded-full">10-Sec Rapid Fire</span>
+          </h1>
+          <p class="text-slate-400 text-sm mt-1">Select from 25 B2+/C1 executive prompts. Record your instant response under strict 10s pressure.</p>
+        </div>
+        <div class="text-slate-400 text-xs bg-slate-900 border border-slate-800 p-2.5 rounded-lg flex items-center gap-2">
+          <i class="fa-solid fa-circle-info text-blue-400"></i>
+          <span>Goal: Express high-impact advice fluently before time runs out.</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        <!-- Left Column: Catalog of 25 Prompts -->
+        <div class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col h-[680px]">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-3 px-2">
+            <span class="text-sm font-semibold text-slate-200">Speaking Prompts Catalog</span>
+            <span id="prompt-counter" class="text-xs bg-blue-900/60 text-blue-300 border border-blue-700/50 px-2 py-0.5 rounded-full">25 Available</span>
+          </div>
+          
+          <div id="prompts-list" class="flex-1 overflow-y-auto space-y-2 pr-1">
+            <!-- JS populated 25 prompts -->
+          </div>
+        </div>
+
+        <!-- Right Column: Interactive Sprint Console -->
+        <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between h-[680px] relative overflow-hidden shadow-2xl">
+          
+          <!-- Top Prompt Header -->
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span id="active-prompt-num" class="text-xs font-bold uppercase tracking-wider text-cyan-400 bg-cyan-950/80 border border-cyan-800/80 px-2.5 py-1 rounded">Prompt #1</span>
+              <span id="active-target-structure" class="text-xs text-slate-400 bg-slate-800/80 px-2.5 py-1 rounded border border-slate-700">Grammar: 2nd Conditional</span>
+            </div>
+
+            <h3 id="active-prompt-text" class="text-lg sm:text-xl font-medium text-slate-100 leading-snug mb-4">
+              "A colleague is trapped in a low-paying job but fears leaving. What advice do you give using a 2nd Conditional?"
+            </h3>
+
+            <!-- Target Vocabulary Chips -->
+            <div class="mb-4">
+              <span class="text-xs text-slate-400 uppercase font-semibold tracking-wider block mb-2">Target Vocabulary to Include:</span>
+              <div id="active-target-vocab" class="flex flex-wrap gap-2">
+                <!-- JS target chips -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Middle: Circular Countdown Timer & Controls -->
+          <div class="my-auto py-4 flex flex-col items-center justify-center relative">
+            <div class="relative w-44 h-44 flex items-center justify-center">
+              <!-- Circular SVG Progress -->
+              <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="6" class="text-slate-800" fill="transparent" />
+                <circle id="timer-circle" cx="50" cy="50" r="44" stroke="currentColor" stroke-width="6" class="text-blue-500 timer-svg" fill="transparent" stroke-dasharray="276.46" stroke-dashoffset="0" stroke-linecap="round" />
+              </svg>
+              <!-- Center Countdown / Mic Status -->
+              <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                <span id="timer-display" class="text-4xl font-extrabold text-white font-mono tracking-tight">10.0</span>
+                <span id="recording-status" class="text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider">Ready</span>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center gap-4 mt-6">
+              <button id="btn-start-sprint" onclick="startSprint()" class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/25 transition flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-microphone text-base"></i> Start 10s Sprint
+              </button>
+              <button id="btn-stop-sprint" onclick="stopSprint()" disabled class="px-5 py-3 bg-red-600/30 text-red-400 border border-red-500/40 opacity-50 cursor-not-allowed rounded-xl font-semibold transition text-sm flex items-center gap-2">
+                <i class="fa-solid fa-stop"></i> Stop
+              </button>
+            </div>
+          </div>
+
+          <!-- Bottom: Audio Playback & Benchmark Answer -->
+          <div class="border-t border-slate-800 pt-4 space-y-3">
+            <!-- Recorded Audio Player -->
+            <div id="audio-playback-container" class="hidden flex items-center gap-3 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+              <span class="text-xs text-emerald-400 font-semibold flex items-center gap-1.5 min-w-fit">
+                <i class="fa-solid fa-circle-check"></i> Recorded Audio:
+              </span>
+              <audio id="audio-player" controls class="w-full h-8 max-h-8 rounded"></audio>
+            </div>
+
+            <!-- Benchmark Accordion -->
+            <div class="bg-slate-950/60 border border-slate-800/80 rounded-xl overflow-hidden">
+              <button onclick="toggleBenchmark()" class="w-full px-4 py-2.5 flex items-center justify-between text-left text-xs font-semibold text-slate-300 hover:bg-slate-800/50 transition">
+                <span class="flex items-center gap-2">
+                  <i class="fa-solid fa-award text-amber-400"></i> View C1 Benchmark Reference Answer
+                </span>
+                <i id="benchmark-chevron" class="fa-solid fa-chevron-down text-slate-500 transition-transform"></i>
+              </button>
+              <div id="benchmark-content" class="hidden px-4 py-3 text-xs text-slate-300 border-t border-slate-800/60 bg-slate-950 italic">
+                <!-- JS dynamic benchmark text -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /* =================================================================== */
+    /* DATA STORE (Extracted from "Unconventional career advice" PDF)       */
+    /* =================================================================== */
+
+    // 1. GLOSSARY DATA (12 Items)
+    const glossaryData = [
+      {
+        id: 1,
+        term: "Play to your strengths",
+        ipa: "/pleɪ tuː jɔː strɛŋkθs/",
+        category: "Vocabulary",
+        def: "Utilize your natural abilities and core talents to overcome organizational challenges.",
+        example: "Instead of fixing minor weaknesses, play to your strengths to deliver immediate high value.",
+        type: "Idiomatic Verb Phrase"
+      },
+      {
+        id: 2,
+        term: "Complacent",
+        ipa: "/kəmˈpleɪ.sənt/",
+        category: "Vocabulary",
+        def: "Showing uncritical satisfaction with oneself or achievements, leading to stagnation.",
+        example: "Don't cruise or be complacent; always search for blind spots in your skill set.",
+        type: "Adjective"
+      },
+      {
+        id: 3,
+        term: "Niche",
+        ipa: "/niːʃ/",
+        category: "Vocabulary",
+        def: "A specialized segment of the market or professional field for which someone is best suited.",
+        example: "Combine two distinct skills to find a unique niche where you face less competition.",
+        type: "Noun"
+      },
+      {
+        id: 4,
+        term: "Work-life balance",
+        ipa: "/wɜːk laɪf ˈbæl.əns/",
+        category: "Vocabulary",
+        def: "The equilibrium between professional commitments and personal time.",
+        example: "Don't expect perfect work-life balance at all times during intense growth phases.",
+        type: "Noun Phrase"
+      },
+      {
+        id: 5,
+        term: "Self-promotion",
+        ipa: "/ˌself.prəˈməʊ.ʃən/",
+        category: "Vocabulary",
+        def: "The practice of purposefully highlighting one's abilities and value to decision-makers.",
+        example: "Consistent self-promotion ensures your contributions are recognized during appraisals.",
+        type: "Noun"
+      },
+      {
+        id: 6,
+        term: "Think outside the box",
+        ipa: "/θɪŋk ˌaʊtˈsaɪd ðə bɒks/",
+        category: "Vocabulary",
+        def: "Approach problems unconventionally and creatively.",
+        example: "We need engineers who think outside the box to bypass traditional roadblocks.",
+        type: "Idiom"
+      },
+      {
+        id: 7,
+        term: "Go the extra mile",
+        ipa: "/ɡəʊ ði ˈek.strə maɪl/",
+        category: "Vocabulary",
+        def: "Exert extra effort beyond expectations to deliver exceptional value.",
+        example: "Giving more than expected and going the extra mile builds rapid executive credibility.",
+        type: "Idiom"
+      },
+      {
+        id: 8,
+        term: "2nd Conditional for Advice",
+        ipa: "/ɪf aɪ wɜːr juː.../",
+        category: "Grammar",
+        def: "Hypothetical structure used to offer diplomatic, non-intrusive career advice.",
+        example: "If I were in your position, I would negotiate for equity instead of salary.",
+        type: "Grammar Structure"
+      },
+      {
+        id: 9,
+        term: "Had better ('d better)",
+        ipa: "/hæd ˈbet.ər/",
+        category: "Grammar",
+        def: "Structure used to give strong advice with implicit urgency or consequences.",
+        example: "You'd better audit your department budget before the quarterly review.",
+        type: "Modal Expression"
+      },
+      {
+        id: 10,
+        term: "Proactive attitude",
+        ipa: "/prəʊˈæk.tɪv ˈæt.ɪ.tjuːd/",
+        category: "Vocabulary",
+        def: "Controlling a situation by causing something to happen rather than waiting to respond.",
+        example: "Leaders seek professionals with a proactive attitude who bring solutions, not problems.",
+        type: "Noun Phrase"
+      },
+      {
+        id: 11,
+        term: "Skill-swap",
+        ipa: "/skɪl swɒp/",
+        category: "Vocabulary",
+        def: "A cost-effective arrangement where colleagues exchange training in their areas of expertise.",
+        example: "Organizing internal skill-swaps is a cost-effective alternative to expensive training courses.",
+        type: "Noun / Verb"
+      },
+      {
+        id: 12,
+        term: "Socratic Suggestion",
+        ipa: "/waɪ dəʊnt juː.../",
+        category: "Grammar",
+        def: "Question format ('Why don't you...') used to gently propose alternative actions.",
+        example: "Why don't you consider combining design with coding to differentiate yourself?",
+        type: "Grammar Structure"
+      }
+    ];
+
+    // 2. GRAMMAR DRILLS DATA
+    const grammarDrills = [
+      {
+        scenario: "Scenario A: A team member is hesitant about switching departments to pursue a growing tech field.",
+        prompt: "Which option delivers soft, diplomatic advice using a 2nd conditional?",
+        options: [
+          "If I were in your position, I would apply for the transition immediately.",
+          "You'd better switch departments or you'll get left behind.",
+          "Switch departments right now to get a higher pay grade."
+        ],
+        correct: 0,
+        explanation: "'If I were in your position, I would...' uses the 2nd conditional for diplomatic advice."
+      },
+      {
+        scenario: "Scenario B: A junior executive is ignoring market shifts and relying only on past success.",
+        prompt: "Which option gives an urgent warning about complacency using 'had better'?",
+        options: [
+          "Why don't you stop being complacent?",
+          "You'd better address your blind spots before market changes affect your team.",
+          "If I were you, I would think about being complacent."
+        ],
+        correct: 1,
+        explanation: "'You'd better [verb]' expresses strong recommendation with potential negative consequences."
+      },
+      {
+        scenario: "Scenario C: Delivering a clear action command during an executive crisis.",
+        prompt: "Which option uses an imperative to direct immediate focus on core abilities?",
+        options: [
+          "You should play to your strengths whenever possible.",
+          "Why don't you play to your strengths?",
+          "Play to your strengths and bring solutions, not problems."
+        ],
+        correct: 2,
+        explanation: "Imperatives start directly with the bare infinitive ('Play...') for decisive action."
+      }
+    ];
+
+    // 3. 25 SPEAKING PROMPTS DATA
+    const speakingPrompts = [
+      {
+        id: 1,
+        title: "Career Transition Advice",
+        structure: "2nd Conditional",
+        vocab: ["play to your strengths", "niche"],
+        text: "A software engineer wants to transition into AI management. Give diplomatic advice using the 2nd Conditional.",
+        benchmark: "If I were in your position, I would play to your strengths in coding while building a niche in AI project management."
+      },
+      {
+        id: 2,
+        title: "Warning on Market Shifts",
+        structure: "Had Better",
+        vocab: ["complacent", "proactive attitude"],
+        text: "Warn a manager who is ignoring automated tools in their work environment.",
+        benchmark: "You'd better adopt a proactive attitude with new software before becoming completely complacent in your role."
+      },
+      {
+        id: 3,
+        title: "Executive Direct Coaching",
+        structure: "Imperative",
+        vocab: ["think outside the box", "go the extra mile"],
+        text: "Directly coach a team struggling with stagnant product innovation.",
+        benchmark: "Think outside the box during brainstorming and go the extra mile to present concrete solutions."
+      },
+      {
+        id: 4,
+        title: "Suggesting Skill Swap",
+        structure: "Why don't you...?",
+        vocab: ["skill-swap", "self-promotion"],
+        text: "Suggest a low-cost career development alternative to a colleague with a tight budget.",
+        benchmark: "Why don't you initiate a skill-swap with senior peers to boost your professional development and self-promotion?"
+      },
+      {
+        id: 5,
+        title: "Managing Work-Life Balance",
+        structure: "Modal Verb (Should)",
+        vocab: ["work-life balance", "complacent"],
+        text: "Advise a client who is burning out while pursuing rapid advancement.",
+        benchmark: "You should accept that work-life balance isn't always linear, but you shouldn't become complacent about health."
+      },
+      {
+        id: 6,
+        title: "Pitching Unconventional Roles",
+        structure: "2nd Conditional",
+        vocab: ["niche", "think outside the box"],
+        text: "Advise an artist looking to work in corporate branding.",
+        benchmark: "If I were you, I would combine design with data analytics to carve out a unique niche."
+      },
+      {
+        id: 7,
+        title: "Overcoming Promotion Failure",
+        structure: "Had Better",
+        vocab: ["self-promotion", "play to your strengths"],
+        text: "Warn a candidate who was passed over for promotion due to low visibility.",
+        benchmark: "You'd better practice strategic self-promotion and play to your strengths before the next review cycle."
+      },
+      {
+        id: 8,
+        title: "Handling Workplace Crisis",
+        structure: "Imperative",
+        vocab: ["proactive attitude", "go the extra mile"],
+        text: "Order a project lead to take control during an unexpected client fallout.",
+        benchmark: "Show a proactive attitude immediately, contact the client, and go the extra mile to rectify the bug."
+      },
+      {
+        id: 9,
+        title: "Addressing Stagnant Teams",
+        structure: "Why don't you...?",
+        vocab: ["complacent", "think outside the box"],
+        text: "Propose a new strategy to a department director whose growth has plateaued.",
+        benchmark: "Why don't you challenge your team to think outside the box so they don't become complacent?"
+      },
+      {
+        id: 10,
+        title: "Upskilling Choice",
+        structure: "Modal Verb (Should)",
+        vocab: ["skill-swap", "niche"],
+        text: "Recommend how a junior consultant should approach training.",
+        benchmark: "You should leverage internal skill-swaps to build expertise in a lucrative tech niche."
+      },
+      {
+        id: 11,
+        title: "Salary Negotiation Strategy",
+        structure: "2nd Conditional",
+        vocab: ["go the extra mile", "self-promotion"],
+        text: "Advise a senior engineer prepare for salary negotiation.",
+        benchmark: "If I were in your position, I would highlight how you go the extra mile using data-backed self-promotion."
+      },
+      {
+        id: 12,
+        title: "Preventing Burnout",
+        structure: "Had Better",
+        vocab: ["work-life balance", "proactive attitude"],
+        text: "Warn an ambitious startup founder working 80 hours a week.",
+        benchmark: "You'd better adopt a proactive attitude toward work-life balance before severe exhaustion hits."
+      },
+      {
+        id: 13,
+        title: "Entering New Markets",
+        structure: "Imperative",
+        vocab: ["niche", "think outside the box"],
+        text: "Direct a market research team targeting an overcrowded industry.",
+        benchmark: "Find an unexplored niche and think outside the box to differentiate our core service."
+      },
+      {
+        id: 14,
+        title: "Boosting Visibility",
+        structure: "Why don't you...?",
+        vocab: ["self-promotion", "play to your strengths"],
+        text: "Suggest how a quiet high-performer can get noticed by executives.",
+        benchmark: "Why don't you lead the next company presentation to combine self-promotion with your strategic strengths?"
+      },
+      {
+        id: 15,
+        title: "Reinventing Career Path",
+        structure: "Modal Verb (Ought to)",
+        vocab: ["proactive attitude", "complacent"],
+        text: "Recommend action for a manager whose industry is undergoing digital transformation.",
+        benchmark: "You ought to demonstrate a proactive attitude toward AI tools rather than remaining complacent."
+      },
+      {
+        id: 16,
+        title: "Cross-Department Training",
+        structure: "2nd Conditional",
+        vocab: ["skill-swap", "go the extra mile"],
+        text: "Advise a department head wanting to improve collaboration.",
+        benchmark: "If I were leading that division, I would set up a skill-swap program and go the extra mile to reward participants."
+      },
+      {
+        id: 17,
+        title: "Urgent Performance Review",
+        structure: "Had Better",
+        vocab: ["play to your strengths", "complacent"],
+        text: "Warn a direct report with declining output.",
+        benchmark: "You'd better start playing to your core strengths immediately; we cannot afford complacency right now."
+      },
+      {
+        id: 18,
+        title: "Client Pitch Directive",
+        structure: "Imperative",
+        vocab: ["think outside the box", "proactive attitude"],
+        text: "Give instructions right before entering a key client pitch.",
+        benchmark: "Demonstrate a proactive attitude, think outside the box, and answer their concerns with concrete data."
+      },
+      {
+        id: 19,
+        title: "Career Pivot Query",
+        structure: "Why don't you...?",
+        vocab: ["niche", "work-life balance"],
+        text: "Suggest an alternative field to an executive seeking more autonomy.",
+        benchmark: "Why don't you transition into specialized consulting to secure a better niche and work-life balance?"
+      },
+      {
+        id: 20,
+        title: "Self-Development Budget",
+        structure: "Modal Verb (Should)",
+        vocab: ["skill-swap", "self-promotion"],
+        text: "Advise an employee with no corporate learning stipend.",
+        benchmark: "You should focus on skill-swaps and online networking to gain credentials for future self-promotion."
+      },
+      {
+        id: 21,
+        title: "Handling Competitive Peers",
+        structure: "2nd Conditional",
+        vocab: ["proactive attitude", "go the extra mile"],
+        text: "Advise a lead worker dealing with aggressive internal rivals.",
+        benchmark: "If I were in your shoes, I would maintain a proactive attitude and consistently go the extra mile."
+      },
+      {
+        id: 22,
+        title: "Preventing Team Stagnation",
+        structure: "Had Better",
+        vocab: ["think outside the box", "complacent"],
+        text: "Warn a VP about competitors launching innovative features.",
+        benchmark: "We'd better start thinking outside the box immediately; remaining complacent will cost us market share."
+      },
+      {
+        id: 23,
+        title: "Setting Team Priorities",
+        structure: "Imperative",
+        vocab: ["work-life balance", "play to your strengths"],
+        text: "Set operational boundaries for a newly formed team.",
+        benchmark: "Play to your strengths during work hours and protect your work-life balance after operations close."
+      },
+      {
+        id: 24,
+        title: "Niche Specialization",
+        structure: "Why don't you...?",
+        vocab: ["niche", "skill-swap"],
+        text: "Suggest a specialization path to a generalist administrator.",
+        benchmark: "Why don't you offer a skill-swap in administrative automation to build a specialized tech niche?"
+      },
+      {
+        id: 25,
+        title: "Executive Leadership Style",
+        structure: "Modal Verb (Should)",
+        vocab: ["go the extra mile", "proactive attitude"],
+        text: "Advise a newly appointed Director on team leadership.",
+        benchmark: "You should model a proactive attitude and show your team how to go the extra mile for key clients."
+      }
+    ];
+
+    /* =================================================================== */
+    /* STATE MANAGEMENT & TAB SWITCHING                                    */
+    /* =================================================================== */
+    let currentPromptIndex = 0;
+    let timerInterval = null;
+    let timeRemaining = 10.0;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let audioContext = null;
+
+    function switchTab(tab) {
+      // Hide sections
+      document.getElementById('sec-glossary').classList.add('hidden');
+      document.getElementById('sec-grammar').classList.add('hidden');
+      document.getElementById('sec-speaking').classList.add('hidden');
+
+      // Reset nav button styles
+      ['glossary', 'grammar', 'speaking'].forEach(t => {
+        const btn = document.getElementById(`tab-${t}`);
+        btn.className = "px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800";
+      });
+
+      // Active section & tab style
+      document.getElementById(`sec-${tab}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tab-${tab}`);
+      activeBtn.className = "px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 bg-blue-600 text-white shadow-md shadow-blue-600/30";
+    }
+
+    /* =================================================================== */
+    /* SECTION 1: GLOSSARY RENDER & SPEECH API                             */
+    /* =================================================================== */
+    function renderGlossary(data) {
+      const grid = document.getElementById('glossary-grid');
+      grid.innerHTML = '';
+
+      if (data.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500">No terms matching your search criteria.</div>`;
+        return;
+      }
+
+      data.forEach(item => {
+        const card = document.createElement('div');
+        card.className = "bg-slate-900/80 border border-slate-800 rounded-xl p-5 hover:border-slate-700 transition flex flex-col justify-between group";
+        card.innerHTML = `
+          <div>
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <h3 class="text-base font-bold text-slate-100 group-hover:text-blue-400 transition">${item.term}</h3>
+              <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded border ${
+                item.category === 'Grammar' 
+                  ? 'bg-purple-950/60 text-purple-300 border-purple-800/50' 
+                  : 'bg-blue-950/60 text-blue-300 border-blue-800/50'
+              }">${item.type}</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-slate-400 font-mono mb-3">
+              <span>${item.ipa}</span>
+              <button onclick="speakTerm('${item.term.replace(/'/g, "\\'")}')" title="Listen Pronunciation" class="text-slate-500 hover:text-cyan-400 transition ml-1 p-1">
+                <i class="fa-solid fa-volume-high"></i>
+              </button>
+            </div>
+            <p class="text-xs text-slate-300 mb-3 leading-relaxed">${item.def}</p>
+          </div>
+          <div class="border-t border-slate-800/80 pt-2.5 mt-2">
+            <p class="text-xs text-slate-400 italic">"${item.example}"</p>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function filterGlossary() {
+      const search = document.getElementById('glossary-search').value.toLowerCase();
+      const cat = document.getElementById('glossary-filter').value;
+
+      const filtered = glossaryData.filter(item => {
+        const matchesSearch = item.term.toLowerCase().includes(search) || 
+                              item.def.toLowerCase().includes(search) ||
+                              item.ipa.toLowerCase().includes(search);
+        const matchesCat = (cat === 'all') || (item.category === cat);
+        return matchesSearch && matchesCat;
+      });
+
+      renderGlossary(filtered);
+    }
+
+    function speakTerm(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+      } else {
+        alert("Web Speech API is not supported in this browser.");
+      }
+    }
+
+    /* =================================================================== */
+    /* SECTION 2: GRAMMAR DRILLS RENDER & EVALUATION                      */
+    /* =================================================================== */
+    function renderGrammarDrills() {
+      const container = document.getElementById('grammar-drills-container');
+      container.innerHTML = '';
+
+      grammarDrills.forEach((drill, index) => {
+        const item = document.createElement('div');
+        item.className = "bg-slate-950/70 border border-slate-800/90 rounded-xl p-4 sm:p-5";
+        
+        let optionsHTML = drill.options.map((opt, optIdx) => `
+          <label class="flex items-start gap-3 p-3 rounded-lg border border-slate-800/80 hover:bg-slate-900 cursor-pointer transition text-xs sm:text-sm text-slate-300">
+            <input type="radio" name="drill-${index}" value="${optIdx}" onchange="checkDrill(${index}, ${optIdx})" class="mt-0.5 text-blue-600 focus:ring-blue-500 bg-slate-900 border-slate-700">
+            <span>${opt}</span>
+          </label>
+        `).join('');
+
+        item.innerHTML = `
+          <p class="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-1">${drill.scenario}</p>
+          <p class="text-sm font-medium text-slate-200 mb-3">${drill.prompt}</p>
+          <div class="space-y-2 mb-3">
+            ${optionsHTML}
+          </div>
+          <div id="drill-feedback-${index}" class="hidden p-3 rounded-lg text-xs leading-relaxed"></div>
+        `;
+
+        container.appendChild(item);
+      });
+    }
+
+    function checkDrill(drillIdx, selectedOptIdx) {
+      const drill = grammarDrills[drillIdx];
+      const feedbackDiv = document.getElementById(`drill-feedback-${drillIdx}`);
+      feedbackDiv.classList.remove('hidden', 'bg-emerald-950/60', 'border-emerald-800', 'text-emerald-300', 'bg-red-950/60', 'border-red-800', 'text-red-300');
+
+      if (selectedOptIdx === drill.correct) {
+        feedbackDiv.classList.add('bg-emerald-950/60', 'border', 'border-emerald-800', 'text-emerald-300');
+        feedbackDiv.innerHTML = `<i class="fa-solid fa-circle-check mr-1.5"></i> <strong>Correct!</strong> ${drill.explanation}`;
+      } else {
+        feedbackDiv.classList.add('bg-red-950/60', 'border', 'border-red-800', 'text-red-300');
+        feedbackDiv.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1.5"></i> <strong>Incorrect.</strong> Try again! Focus on the requested structure.`;
+      }
+    }
+
+    /* =================================================================== */
+    /* SECTION 3: SPEAKING PROMPTS & 10s SPRINT ENGINE                     */
+    /* =================================================================== */
+    function renderPromptsCatalog() {
+      const list = document.getElementById('prompts-list');
+      list.innerHTML = '';
+
+      speakingPrompts.forEach((p, idx) => {
+        const btn = document.createElement('button');
+        btn.onclick = () => selectPrompt(idx);
+        btn.id = `prompt-btn-${idx}`;
+        const isActive = (idx === currentPromptIndex);
+
+        btn.className = `w-full text-left p-3 rounded-xl border transition flex flex-col gap-1 ${
+          isActive 
+            ? 'bg-blue-900/40 border-blue-600/80 text-white shadow-md' 
+            : 'bg-slate-950/50 border-slate-800/80 text-slate-300 hover:bg-slate-800/50 hover:border-slate-700'
+        }`;
+
+        btn.innerHTML = `
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-slate-200">#${p.id} ${p.title}</span>
+            <span class="text-[10px] text-cyan-400 bg-cyan-950 px-1.5 py-0.5 rounded border border-cyan-800/50">${p.structure}</span>
+          </div>
+          <p class="text-xs text-slate-400 line-clamp-1">${p.text}</p>
+        `;
+
+        list.appendChild(btn);
+      });
+    }
+
+    function selectPrompt(idx) {
+      if (timerInterval) stopSprint();
+      currentPromptIndex = idx;
+      renderPromptsCatalog();
+
+      const p = speakingPrompts[idx];
+      document.getElementById('active-prompt-num').innerText = `Prompt #${p.id}`;
+      document.getElementById('active-target-structure').innerText = `Structure: ${p.structure}`;
+      document.getElementById('active-prompt-text').innerText = `"${p.text}"`;
+      document.getElementById('benchmark-content').innerText = `"${p.benchmark}"`;
+
+      // Render Target Vocab Chips
+      const vocabContainer = document.getElementById('active-target-vocab');
+      vocabContainer.innerHTML = p.vocab.map(v => 
+        `<span class="text-xs font-mono bg-slate-800 text-cyan-300 px-2.5 py-1 rounded-md border border-slate-700 flex items-center gap-1">
+          <i class="fa-solid fa-tag text-[10px]"></i> ${v}
+        </span>`
+      ).join('');
+
+      // Reset Audio & Timer Display
+      resetTimerUI();
+      document.getElementById('audio-playback-container').classList.add('hidden');
+      document.getElementById('benchmark-content').classList.add('hidden');
+      document.getElementById('benchmark-chevron').style.transform = 'rotate(0deg)';
+    }
+
+    function toggleBenchmark() {
+      const content = document.getElementById('benchmark-content');
+      const chevron = document.getElementById('benchmark-chevron');
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        chevron.style.transform = 'rotate(180deg)';
+      } else {
+        content.classList.add('hidden');
+        chevron.style.transform = 'rotate(0deg)';
+      }
+    }
+
+    /* Web Audio Beep Generator for Sprint Countdown */
+    function playBeep(freq = 600, duration = 0.1) {
+      try {
+        if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioContext.state === 'suspended') audioContext.resume();
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start();
+        osc.stop(audioContext.currentTime + duration);
+      } catch (e) {
+        console.log("Audio feedback error", e);
+      }
+    }
+
+    function resetTimerUI() {
+      timeRemaining = 10.0;
+      document.getElementById('timer-display').innerText = '10.0';
+      document.getElementById('recording-status').innerText = 'Ready';
+      document.getElementById('recording-status').className = 'text-xs font-medium text-slate-400 mt-1 uppercase tracking-wider';
+      
+      const circle = document.getElementById('timer-circle');
+      circle.style.strokeDashoffset = '0';
+      circle.classList.remove('text-red-500');
+      circle.classList.add('text-blue-500');
+    }
+
+    async function startSprint() {
+      resetTimerUI();
+      audioChunks = [];
+
+      // Request Mic Stream
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+        mediaRecorder.onstop = saveAndRenderAudio;
+        mediaRecorder.start();
+      } catch (err) {
+        alert("Microphone access is required for the 10s speaking sprint.");
+        return;
+      }
+
+      // UI State Updates
+      document.getElementById('btn-start-sprint').disabled = true;
+      document.getElementById('btn-start-sprint').classList.add('opacity-50', 'cursor-not-allowed');
+      document.getElementById('btn-stop-sprint').disabled = false;
+      document.getElementById('btn-stop-sprint').classList.remove('opacity-50', 'cursor-not-allowed');
+      
+      document.getElementById('recording-status').innerText = 'RECORDING';
+      document.getElementById('recording-status').className = 'text-xs font-bold text-red-400 mt-1 uppercase tracking-wider animate-pulse';
+
+      const circle = document.getElementById('timer-circle');
+      circle.classList.remove('text-blue-500');
+      circle.classList.add('text-red-500');
+
+      playBeep(800, 0.15); // Start beep
+
+      const totalDash = 276.46; // 2 * PI * r (r=44)
+      const startTime = Date.now();
+
+      timerInterval = setInterval(() => {
+        const elapsed = (Date.now() - startTime) / 1000;
+        timeRemaining = Math.max(0, 10.0 - elapsed);
+        
+        document.getElementById('timer-display').innerText = timeRemaining.toFixed(1);
+
+        // Update SVG Circle Progress
+        const offset = totalDash * (1 - (timeRemaining / 10.0));
+        circle.style.strokeDashoffset = offset;
+
+        // Beep at last 3 seconds
+        if (timeRemaining <= 3 && timeRemaining > 0 && Math.floor(timeRemaining * 10) % 10 === 0) {
+          playBeep(500, 0.08);
+        }
+
+        if (timeRemaining <= 0) {
+          playBeep(1200, 0.3); // Final double/long beep
+          stopSprint();
+        }
+      }, 50);
+    }
+
+    function stopSprint() {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = null;
+
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+      }
+
+      // UI Reset
+      document.getElementById('btn-start-sprint').disabled = false;
+      document.getElementById('btn-start-sprint').classList.remove('opacity-50', 'cursor-not-allowed');
+      document.getElementById('btn-stop-sprint').disabled = true;
+      document.getElementById('btn-stop-sprint').classList.add('opacity-50', 'cursor-not-allowed');
+
+      document.getElementById('recording-status').innerText = 'Completed';
+      document.getElementById('recording-status').className = 'text-xs font-bold text-emerald-400 mt-1 uppercase tracking-wider';
+    }
+
+    function saveAndRenderAudio() {
+      const blob = new Blob(audioChunks, { type: 'audio/webm' });
+      const audioUrl = URL.createObjectURL(blob);
+      const player = document.getElementById('audio-player');
+      player.src = audioUrl;
+      document.getElementById('audio-playback-container').classList.remove('hidden');
+    }
+
+    /* =================================================================== */
+    /* INITIALIZATION                                                      */
+    /* =================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      renderGlossary(glossaryData);
+      renderGrammarDrills();
+      renderPromptsCatalog();
+      selectPrompt(0);
+    });
+  </script>
+</body>
+</html>
