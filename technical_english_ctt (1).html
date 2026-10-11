@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical English CTT - Engine Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        body { font-family: 'Poppins', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between">
+
+    <header class="bg-slate-800 border-b border-slate-700 p-4 shadow-md">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-blue-600 p-2.5 rounded-xl text-white shadow-lg">
+                    <i class="fa-solid fa-gears text-2xl animate-spin" style="animation-duration: 8s;"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">Technical English CTT</h1>
+                    <p class="text-xs text-slate-400">A1 Technical English: Internal Combustion Engine Simulation with Fluid Flows</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 bg-slate-900 px-4 py-2 rounded-xl border border-slate-700">
+                    <span id="stroke-dot" class="w-3 h-3 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span id="stroke-status" class="text-sm font-semibold uppercase tracking-wider text-blue-400">Intake Stroke</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto w-full p-4 grid grid-cols-1 lg:grid-cols-3 gap-6 my-auto">
+        
+        <!-- Canvas Simulation Panel -->
+        <div class="lg:col-span-2 bg-slate-800 rounded-2xl border border-slate-700 p-4 flex flex-col items-center shadow-xl relative overflow-hidden">
+            <div class="absolute top-4 left-4 z-10 bg-slate-900/90 backdrop-blur px-3 py-1.5 rounded-lg border border-slate-700 text-xs text-slate-300 flex items-center gap-2">
+                <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span>Interactive Live Cutaway (Direct Labels On)</span>
+            </div>
+            
+            <div class="w-full aspect-[4/3] max-h-[460px] relative flex justify-center items-center mt-6">
+                <canvas id="engineCanvas" class="w-full h-full rounded-xl bg-gradient-to-b from-slate-950 to-slate-900 border border-slate-700 shadow-inner cursor-pointer"></canvas>
+            </div>
+
+            <!-- Control Dashboard -->
+            <div class="w-full mt-4 flex flex-wrap justify-between items-center gap-3 bg-slate-900/90 p-3 rounded-xl border border-slate-700">
+                <div class="flex items-center gap-2">
+                    <button id="btn-play" onclick="togglePlay()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg font-semibold text-sm transition flex items-center gap-2 shadow-lg">
+                        <i id="play-icon" class="fa-solid fa-pause"></i> <span id="play-text">Pause</span>
+                    </button>
+                    <button onclick="resetSimulation()" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-2 rounded-lg text-sm transition">
+                        <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+                </div>
+                
+                <div class="flex items-center gap-2 flex-1 max-w-xs">
+                    <span class="text-xs text-slate-400">Speed:</span>
+                    <input type="range" id="speedRange" min="0.4" max="2.5" step="0.1" value="1" class="w-full accent-blue-500 cursor-pointer">
+                    <span id="speed-val" class="text-xs font-bold text-blue-400 w-8">1.0x</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Vocabulary & Info Panel (A1 Technical English) -->
+        <div class="bg-slate-800 rounded-2xl border border-slate-700 p-5 flex flex-col justify-between shadow-xl">
+            <div>
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-lg font-bold text-blue-300 flex items-center gap-2">
+                        <i class="fa-solid fa-book-open"></i> Engine Vocabulary (A1)
+                    </h2>
+                    <span class="text-xs bg-blue-900/60 text-blue-300 border border-blue-700 px-2 py-0.5 rounded">Click to Learn</span>
+                </div>
+                <p class="text-xs text-slate-400 mb-4">Click any engine component to learn its technical term, pronunciation, and functional description.</p>
+                
+                <!-- Part Selector Pills -->
+                <div class="grid grid-cols-2 gap-2 mb-4" id="part-buttons">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- Detailed Part Info Box -->
+            <div id="info-card" class="bg-slate-900 border border-blue-500/40 rounded-xl p-4 transition-all duration-300">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <span id="info-tag" class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">Component</span>
+                        <h3 id="info-title" class="text-lg font-bold text-white mt-1">Piston</h3>
+                    </div>
+                    <div id="info-icon" class="text-blue-400 text-2xl"><i class="fa-solid fa-arrows-up-down"></i></div>
+                </div>
+                <p id="info-desc" class="text-xs text-slate-300 mt-2 leading-relaxed">A solid metal cylinder that moves up and down inside the engine block. It compresses air-fuel mixture and receives combustion force.</p>
+                <div class="mt-3 pt-3 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
+                    <span>Pronunciation: <strong class="text-emerald-400" id="info-pronun">/ˈpɪstən/</strong></span>
+                    <button onclick="speakPart()" class="bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded text-[10px] flex items-center gap-1 transition">
+                        <i class="fa-solid fa-volume-high"></i> Listen
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-800">
+        Technical English CTT • Internal Combustion Engine & Fluid Flow Visualizer (A1)
+    </footer>
+
+    <script>
+        const engineParts = {
+            piston: {
+                name: "Piston",
+                pronun: "/ˈpɪstən/",
+                desc: "A solid metal cylinder that moves up and down inside the cylinder block, transmitting power to the connecting rod.",
+                icon: "fa-arrows-up-down",
+                x: 200, y: 220
+            },
+            sparkPlug: {
+                name: "Spark Plug",
+                pronun: "/spɑːrk plʌɡ/",
+                desc: "An electrical component that produces a high-voltage spark to ignite the compressed air-fuel mixture.",
+                icon: "fa-bolt",
+                x: 200, y: 75
+            },
+            intakeValve: {
+                name: "Intake Valve",
+                pronun: "/ˈɪnteɪk vælv/",
+                desc: "Opens during the intake stroke to let fresh air and fuel enter the combustion chamber.",
+                icon: "fa-arrow-down",
+                x: 155, y: 90
+            },
+            exhaustValve: {
+                name: "Exhaust Valve",
+                pronun: "/ɪɡˈzɔːst vælv/",
+                desc: "Opens during the exhaust stroke to expel spent gases out of the cylinder into the exhaust manifold.",
+                icon: "fa-arrow-up",
+                x: 245, y: 90
+            },
+            connectingRod: {
+                name: "Connecting Rod",
+                pronun: "/kəˈnektɪŋ rɑːd/",
+                desc: "The arm connecting the piston to the crankshaft, translating vertical reciprocating motion into rotation.",
+                icon: "fa-link",
+                x: 200, y: 310
+            },
+            crankshaft: {
+                name: "Crankshaft",
+                pronun: "/ˈkræŋkʃæft/",
+                desc: "A heavy rotating shaft with crankpins that converts linear piston movement into rotational drive power.",
+                icon: "fa-circle-notch",
+                x: 200, y: 390
+            }
+        };
+
+        let activePart = 'piston';
+        let isPlaying = true;
+        let animationSpeed = 1.0;
+        let crankAngle = 0;
+
+        // Particle systems for intake air-fuel and exhaust gases
+        let intakeParticles = [];
+        let exhaustParticles = [];
+
+        const canvas = document.getElementById('engineCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function buildButtons() {
+            const container = document.getElementById('part-buttons');
+            container.innerHTML = '';
+            for (let key in engineParts) {
+                const part = engineParts[key];
+                const btn = document.createElement('button');
+                btn.className = `p-2 rounded-xl text-left border text-xs font-medium transition flex items-center gap-2 ${activePart === key ? 'bg-blue-600/30 border-blue-500 text-white' : 'bg-slate-900 border-slate-700 text-slate-300 hover:border-slate-500'}`;
+                btn.innerHTML = `<i class="fa-solid ${part.icon} text-blue-400"></i> <span class="truncate">${part.name}</span>`;
+                btn.onclick = () => selectPart(key);
+                container.appendChild(btn);
+            }
+        }
+
+        function selectPart(key) {
+            activePart = key;
+            const part = engineParts[key];
+            document.getElementById('info-title').innerText = part.name;
+            document.getElementById('info-pronun').innerText = part.pronun;
+            document.getElementById('info-desc').innerText = part.desc;
+            document.getElementById('info-icon').innerHTML = `<i class="fa-solid ${part.icon}"></i>`;
+            buildButtons();
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            document.getElementById('play-icon').className = isPlaying ? "fa-solid fa-pause" : "fa-solid fa-play";
+            document.getElementById('play-text').innerText = isPlaying ? "Pause" : "Play";
+        }
+
+        function resetSimulation() {
+            crankAngle = 0;
+            intakeParticles = [];
+            exhaustParticles = [];
+        }
+
+        document.getElementById('speedRange').addEventListener('input', (e) => {
+            animationSpeed = parseFloat(e.target.value);
+            document.getElementById('speed-val').innerText = animationSpeed.toFixed(1) + 'x';
+        });
+
+        function speakPart() {
+            if ('speechSynthesis' in window) {
+                const part = engineParts[activePart];
+                const utterance = new SpeechSynthesisUtterance(part.name);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Main Animation and Simulation Loop
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (isPlaying) {
+                crankAngle += 0.035 * animationSpeed;
+                if (crankAngle > Math.PI * 4) crankAngle = 0;
+            }
+
+            const normalizedAngle = crankAngle % (Math.PI * 4);
+            let strokeName = "Intake Stroke";
+            let strokeColor = "#3b82f6";
+            let strokeDotColor = "bg-blue-500";
+
+            if (normalizedAngle < Math.PI) {
+                strokeName = "1. Intake Stroke (Air-Fuel In)";
+                strokeColor = "#3b82f6";
+                strokeDotColor = "bg-blue-500";
+            } else if (normalizedAngle < Math.PI * 2) {
+                strokeName = "2. Compression Stroke (Air Compressed)";
+                strokeColor = "#eab308";
+                strokeDotColor = "bg-yellow-500";
+            } else if (normalizedAngle < Math.PI * 3) {
+                strokeName = "3. Power Stroke (Combustion / Ignition)";
+                strokeColor = "#ef4444";
+                strokeDotColor = "bg-red-500";
+            } else {
+                strokeName = "4. Exhaust Stroke (Gases Out)";
+                strokeColor = "#a855f7";
+                strokeDotColor = "bg-purple-500";
+            }
+
+            document.getElementById('stroke-status').innerText = strokeName;
+            document.getElementById('stroke-status').style.color = strokeColor;
+            document.getElementById('stroke-dot').className = `w-3 h-3 rounded-full ${strokeDotColor} animate-pulse`;
+
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2 - 10;
+            const scale = Math.min(canvas.width, canvas.height) / 400;
+
+            ctx.save();
+            ctx.translate(cx, cy - 50 * scale);
+            ctx.scale(scale, scale);
+
+            // 1. Draw Intake Manifold / Runner (inspired by photo)
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 14;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(-120, -110);
+            ctx.quadraticCurveTo(-90, -80, -50, -65);
+            ctx.stroke();
+
+            // 2. Draw Cylinder Block Walls
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(-75, -20, 22, 220);
+            ctx.fillRect(53, -20, 22, 220);
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 3;
+            ctx.strokeRect(-75, -20, 150, 220);
+
+            // 3. Cylinder Head
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(-75, -60, 150, 40);
+
+            // Valve status flags
+            let intakeOpen = normalizedAngle < Math.PI;
+            let exhaustOpen = normalizedAngle >= Math.PI * 3;
+
+            // --- INTAKE FLOW PARTICLES ---
+            if (intakeOpen && isPlaying) {
+                if (Math.random() < 0.4) {
+                    intakeParticles.push({ x: -110 + Math.random() * 20, y: -100 + Math.random() * 10, vx: 2, vy: 2 });
+                }
+            }
+            // Render Intake Particles (Cyan / Fresh Air-Fuel)
+            ctx.fillStyle = '#38bdf8';
+            intakeParticles.forEach((p, index) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+                if (p.y > 10) intakeParticles.splice(index, 1);
+            });
+
+            // --- EXHAUST FLOW PARTICLES ---
+            if (exhaustOpen && isPlaying) {
+                if (Math.random() < 0.4) {
+                    exhaustParticles.push({ x: 40 + Math.random() * 10, y: -45, vx: 1.5, vy: -3 });
+                }
+            }
+            // Render Exhaust Particles (Orange / Spent gases out)
+            ctx.fillStyle = '#f97316';
+            exhaustParticles.forEach((p, index) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
+                ctx.fill();
+                if (p.y < -100) exhaustParticles.splice(index, 1);
+            });
+
+            // Draw Intake Valve (Left)
+            ctx.fillStyle = intakeOpen ? '#60a5fa' : '#94a3b8';
+            ctx.fillRect(-55, intakeOpen ? -42 : -55, 26, 14);
+
+            // Draw Exhaust Valve (Right)
+            ctx.fillStyle = exhaustOpen ? '#f87171' : '#94a3b8';
+            ctx.fillRect(29, exhaustOpen ? -42 : -55, 26, 14);
+
+            // Draw Spark Plug & Electrical Spark
+            ctx.fillStyle = '#e2e8f0';
+            ctx.fillRect(-7, -50, 14, 20);
+            ctx.fillStyle = '#f59e0b';
+            ctx.beginPath();
+            ctx.arc(0, -30, 4, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (normalizedAngle >= Math.PI * 2 && normalizedAngle < Math.PI * 2.3 && isPlaying) {
+                ctx.strokeStyle = '#ef4444';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(-15, -35); ctx.lineTo(15, -25);
+                ctx.moveTo(15, -35); ctx.lineTo(-15, -25);
+                ctx.stroke();
+            }
+
+            // 4. Piston Kinematics
+            const strokeLength = 75;
+            const crankRadius = strokeLength / 2;
+            const pistonY = 30 + Math.cos(normalizedAngle) * crankRadius;
+
+            // Draw Piston
+            ctx.fillStyle = '#64748b';
+            ctx.fillRect(-50, pistonY, 100, 52);
+            ctx.strokeStyle = activePart === 'piston' ? '#3b82f6' : '#cbd5e1';
+            ctx.lineWidth = activePart === 'piston' ? 4 : 2;
+            ctx.strokeRect(-50, pistonY, 100, 52);
+
+            // Piston rings
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(-52, pistonY + 10, 104, 4);
+            ctx.fillRect(-52, pistonY + 28, 104, 4);
+
+            // 5. Connecting Rod
+            const crankX = Math.sin(normalizedAngle) * crankRadius;
+            const crankY = 150 + Math.cos(normalizedAngle) * crankRadius;
+            const wristPinX = 0;
+            const wristPinY = pistonY + 26;
+
+            ctx.strokeStyle = activePart === 'connectingRod' ? '#3b82f6' : '#94a3b8';
+            ctx.lineWidth = activePart === 'connectingRod' ? 6 : 4;
+            ctx.beginPath();
+            ctx.moveTo(wristPinX, wristPinY);
+            ctx.lineTo(crankX, crankY);
+            ctx.stroke();
+
+            // 6. Crankshaft
+            ctx.fillStyle = activePart === 'crankshaft' ? '#3b82f6' : '#475569';
+            ctx.beginPath();
+            ctx.arc(0, 150, 26, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Crank pin
+            ctx.fillStyle = '#cbd5e1';
+            ctx.beginPath();
+            ctx.arc(crankX, crankY, 9, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Combustion Flash
+            if (normalizedAngle >= Math.PI * 2 && normalizedAngle < Math.PI * 3) {
+                const alpha = Math.sin((normalizedAngle - Math.PI * 2));
+                ctx.fillStyle = `rgba(239, 68, 68, ${alpha * 0.65})`;
+                ctx.fillRect(-45, -12, 90, pistonY + 12);
+            }
+
+            // --- DIRECT LABELS ON CANVAS FOR A1 TECHNICAL ENGLISH ---
+            ctx.font = "bold 11px Poppins, sans-serif";
+            
+            // Intake label line & box
+            ctx.strokeStyle = '#38bdf8';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(-60, -95); ctx.lineTo(-110, -95); ctx.stroke();
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(-175, -107, 65, 22);
+            ctx.strokeStyle = '#38bdf8'; ctx.strokeRect(-175, -107, 65, 22);
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillText("AIR INTAKE", -171, -92);
+
+            // Exhaust label line & box
+            ctx.strokeStyle = '#f97316';
+            ctx.beginPath(); ctx.moveTo(60, -80); ctx.lineTo(110, -80); ctx.stroke();
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(110, -92, 72, 22);
+            ctx.strokeStyle = '#f97316'; ctx.strokeRect(110, -92, 72, 22);
+            ctx.fillStyle = '#fb923c';
+            ctx.fillText("EXHAUST GAS", 114, -77);
+
+            // Spark plug label
+            ctx.fillStyle = '#f59e0b';
+            ctx.fillText("SPARK PLUG", -35, -45);
+
+            ctx.restore();
+            requestAnimationFrame(animate);
+        }
+
+        buildButtons();
+        requestAnimationFrame(animate);
+    </script>
+</body>
+</html>
