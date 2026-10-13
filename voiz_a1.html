@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOIZ - A1 English Speaking Practice</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Phosphor Icons for UI Elements -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            accent: {
+              400: '#38bdf8',
+              500: '#0ea5e9',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom CSS for smooth circular countdown animation & custom scrollbar */
+    .timer-circle {
+      transition: stroke-dashoffset 1s linear;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+
+  <header class="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-accent-400 flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-brand-500/20">
+          <i class="ph-bold ph-microphone"></i>
+        </div>
+        <div>
+          <span class="text-xl font-black tracking-tight bg-gradient-to-r from-white via-slate-200 to-brand-500 bg-clip-text text-transparent">VOIZ</span>
+          <span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20">A1 English Sprint</span>
+        </div>
+      </div>
+      
+      <!-- Navigation Tabs -->
+      <nav class="hidden md:flex items-center gap-1 bg-slate-800/60 p-1 rounded-xl border border-slate-700/50">
+        <button onclick="showTab('sprint')" id="tab-btn-sprint" class="px-4 py-2 text-sm font-semibold rounded-lg transition-all text-white bg-brand-600 shadow-sm flex items-center gap-2">
+          <i class="ph-bold ph-lightning"></i> 10s Sprint Engine
+        </button>
+        <button onclick="showTab('grammar')" id="tab-btn-grammar" class="px-4 py-2 text-sm font-semibold rounded-lg transition-all text-slate-400 hover:text-white hover:bg-slate-700/50 flex items-center gap-2">
+          <i class="ph-bold ph-book-open"></i> Grammar & Guide
+        </button>
+        <button onclick="showTab('vocab')" id="tab-btn-vocab" class="px-4 py-2 text-sm font-semibold rounded-lg transition-all text-slate-400 hover:text-white hover:bg-slate-700/50 flex items-center gap-2">
+          <i class="ph-bold ph-list-checks"></i> Vocabulary
+        </button>
+      </nav>
+
+      <!-- Mobile Nav Buttons -->
+      <div class="flex md:hidden gap-2">
+        <button onclick="showTab('sprint')" class="p-2 rounded-lg bg-slate-800 text-brand-400 border border-slate-700"><i class="ph-bold ph-lightning text-xl"></i></button>
+        <button onclick="showTab('grammar')" class="p-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700"><i class="ph-bold ph-book-open text-xl"></i></button>
+        <button onclick="showTab('vocab')" class="p-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700"><i class="ph-bold ph-list-checks text-xl"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <section id="sec-sprint" class="space-y-6">
+      
+      <!-- Top Bar with Question Selection & Progress -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-4 w-full md:w-auto">
+          <button onclick="prevPrompt()" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition border border-slate-700 hover:border-slate-600 active:scale-95">
+            <i class="ph-bold ph-caret-left text-lg"></i>
+          </button>
+          <div class="flex-1">
+            <p class="text-xs uppercase tracking-widest font-bold text-slate-400">Oral Practice Prompt</p>
+            <div class="flex items-center gap-2">
+              <span id="prompt-number-badge" class="text-2xl font-black text-brand-400">1</span>
+              <span class="text-xl font-bold text-slate-500">/ 25</span>
+              <span id="prompt-grammar-tag" class="ml-3 text-xs font-semibold px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">Present Simple</span>
+            </div>
+          </div>
+          <button onclick="nextPrompt()" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition border border-slate-700 hover:border-slate-600 active:scale-95">
+            <i class="ph-bold ph-caret-right text-lg"></i>
+          </button>
+        </div>
+
+        <!-- Quick Select Drawer Switch -->
+        <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+          <button onclick="toggleGridModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-sm font-semibold flex items-center gap-2">
+            <i class="ph-bold ph-squares-four text-lg"></i> Question Catalog
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Active Practice Card -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Side: Prompt Details & Benchmark -->
+        <div class="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col justify-between space-y-6 shadow-xl">
+          <div class="space-y-4">
+            <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-accent-400 bg-accent-500/10 px-3 py-1 rounded-md border border-accent-500/20">
+              <i class="ph-bold ph-chat-circle-dots"></i> Target Question
+            </div>
+            <h2 id="prompt-question" class="text-2xl sm:text-3xl font-extrabold text-white leading-tight">
+              Loading question...
+            </h2>
+            <p id="prompt-translation" class="text-slate-400 text-sm italic">
+              Traducción...
+            </p>
+          </div>
+
+          <!-- Vocabulary Target for this Prompt -->
+          <div class="space-y-2 bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <i class="ph-bold ph-key text-brand-400"></i> Target Vocabulary to Include:
+            </span>
+            <div id="prompt-vocab-list" class="flex flex-wrap gap-2 pt-1">
+              <!-- Dynamically populated tags -->
+            </div>
+          </div>
+
+          <!-- Reference / Benchmark Answer (Expandable/Visible) -->
+          <div class="border-t border-slate-800 pt-5 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                <i class="ph-bold ph-check-circle"></i> Benchmark Model Answer
+              </span>
+              <button onclick="toggleBenchmark()" id="benchmark-toggle-btn" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 font-medium">
+                <i class="ph-bold ph-eye"></i> Show Answer
+              </button>
+            </div>
+            <div id="benchmark-box" class="hidden bg-emerald-950/30 border border-emerald-500/20 rounded-xl p-4 text-emerald-200 text-sm sm:text-base font-medium leading-relaxed">
+              <p id="prompt-benchmark">...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: 10-Second Sprint Engine & Audio Recorder -->
+        <div class="lg:col-span-5 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-slate-800 rounded-2xl p-6 sm:p-8 flex flex-col items-center justify-center text-center shadow-xl relative overflow-hidden">
+          
+          <div class="absolute top-4 right-4 flex items-center gap-1 text-xs text-slate-400 bg-slate-800/80 px-2.5 py-1 rounded-full border border-slate-700">
+            <i class="ph-bold ph-timer text-brand-400"></i> 10s Limit
+          </div>
+
+          <h3 class="text-lg font-bold text-slate-200 mb-6">Oral Sprint Recording</h3>
+
+          <!-- Circular SVG Countdown Timer -->
+          <div class="relative w-48 h-48 my-2 flex items-center justify-center">
+            <svg class="w-full h-full" viewBox="0 0 100 100">
+              <!-- Background Circle -->
+              <circle class="text-slate-800" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"/>
+              <!-- Animated Progress Circle -->
+              <circle id="timer-ring" class="text-brand-500 timer-circle" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="0" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"/>
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span id="timer-display" class="text-5xl font-black tracking-tighter text-white">10</span>
+              <span id="timer-status" class="text-xs font-bold uppercase tracking-widest text-slate-400 mt-1">Ready</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="mt-6 flex flex-col w-full gap-3">
+            <button id="btn-start-sprint" onclick="startSprint()" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-600 text-white font-bold text-base shadow-lg shadow-brand-500/25 transition active:scale-95 flex items-center justify-center gap-2">
+              <i class="ph-bold ph-play-circle text-xl"></i> Start 10s Sprint
+            </button>
+
+            <!-- Audio Playback Box (Shows after recording) -->
+            <div id="recording-playback-box" class="hidden w-full bg-slate-950 p-3.5 rounded-xl border border-slate-800 space-y-2 mt-2">
+              <div class="flex items-center justify-between text-xs font-semibold text-slate-400">
+                <span class="flex items-center gap-1.5 text-brand-400"><i class="ph-bold ph-waveform"></i> Your Audio Recording</span>
+                <span id="rec-duration">10.0s</span>
+              </div>
+              <audio id="audio-preview" controls class="w-full h-10 rounded-lg accent-brand-500 bg-slate-900"></audio>
+            </div>
+          </div>
+
+          <p class="text-xs text-slate-500 mt-4 leading-normal">
+            Press start, hear the beep countdown, speak clearly in English before time runs out!
+          </p>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-grammar" class="hidden space-y-8">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="p-3 bg-brand-500/10 text-brand-400 rounded-xl border border-brand-500/20">
+            <i class="ph-bold ph-book-open text-2xl"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold text-white">A1 Grammar Reference & Quick Guide</h2>
+            <p class="text-slate-400 text-sm">Essential tenses needed for the VOIZ 10-second oral sprint workouts.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Present Simple -->
+          <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-5 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h3 class="font-bold text-brand-400 text-lg">1. Present Simple</h3>
+              <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Habits & Routines</span>
+            </div>
+            <p class="text-xs text-slate-400">Used for facts, daily routines, and permanent states.</p>
+            <div class="text-xs font-mono bg-slate-900 p-2.5 rounded border border-slate-800/80 text-slate-300 space-y-1">
+              <p><strong class="text-brand-300">(+)</strong> I/You/We/They eat breakfast.</p>
+              <p><strong class="text-brand-300">(+)</strong> He/She/It eats at 8 AM.</p>
+              <p><strong class="text-rose-400">(-)</strong> I don't work on Sundays.</p>
+              <p><strong class="text-emerald-400">(?)</strong> Do you like coffee?</p>
+            </div>
+          </div>
+
+          <!-- Past Simple -->
+          <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-5 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h3 class="font-bold text-amber-400 text-lg">2. Past Simple</h3>
+              <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Completed Actions</span>
+            </div>
+            <p class="text-xs text-slate-400">Used for actions finished at a specific time in the past.</p>
+            <div class="text-xs font-mono bg-slate-900 p-2.5 rounded border border-slate-800/80 text-slate-300 space-y-1">
+              <p><strong class="text-amber-300">(+)</strong> Regular: I cooked yesterday.</p>
+              <p><strong class="text-amber-300">(+)</strong> Irregular: I went home early.</p>
+              <p><strong class="text-rose-400">(-)</strong> She didn't call me.</p>
+              <p><strong class="text-emerald-400">(?)</strong> Did you watch TV last night?</p>
+            </div>
+          </div>
+
+          <!-- Future Simple -->
+          <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-5 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h3 class="font-bold text-emerald-400 text-lg">3. Future Simple</h3>
+              <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded">Plans & Predictions</span>
+            </div>
+            <p class="text-xs text-slate-400">Used with <em>will</em> (spontaneous/promises) or <em>be going to</em> (plans).</p>
+            <div class="text-xs font-mono bg-slate-900 p-2.5 rounded border border-slate-800/80 text-slate-300 space-y-1">
+              <p><strong class="text-emerald-300">(+)</strong> I will travel next week.</p>
+              <p><strong class="text-emerald-300">(+)</strong> I am going to buy a car.</p>
+              <p><strong class="text-rose-400">(-)</strong> He won't come tonight.</p>
+              <p><strong class="text-emerald-400">(?)</strong> Will you study English later?</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Instructions Section -->
+        <div class="mt-8 bg-brand-950/20 border border-brand-500/20 rounded-xl p-6 space-y-4">
+          <h3 class="text-lg font-bold text-brand-300 flex items-center gap-2">
+            <i class="ph-bold ph-info"></i> How to Use VOIZ for Max Speaking Fluency
+          </h3>
+          <ol class="list-decimal list-inside text-sm text-slate-300 space-y-2 leading-relaxed">
+            <li><strong>Select a Prompt:</strong> Pick any question from the 25 A1 oral practice questions catalog.</li>
+            <li><strong>Review Vocabulary:</strong> Check the required target words and structure before pressing start.</li>
+            <li><strong>Hit "Start 10s Sprint":</strong> Listen to the countdown audio beep signals (3-2-1-Go!).</li>
+            <li><strong>Speak Immediately:</strong> Speak out loud in English into your microphone during the 10-second timer.</li>
+            <li><strong>Listen & Benchmark:</strong> Listen back to your recorded audio and compare your answer with the provided model benchmark!</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="sec-vocab" class="hidden space-y-6">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="p-3 bg-accent-500/10 text-accent-400 rounded-xl border border-accent-500/20">
+            <i class="ph-bold ph-list-checks text-2xl"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold text-white">A1 Master Vocabulary Bank</h2>
+            <p class="text-slate-400 text-sm">Key high-frequency words required across all 25 speaking prompts.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="vocab-glossary-container">
+          <!-- Dynamically populated from script -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="grid-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 sm:p-6 border-b border-slate-800 flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-bold text-white">Select Practice Prompt</h3>
+          <p class="text-xs text-slate-400">Jump directly to any of the 25 A1 prompts</p>
+        </div>
+        <button onclick="toggleGridModal()" class="p-2 text-slate-400 hover:text-white rounded-lg bg-slate-800">
+          <i class="ph-bold ph-x text-lg"></i>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-3" id="modal-prompt-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PROMPTS = [
+      // Present Simple Tense (1-9)
+      {
+        id: 1,
+        grammar: "Present Simple",
+        question: "What is your daily morning routine?",
+        translation: "¿Cuál es tu rutina diaria por la mañana?",
+        vocab: ["wake up", "breakfast", "coffee", "brush teeth", "usually"],
+        benchmark: "I usually wake up at 7 AM, drink a hot cup of coffee, and eat breakfast before work."
+      },
+      {
+        id: 2,
+        grammar: "Present Simple",
+        question: "Where do you live and who do you live with?",
+        translation: "¿Dónde vives y con quién vives?",
+        vocab: ["live in", "apartment", "family", "roommate", "city"],
+        benchmark: "I live in a quiet apartment in the city center with my family and my pet dog."
+      },
+      {
+        id: 3,
+        grammar: "Present Simple",
+        question: "What do you do for work or study?",
+        translation: "¿A qué te dedicas o qué estudias?",
+        vocab: ["work as", "study", "office", "student", "every day"],
+        benchmark: "I work as an office assistant every day, and I study English in the evening."
+      },
+      {
+        id: 4,
+        grammar: "Present Simple",
+        question: "What is your favorite food and how often do you eat it?",
+        translation: "¿Cuál es tu comida favorita y qué tan seguido la comes?",
+        vocab: ["favorite", "pizza", "eat", "twice a week", "delicious"],
+        benchmark: "My favorite food is delicious pepperoni pizza, and I eat it twice a week."
+      },
+      {
+        id: 5,
+        grammar: "Present Simple",
+        question: "How do you usually spend your weekends?",
+        translation: "¿Cómo pasas normalmente tus fines de semana?",
+        vocab: ["weekend", "relax", "friends", "park", "watch movies"],
+        benchmark: "On weekends, I relax with my friends, visit the park, and watch movies at home."
+      },
+      {
+        id: 6,
+        grammar: "Present Simple",
+        question: "What sports or hobbies do you enjoy?",
+        translation: "¿Qué deportes o pasatiempos disfrutas?",
+        vocab: ["enjoy", "play soccer", "read books", "music", "free time"],
+        benchmark: "In my free time, I enjoy playing soccer and listening to pop music."
+      },
+      {
+        id: 7,
+        grammar: "Present Simple",
+        question: "What time do you usually go to bed?",
+        translation: "¿A qué hora te acostumbras ir a la cama?",
+        vocab: ["go to bed", "sleep", "around 10 PM", "tired", "night"],
+        benchmark: "I usually feel tired and go to bed around 10 PM every night."
+      },
+      {
+        id: 8,
+        grammar: "Present Simple",
+        question: "Does your best friend speak English?",
+        translation: "¿Tu mejor amigo/a habla inglés?",
+        vocab: ["best friend", "speak", "fluent", "practice", "together"],
+        benchmark: "Yes, my best friend speaks basic English, so we practice speaking together."
+      },
+      {
+        id: 9,
+        grammar: "Present Simple",
+        question: "What is the weather like in your city today?",
+        translation: "¿Cómo está el clima en tu ciudad hoy?",
+        vocab: ["weather", "sunny", "warm", "cold", "today"],
+        benchmark: "Today the weather in my city is bright, sunny, and very warm."
+      },
+
+      // Past Simple Tense (10-17)
+      {
+        id: 10,
+        grammar: "Past Simple",
+        question: "What did you do yesterday afternoon?",
+        translation: "¿Qué hiciste ayer por la tarde?",
+        vocab: ["cleaned", "studied", "cooked", "yesterday", "afternoon"],
+        benchmark: "Yesterday afternoon, I cleaned my bedroom and cooked a delicious lunch."
+      },
+      {
+        id: 11,
+        grammar: "Past Simple",
+        question: "Where did you go on your last vacation?",
+        translation: "¿A dónde fuiste en tus últimas vacaciones?",
+        vocab: ["went to", "beach", "traveled", "last summer", "swam"],
+        benchmark: "Last summer, I traveled to the beach with my friends and swam in the ocean."
+      },
+      {
+        id: 12,
+        grammar: "Past Simple",
+        question: "What did you eat for dinner last night?",
+        translation: "¿Qué cenaste anoche?",
+        vocab: ["ate", "chicken", "salad", "drank water", "last night"],
+        benchmark: "Last night I ate grilled chicken with a fresh salad and drank cold water."
+      },
+      {
+        id: 13,
+        grammar: "Past Simple",
+        question: "Did you watch a movie or TV show last weekend?",
+        translation: "¿Viste alguna película o serie el fin de semana pasado?",
+        vocab: ["watched", "movie", "cinema", "funny", "last weekend"],
+        benchmark: "Yes, last weekend I watched a very funny movie on Netflix."
+      },
+      {
+        id: 14,
+        grammar: "Past Simple",
+        question: "At what time did you wake up this morning?",
+        translation: "¿A qué hora te despertaste esta mañana?",
+        vocab: ["woke up", "early", "at 6 AM", "alarm", "this morning"],
+        benchmark: "This morning my alarm rang and I woke up early at 6 AM."
+      },
+      {
+        id: 15,
+        grammar: "Past Simple",
+        question: "Who was your first English teacher?",
+        translation: "¿Quién fue tu primer profesor/a de inglés?",
+        vocab: ["was", "kind", "taught", "school", "years ago"],
+        benchmark: "My first English teacher was Mr. Smith, and he taught me in school years ago."
+      },
+      {
+        id: 16,
+        grammar: "Past Simple",
+        question: "How did you get to work or school today?",
+        translation: "¿Cómo llegaste al trabajo o la escuela hoy?",
+        vocab: ["took the bus", "walked", "drove", "arrived", "this morning"],
+        benchmark: "This morning I took the bus and arrived at work in twenty minutes."
+      },
+      {
+        id: 17,
+        grammar: "Past Simple",
+        question: "Did you buy anything special last week?",
+        translation: "¿Compraste algo especial la semana pasada?",
+        vocab: ["bought", "new clothes", "shoes", "store", "last week"],
+        benchmark: "Yes, last week I bought a pair of new white shoes at the store."
+      },
+
+      // Future Simple & Going to (18-25)
+      {
+        id: 18,
+        grammar: "Future Simple",
+        question: "What are you going to do this weekend?",
+        translation: "¿Qué vas a hacer este fin de semana?",
+        vocab: ["going to", "visit", "shopping", "relax", "this weekend"],
+        benchmark: "This weekend I am going to visit my grandparents and go shopping."
+      },
+      {
+        id: 19,
+        grammar: "Future Simple",
+        question: "Where will you travel on your next trip?",
+        translation: "¿A dónde viajarás en tu próximo viaje?",
+        vocab: ["will travel", "next year", "new city", "hotel", "explore"],
+        benchmark: "On my next trip, I will travel to New York and explore the city."
+      },
+      {
+        id: 20,
+        grammar: "Future Simple",
+        question: "What are you going to cook or eat for dinner tonight?",
+        translation: "¿Qué vas a cocinar o comer para la cena esta noche?",
+        vocab: ["going to cook", "pasta", "tonight", "prepare", "family"],
+        benchmark: "Tonight I am going to cook hot pasta with cheese for my family."
+      },
+      {
+        id: 21,
+        grammar: "Future Simple",
+        question: "Will you study English tomorrow?",
+        translation: "¿Estudiarás inglés mañana?",
+        vocab: ["will study", "practice speaking", "tomorrow", "hour", "learn"],
+        benchmark: "Yes, I will study English tomorrow for one hour using VOIZ."
+      },
+      {
+        id: 22,
+        grammar: "Future Simple",
+        question: "What time will you wake up tomorrow morning?",
+        translation: "¿A qué hora te despertarás mañana por la mañana?",
+        vocab: ["will wake up", "at 7 AM", "early", "alarm", "tomorrow"],
+        benchmark: "Tomorrow morning I will wake up early at 7 AM."
+      },
+      {
+        id: 23,
+        grammar: "Future Simple",
+        question: "What are you going to buy the next time you go shopping?",
+        translation: "¿Qué vas a comprar la próxima vez que vayas de compras?",
+        vocab: ["going to buy", "groceries", "fruits", "vegetables", "supermarket"],
+        benchmark: "Next time I go to the supermarket, I am going to buy fresh fruits and vegetables."
+      },
+      {
+        id: 24,
+        grammar: "Future Simple",
+        question: "Will you meet any friends later today?",
+        translation: "¿Te reunirás con algún amigo más tarde hoy?",
+        vocab: ["will meet", "later", "coffee shop", "talk", "afternoon"],
+        benchmark: "Yes, I will meet my friend Maria at a coffee shop later this afternoon."
+      },
+      {
+        id: 25,
+        grammar: "Future Simple",
+        question: "How will improving your English help your life?",
+        translation: "¿Cómo te ayudará en la vida mejorar tu inglés?",
+        vocab: ["will help", "get a job", "travel", "speak confidently", "future"],
+        benchmark: "Improving my English will help me get a better job and travel with confidence."
+      }
+    ];
+
+    const GLOSSARY = [
+      { category: "Verbs (Present)", items: ["wake up (despertar)", "eat (comer)", "study (estudiar)", "work (trabajar)", "live (vivir)"] },
+      { category: "Verbs (Past)", items: ["woke up (despertó)", "ate (comió)", "studied (estudió)", "worked (trabajó)", "went (fue)"] },
+      { category: "Verbs (Future)", items: ["will travel (viajará)", "going to cook (va a cocinar)", "will study (estudiará)", "going to buy (va a comprar)"] },
+      { category: "Time Expressions", items: ["usually (normalmente)", "yesterday (ayer)", "last night (anoche)", "tomorrow (mañana)", "this weekend (este fin de semana)"] },
+      { category: "Everyday Nouns", items: ["breakfast (desayuno)", "apartment (apartamento)", "weather (clima)", "supermarket (supermercado)", "friends (amigos)"] }
+    ];
+
+    let currentIndex = 0;
+    let timerInterval = null;
+    let secondsLeft = 10;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let audioContext = null;
+
+    function playAudioBeep(freq = 600, duration = 0.1) {
+      try {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.2, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start();
+        osc.stop(audioContext.currentTime + duration);
+      } catch (e) {
+        console.warn("Audio Context beep error", e);
+      }
+    }
+
+    function renderPrompt() {
+      const p = PROMPTS[currentIndex];
+      document.getElementById('prompt-number-badge').innerText = p.id;
+      document.getElementById('prompt-grammar-tag').innerText = p.grammar;
+      document.getElementById('prompt-question').innerText = p.question;
+      document.getElementById('prompt-translation').innerText = p.translation;
+      document.getElementById('prompt-benchmark').innerText = p.benchmark;
+
+      // Render Vocab Tags
+      const vocabContainer = document.getElementById('prompt-vocab-list');
+      vocabContainer.innerHTML = p.vocab.map(v => 
+        `<span class="px-2.5 py-1 rounded-lg bg-slate-800 text-brand-300 border border-slate-700/80 text-xs font-semibold">${v}</span>`
+      ).join('');
+
+      // Reset Benchmark Visibility & Recording UI
+      document.getElementById('benchmark-box').classList.add('hidden');
+      document.getElementById('benchmark-toggle-btn').innerHTML = `<i class="ph-bold ph-eye"></i> Show Answer`;
+      resetSprintState();
+    }
+
+    function toggleBenchmark() {
+      const box = document.getElementById('benchmark-box');
+      const btn = document.getElementById('benchmark-toggle-btn');
+      if (box.classList.contains('hidden')) {
+        box.classList.remove('hidden');
+        btn.innerHTML = `<i class="ph-bold ph-eye-slash"></i> Hide Answer`;
+      } else {
+        box.classList.add('hidden');
+        btn.innerHTML = `<i class="ph-bold ph-eye"></i> Show Answer`;
+      }
+    }
+
+    function prevPrompt() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        renderPrompt();
+      }
+    }
+
+    function nextPrompt() {
+      if (currentIndex < PROMPTS.length - 1) {
+        currentIndex++;
+        renderPrompt();
+      }
+    }
+
+    function selectPrompt(index) {
+      currentIndex = index;
+      renderPrompt();
+      toggleGridModal();
+    }
+
+    function showTab(tabName) {
+      ['sprint', 'grammar', 'vocab'].forEach(t => {
+        document.getElementById(`sec-${t}`).classList.add('hidden');
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (btn) {
+          btn.className = "px-4 py-2 text-sm font-semibold rounded-lg transition-all text-slate-400 hover:text-white hover:bg-slate-700/50 flex items-center gap-2";
+        }
+      });
+
+      document.getElementById(`sec-${tabName}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+      if (activeBtn) {
+        activeBtn.className = "px-4 py-2 text-sm font-semibold rounded-lg transition-all text-white bg-brand-600 shadow-sm flex items-center gap-2";
+      }
+    }
+
+    function toggleGridModal() {
+      const modal = document.getElementById('grid-modal');
+      modal.classList.toggle('hidden');
+      if (!modal.classList.contains('hidden')) {
+        const grid = document.getElementById('modal-prompt-grid');
+        grid.innerHTML = PROMPTS.map((p, idx) => `
+          <button onclick="selectPrompt(${idx})" class="p-3.5 text-left rounded-xl border ${idx === currentIndex ? 'border-brand-500 bg-brand-500/10' : 'border-slate-800 bg-slate-950/60 hover:border-slate-700'} transition flex flex-col gap-1">
+            <div class="flex items-center justify-between text-xs">
+              <span class="font-bold text-brand-400">#${p.id}</span>
+              <span class="text-slate-400 bg-slate-800 px-2 py-0.5 rounded">${p.grammar}</span>
+            </div>
+            <p class="text-xs font-semibold text-white line-clamp-1">${p.question}</p>
+          </button>
+        `).join('');
+      }
+    }
+
+    function resetSprintState() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      secondsLeft = 10;
+      updateTimerCircle(10);
+      document.getElementById('timer-display').innerText = "10";
+      document.getElementById('timer-status').innerText = "Ready";
+      document.getElementById('timer-status').className = "text-xs font-bold uppercase tracking-widest text-slate-400 mt-1";
+      document.getElementById('recording-playback-box').classList.add('hidden');
+      
+      const btn = document.getElementById('btn-start-sprint');
+      btn.disabled = false;
+      btn.innerHTML = `<i class="ph-bold ph-play-circle text-xl"></i> Start 10s Sprint`;
+      btn.className = "w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-600 text-white font-bold text-base shadow-lg shadow-brand-500/25 transition active:scale-95 flex items-center justify-center gap-2";
+
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      }
+    }
+
+    function updateTimerCircle(seconds) {
+      const circle = document.getElementById('timer-ring');
+      const circumference = 2 * Math.PI * 40; // r=40 -> 251.32
+      const offset = circumference - (seconds / 10) * circumference;
+      circle.style.strokeDashoffset = offset;
+    }
+
+    async function startSprint() {
+      // Audio Recording Permission Check
+      audioChunks = [];
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        mediaRecorder.onstop = saveAndPresentRecording;
+      } catch (err) {
+        alert("Microphone access is required to record your speaking practice. Please allow microphone permissions.");
+        return;
+      }
+
+      // Prepare UI for Countdown Sprint
+      const btn = document.getElementById('btn-start-sprint');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="ph-bold ph-record text-xl animate-pulse text-rose-400"></i> Sprinting... Speak Now!`;
+      btn.className = "w-full py-3.5 px-6 rounded-xl bg-slate-800 text-slate-400 font-bold text-base border border-slate-700 flex items-center justify-center gap-2 cursor-not-allowed";
+
+      document.getElementById('timer-status').innerText = "SPEAKING";
+      document.getElementById('timer-status').className = "text-xs font-bold uppercase tracking-widest text-rose-400 animate-pulse mt-1";
+
+      secondsLeft = 10;
+      updateTimerCircle(10);
+      document.getElementById('timer-display').innerText = "10";
+
+      // Start Recording
+      mediaRecorder.start();
+      playAudioBeep(800, 0.2); // Start Beep
+
+      // Start Timer Interval
+      timerInterval = setInterval(() => {
+        secondsLeft--;
+        document.getElementById('timer-display').innerText = secondsLeft;
+        updateTimerCircle(secondsLeft);
+
+        if (secondsLeft > 0 && secondsLeft <= 3) {
+          playAudioBeep(500, 0.1); // Warning Beeps for last 3 seconds
+        }
+
+        if (secondsLeft <= 0) {
+          clearInterval(timerInterval);
+          playAudioBeep(1000, 0.4); // High Finish Beep
+          if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+          }
+          document.getElementById('timer-status').innerText = "Finished";
+          document.getElementById('timer-status').className = "text-xs font-bold uppercase tracking-widest text-emerald-400 mt-1";
+          btn.disabled = false;
+          btn.innerHTML = `<i class="ph-bold ph-arrow-counter-clockwise text-xl"></i> Retry 10s Sprint`;
+          btn.className = "w-full py-3.5 px-6 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-base transition flex items-center justify-center gap-2";
+        }
+      }, 1000);
+    }
+
+    function saveAndPresentRecording() {
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const preview = document.getElementById('audio-preview');
+      preview.src = audioUrl;
+      document.getElementById('recording-playback-box').classList.remove('hidden');
+    }
+
+    function renderGlossary() {
+      const container = document.getElementById('vocab-glossary-container');
+      container.innerHTML = GLOSSARY.map(g => `
+        <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 space-y-2">
+          <h3 class="text-sm font-bold text-accent-400 border-b border-slate-800 pb-1.5 flex items-center gap-2">
+            <i class="ph-bold ph-tag"></i> ${g.category}
+          </h3>
+          <ul class="space-y-1">
+            ${g.items.map(item => `<li class="text-xs text-slate-300 font-medium flex items-center gap-1.5"><i class="ph-bold ph-dot text-brand-400"></i> ${item}</li>`).join('')}
+          </ul>
+        </div>
+      `).join('');
+    }
+
+    /* Initialize App on Window Load */
+    window.onload = function() {
+      renderPrompt();
+      renderGlossary();
+    };
+  </script>
+</body>
+</html>
