@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SENA AutoLexicon - Diccionario Técnico & Flashcards</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        sena: {
+                            green: '#39A900',
+                            darkGreen: '#2e8700',
+                            navy: '#00324D',
+                            lightNavy: '#004B73',
+                            accent: '#FF6B00',
+                            gold: '#F59E0B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b1329;
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            border-color: rgba(57, 169, 0, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px -10px rgba(57, 169, 0, 0.15);
+        }
+
+        /* 3D Flashcard Flip Styling */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 1.5rem;
+        }
+        .flashcard-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(11, 19, 41, 0.8);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #39A900;
+        }
+
+        /* Alphabet button active indicator */
+        .alpha-btn.active {
+            background-color: #39A900 !important;
+            color: #ffffff !important;
+            font-weight: 800;
+            box-shadow: 0 0 12px rgba(57, 169, 0, 0.4);
+        }
+
+        /* Pulse glow animation */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(57, 169, 0, 0.2); }
+            50% { box-shadow: 0 0 25px rgba(57, 169, 0, 0.5); }
+        }
+        .glow-sena {
+            animation: pulse-glow 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 flex flex-col min-h-screen selection:bg-sena-green selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('dictionary')">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-sena-green to-emerald-700 flex items-center justify-center font-bold text-white shadow-lg shadow-sena-green/30 glow-sena">
+                    <i class="fa-solid fa-book-bookmark text-xl"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-extrabold tracking-widest text-sena-green uppercase bg-sena-green/10 px-2 py-0.5 rounded-full border border-sena-green/20">SENA CTT</span>
+                        <span class="text-xs text-slate-400 font-mono">Automotive English</span>
+                    </div>
+                    <h1 class="text-lg font-extrabold tracking-tight text-white flex items-center gap-2">
+                        AutoLexicon <span class="text-xs px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 font-normal">A - Z</span>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Tab Navigation Links -->
+            <nav class="hidden md:flex items-center gap-1 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800">
+                <button id="nav-dictionary" onclick="switchTab('dictionary')" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-sena-green text-white shadow">
+                    <i class="fa-solid fa-book"></i> Diccionario
+                </button>
+                <button id="nav-flashcards" onclick="switchTab('flashcards')" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800">
+                    <i class="fa-solid fa-layer-group"></i> Flashcards 3D
+                </button>
+                <button id="nav-quiz" onclick="switchTab('quiz')" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800">
+                    <i class="fa-solid fa-graduation-cap"></i> Trainer Quiz
+                </button>
+                <button id="nav-favorites" onclick="switchTab('favorites')" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800">
+                    <i class="fa-solid fa-star text-amber-400"></i> Favoritos <span id="fav-counter" class="ml-1 px-1.5 py-0.2 rounded-full bg-amber-400/20 text-amber-300 text-[10px]">0</span>
+                </button>
+            </nav>
+
+            <!-- Quick Stats & Controls -->
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 text-xs font-mono" title="Términos Dominados">
+                    <i class="fa-solid fa-circle-check text-sena-green"></i>
+                    <span id="mastered-count" class="font-bold text-white">0</span> / <span id="total-terms-count">0</span>
+                </div>
+
+                <button onclick="toggleAudioEngine()" id="audio-toggle-btn" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-sena-green border border-slate-800 transition" title="Activar/Desactivar Audio">
+                    <i id="audio-icon" class="fa-solid fa-volume-high"></i>
+                </button>
+
+                <button onclick="openAddTermModal()" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sena-navy hover:bg-sena-lightNavy text-sena-green border border-sena-green/30 text-xs font-bold transition">
+                    <i class="fa-solid fa-plus"></i> Añadir
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Footer Bar -->
+        <div class="md:hidden flex items-center justify-around bg-slate-900 border-t border-slate-800 py-2 px-2 text-xs">
+            <button onclick="switchTab('dictionary')" class="flex flex-col items-center gap-1 text-sena-green">
+                <i class="fa-solid fa-book"></i> Diccionario
+            </button>
+            <button onclick="switchTab('flashcards')" class="flex flex-col items-center gap-1 text-slate-400">
+                <i class="fa-solid fa-layer-group"></i> Flashcards
+            </button>
+            <button onclick="switchTab('quiz')" class="flex flex-col items-center gap-1 text-slate-400">
+                <i class="fa-solid fa-graduation-cap"></i> Quiz
+            </button>
+            <button onclick="switchTab('favorites')" class="flex flex-col items-center gap-1 text-slate-400">
+                <i class="fa-solid fa-star text-amber-400"></i> Favoritos
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6">
+
+        <!-- VIEW 1: VIRTUAL DICTIONARY (SEARCH & ALPHABET FILTER) -->
+        <section id="view-dictionary" class="space-y-6">
+            <!-- Search & Category Filters Box -->
+            <div class="glass-panel p-5 sm:p-6 rounded-3xl space-y-4 shadow-2xl">
+                <div class="flex flex-col md:flex-row items-center gap-4">
+                    <!-- Live Search Bar -->
+                    <div class="relative w-full md:w-2/5">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="search-input" oninput="handleSearch()" placeholder="Buscar término técnico (Inglés o Español)..." class="w-full pl-11 pr-10 py-3 rounded-2xl bg-slate-900/90 border border-slate-700/80 text-white placeholder-slate-400 text-sm focus:outline-none focus:border-sena-green transition font-medium">
+                        <button onclick="clearSearch()" id="clear-search-btn" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Category Filter Dropdown -->
+                    <div class="w-full md:w-2/5">
+                        <select id="category-filter" onchange="applyFilters()" class="w-full py-3 px-4 rounded-2xl bg-slate-900/90 border border-slate-700/80 text-white text-sm focus:outline-none focus:border-sena-green transition font-medium cursor-pointer">
+                            <option value="ALL">Todas las Categorías Técnicas</option>
+                            <option value="Herramientas">🛠️ Herramientas & Equipos</option>
+                            <option value="Motor">⚙️ Motor & Componentes</option>
+                            <option value="EV / Seguridad">⚡ Vehículos Eléctricos & Seguridad HV</option>
+                            <option value="Diagnóstico">💻 Diagnóstico & Códigos DTC</option>
+                            <option value="Frenos">🛞 Frenos & Suspensión</option>
+                            <option value="Eléctrico">🔌 Sistema Eléctrico & Sensores</option>
+                            <option value="Repuestos">📦 Repuestos, Mantenimiento & Cotizaciones</option>
+                        </select>
+                    </div>
+
+                    <!-- Total count indicator -->
+                    <div class="w-full md:w-1/5 text-right text-xs text-slate-400 font-mono">
+                        Mostrando: <span id="filtered-count" class="font-bold text-sena-green">0</span> términos
+                    </div>
+                </div>
+
+                <!-- Alphabet Selector Bar (A to Z) -->
+                <div class="pt-2 border-t border-slate-800/80">
+                    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrow-down-a-z text-sena-green"></i> Filtrar por Letra Inicial:
+                    </div>
+                    <div class="flex flex-wrap gap-1.5" id="alphabet-bar">
+                        <!-- Dynamic A-Z buttons generated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dictionary Grid Results -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="dictionary-grid">
+                <!-- Term Cards rendered dynamically -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="no-results" class="hidden text-center py-16 space-y-3 glass-panel rounded-3xl">
+                <div class="w-16 h-16 mx-auto rounded-full bg-slate-800 flex items-center justify-center text-slate-500 text-2xl">
+                    <i class="fa-solid fa-magnifying-glass font-bold"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white">No se encontraron términos</h3>
+                <p class="text-sm text-slate-400 max-w-md mx-auto">Prueba buscando con otra palabra o selecciona "TODOS" en el filtro de alfabeto.</p>
+                <button onclick="resetFilters()" class="px-4 py-2 rounded-xl bg-sena-green text-white text-xs font-bold">Reiniciar Filtros</button>
+            </div>
+        </section>
+
+        <!-- VIEW 2: 3D INTERACTIVE FLASHCARDS MODE -->
+        <section id="view-flashcards" class="hidden space-y-6">
+            <!-- Deck Control Bar -->
+            <div class="glass-panel p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-sena-green/20 text-sena-green flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-white text-sm sm:text-base">Modo Flashcards 3D</h2>
+                        <p class="text-xs text-slate-400" id="flashcard-deck-subtitle">Repaso activo de vocabulario técnico</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <select id="flashcard-deck-filter" onchange="initFlashcardDeck()" class="py-2 px-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white font-medium">
+                        <option value="ALL">Mazo: Todos los Términos</option>
+                        <option value="UNMASTERED">Mazo: Pendientes por Repasar</option>
+                        <option value="FAVORITES">Mazo: Solo Favoritos ⭐</option>
+                    </select>
+
+                    <button onclick="shuffleFlashcards()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 border border-slate-700" title="Mezclar Mazo">
+                        <i class="fa-solid fa-shuffle mr-1"></i> Mezclar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Flashcard Container Area -->
+            <div class="max-w-xl mx-auto space-y-6">
+                <!-- Progress & Counter bar -->
+                <div class="flex items-center justify-between text-xs font-mono text-slate-400">
+                    <span id="fc-card-counter">Tarjeta 1 de 10</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sena-green font-bold" id="fc-mastered-badge"><i class="fa-solid fa-check"></i> Dominada</span>
+                        <span class="text-slate-500">|</span>
+                        <span>Usa Flechas o Espacio</span>
+                    </div>
+                </div>
+
+                <!-- 3D Card Object -->
+                <div class="perspective-1000 h-80 w-full cursor-pointer" onclick="toggleFlashcardFlip()">
+                    <div id="flashcard-object" class="flashcard flashcard-inner">
+                        
+                        <!-- CARD FRONT (English Term) -->
+                        <div class="flashcard-front glass-panel border border-slate-700 p-8 flex flex-col justify-between items-center text-center shadow-2xl bg-gradient-to-b from-slate-800/90 to-slate-900/90">
+                            <div class="w-full flex justify-between items-center text-xs">
+                                <span id="fc-category-front" class="px-2.5 py-1 rounded-full bg-sena-green/10 text-sena-green font-extrabold uppercase border border-sena-green/20">
+                                    Categoría
+                                </span>
+                                <button onclick="event.stopPropagation(); toggleCurrentFavorite()" id="fc-fav-btn" class="text-slate-500 hover:text-amber-400 text-base">
+                                    <i class="fa-regular fa-star"></i>
+                                </button>
+                            </div>
+
+                            <div class="my-auto space-y-4">
+                                <h3 id="fc-term-front" class="text-3xl sm:text-4xl font-black text-white tracking-tight">
+                                    Torque Wrench
+                                </h3>
+                                <button onclick="event.stopPropagation(); speakCurrentTerm()" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-800 hover:bg-slate-700 text-xs text-sena-green font-bold border border-slate-700 transition">
+                                    <i class="fa-solid fa-volume-high"></i> Escuchar Pronunciación
+                                </button>
+                            </div>
+
+                            <div class="text-xs text-slate-400 flex items-center gap-1.5 font-medium">
+                                <i class="fa-solid fa-rotate text-sena-green animate-pulse"></i> Haz clic o presiona ESPACIO para ver la traducción
+                            </div>
+                        </div>
+
+                        <!-- CARD BACK (Spanish Translation & Context) -->
+                        <div class="flashcard-back glass-panel border border-sena-green/40 p-8 flex flex-col justify-between items-center text-center shadow-2xl bg-gradient-to-b from-slate-900/95 to-slate-950/95">
+                            <div class="w-full flex justify-between items-center text-xs">
+                                <span class="text-amber-400 font-bold uppercase tracking-wider">Traducción Técnica</span>
+                                <span class="text-slate-500 font-mono">SENA Lexicon</span>
+                            </div>
+
+                            <div class="my-auto space-y-3">
+                                <h4 id="fc-translation-back" class="text-2xl sm:text-3xl font-extrabold text-amber-300">
+                                    Llave Dinamométrica / Torquímetro
+                                </h4>
+                                <p id="fc-context-back" class="text-sm text-slate-300 italic max-w-md bg-slate-800/50 p-3 rounded-2xl border border-slate-700/60">
+                                    "Used to tighten cylinder head bolts to precise torque."
+                                </p>
+                            </div>
+
+                            <div class="w-full flex items-center justify-center gap-2 pt-2 border-t border-slate-800">
+                                <span class="text-[11px] text-slate-400">¿Dominas esta palabra?</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Spatial Repetition Action Buttons -->
+                <div class="flex items-center justify-between gap-4">
+                    <button onclick="prevFlashcard()" class="px-5 py-3 rounded-2xl bg-slate-900 hover:bg-slate-800 text-slate-300 font-semibold text-xs border border-slate-800 transition flex items-center gap-2">
+                        <i class="fa-solid fa-chevron-left"></i> Anterior
+                    </button>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="markCurrentMastery(false)" class="px-4 py-3 rounded-2xl bg-red-950/40 hover:bg-red-900/60 text-red-300 border border-red-800/50 text-xs font-bold transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-rotate-left"></i> Por Repasar
+                        </button>
+                        <button onclick="markCurrentMastery(true)" class="px-4 py-3 rounded-2xl bg-sena-green/20 hover:bg-sena-green/30 text-sena-green border border-sena-green/40 text-xs font-extrabold transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-check"></i> ¡Dominada!
+                        </button>
+                    </div>
+
+                    <button onclick="nextFlashcard()" class="px-5 py-3 rounded-2xl bg-sena-green hover:bg-sena-darkGreen text-white font-bold text-xs shadow-lg shadow-sena-green/20 transition flex items-center gap-2">
+                        Siguiente <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 3: TRAINER QUIZ SPEED MODE -->
+        <section id="view-quiz" class="hidden space-y-6">
+            <div class="glass-panel p-6 sm:p-8 rounded-3xl space-y-6 max-w-2xl mx-auto shadow-2xl">
+                <!-- Quiz Header -->
+                <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-white">Speed Quiz - Términos Automotrices</h2>
+                            <p class="text-xs text-slate-400">Selecciona la traducción o término correcto</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-slate-400">Puntaje XP</div>
+                        <div id="quiz-score" class="text-xl font-black text-amber-400 font-mono">0 XP</div>
+                    </div>
+                </div>
+
+                <!-- Active Question Box -->
+                <div id="quiz-question-box" class="space-y-5">
+                    <div class="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 text-center space-y-2">
+                        <span class="text-[10px] uppercase tracking-widest text-sena-green font-bold">¿Cuál es el significado de?</span>
+                        <h3 id="quiz-target-term" class="text-2xl sm:text-3xl font-black text-white">
+                            Torque Wrench
+                        </h3>
+                        <button onclick="speakQuizTerm()" class="text-slate-400 hover:text-sena-green text-xs font-semibold inline-flex items-center gap-1 pt-1">
+                            <i class="fa-solid fa-volume-high"></i> Escuchar
+                        </button>
+                    </div>
+
+                    <!-- Multiple Choice Options -->
+                    <div class="grid grid-cols-1 gap-3" id="quiz-options-container">
+                        <!-- Dynamic options buttons -->
+                    </div>
+
+                    <!-- Instant Feedback Bar -->
+                    <div id="quiz-feedback" class="hidden p-4 rounded-2xl text-xs font-semibold space-y-1"></div>
+
+                    <!-- Action Next button -->
+                    <button id="quiz-next-btn" onclick="nextQuizQuestion()" class="hidden w-full py-3.5 rounded-2xl bg-sena-green hover:bg-sena-darkGreen text-white font-bold text-sm transition shadow-lg shadow-sena-green/30 flex items-center justify-center gap-2">
+                        Siguiente Pregunta <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 4: FAVORITES & BOOKMARKS VIEW -->
+        <section id="view-favorites" class="hidden space-y-6">
+            <div class="glass-panel p-6 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-star text-amber-400"></i> Términos Guardados como Favoritos
+                    </h2>
+                    <p class="text-xs text-slate-400">Tus palabras clave seleccionadas para repaso prioritario</p>
+                </div>
+                <button onclick="startFavoritesDeck()" class="px-4 py-2.5 rounded-xl bg-sena-green hover:bg-sena-darkGreen text-white text-xs font-bold shadow-md transition flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group"></i> Estudiar Favoritos en Flashcards
+                </button>
+            </div>
+
+            <!-- Favorites Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="favorites-grid">
+                <!-- Dynamically populated -->
+            </div>
+
+            <!-- Empty Favorites state -->
+            <div id="no-favorites" class="hidden text-center py-16 space-y-3 glass-panel rounded-3xl">
+                <i class="fa-regular fa-star text-4xl text-slate-600"></i>
+                <h3 class="text-lg font-bold text-white">No tienes favoritos guardados</h3>
+                <p class="text-sm text-slate-400 max-w-md mx-auto">Haz clic en la estrella ⭐ de cualquier término del diccionario para agregarlo a esta lista.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ADD CUSTOM TERM MODAL -->
+    <div id="add-term-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-panel bg-slate-900 border border-slate-700 w-full max-w-lg rounded-3xl p-6 space-y-5 shadow-2xl relative">
+            <button onclick="closeAddTermModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-sena-green/20 text-sena-green flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white text-base">Añadir Término Personalizado</h3>
+                    <p class="text-xs text-slate-400">Agrega nuevo vocabulario a tu diccionario personal SENA</p>
+                </div>
+            </div>
+
+            <form onsubmit="saveCustomTerm(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Término en Inglés *</label>
+                    <input type="text" id="new-term-en" required placeholder="ej. Throttle Body" class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:border-sena-green focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Traducción en Español *</label>
+                    <input type="text" id="new-term-es" required placeholder="ej. Cuerpo de aceleración" class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:border-sena-green focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Categoría</label>
+                        <select id="new-term-cat" class="w-full px-3 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs">
+                            <option value="Herramientas">Herramientas</option>
+                            <option value="Motor">Motor</option>
+                            <option value="EV / Seguridad">EV & Seguridad</option>
+                            <option value="Diagnóstico">Diagnóstico</option>
+                            <option value="Frenos">Frenos & Suspensión</option>
+                            <option value="Eléctrico">Eléctrico</option>
+                            <option value="Repuestos">Repuestos</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-1">Letra Inicial</label>
+                        <input type="text" id="new-term-letter" maxlength="1" placeholder="ej. T" class="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm uppercase">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Ejemplo de Uso / Contexto</label>
+                    <textarea id="new-term-context" rows="2" placeholder="ej. Clean the throttle body with specialized spray." class="w-full px-4 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs focus:border-sena-green focus:outline-none"></textarea>
+                </div>
+
+                <div class="pt-2 flex justify-end gap-3">
+                    <button type="button" onclick="closeAddTermModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 rounded-xl bg-sena-green text-white text-xs font-bold shadow-md">Guardar Término</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Application Footer -->
+    <footer class="border-t border-slate-800/80 bg-slate-950 py-6 text-center text-xs text-slate-500 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-sena-green">SENA CTT Automotive Speaking Club</span> &bull; 2026
+            </div>
+            <div>
+                Diccionario Didáctico Virtual e Interactivo A-Z de Inglés Técnico
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const RAW_DICTIONARY_DATA = [
+            // A
+            { term: "Aftermarket", trans: "Mercado secundario / Repuestos no originales o de marcas homologadas.", cat: "Repuestos", letter: "A", context: "High-quality aftermarket parts can be more cost-effective than OEM components." },
+            { term: "Axle", trans: "Eje del vehículo.", cat: "Frenos", letter: "A", context: "Check the drive axle boot for grease leaks or physical damage." },
+            
+            // B
+            { term: "Battery contacts", trans: "Contactos o bornes de la batería.", cat: "Eléctrico", letter: "B", context: "Clean corrosion off the battery contacts using a wire brush." },
+            { term: "Bench / Workbench", trans: "Banco de trabajo / Mesa del taller.", cat: "Herramientas", letter: "B", context: "Place disassembled components neatly on the workbench." },
+            { term: "Bolts", trans: "Pernos / Tornillos pasantes.", cat: "Herramientas", letter: "B", context: "Tighten cylinder head bolts according to the sequence." },
+            { term: "Brake pads", trans: "Pastillas de freno.", cat: "Frenos", letter: "B", context: "Inspect front brake pads for minimum thickness." },
+            { term: "Braking", trans: "Frenado / Acción de frenar.", cat: "Frenos", letter: "B", context: "Regenerative braking recharges the traction battery." },
+            { term: "Burning oil", trans: "Aceite quemado (olor o síntoma).", cat: "Diagnóstico", letter: "B", context: "Blue exhaust smoke indicates the engine is burning oil." },
+            { term: "Bushing", trans: "Buje / Bucel de suspensión o dirección.", cat: "Frenos", letter: "B", context: "Replace worn control arm bushings to eliminate knocking." },
+
+            // C
+            { term: "CAT IV Multimeter", trans: "Multímetro con categoría de seguridad IV (apto para alto voltaje / VE).", cat: "EV / Seguridad", letter: "C", context: "Use a certified CAT IV multimeter when verifying high voltage." },
+            { term: "Charging port", trans: "Puerto de carga (en vehículos eléctricos e híbridos).", cat: "EV / Seguridad", letter: "C", context: "Plug the level 2 charger cable into the vehicle charging port." },
+            { term: "Check engine light", trans: "Testigo / Luz de falla del motor.", cat: "Diagnóstico", letter: "C", context: "The check engine light illuminated due to an oxygen sensor DTC." },
+            { term: "Clearance", trans: "Luz de montaje / Holgura / Juego mecánico.", cat: "Motor", letter: "C", context: "Measure valve stem clearance using feeler gauges." },
+            { term: "Clutch / Clutch pedal", trans: "Embrague / Pedal del clóche.", cat: "Motor", letter: "C", context: "Press the clutch pedal to disengage the manual gearbox." },
+            { term: "Cylinder head", trans: "Culata / Cámara del motor.", cat: "Motor", letter: "C", context: "Check the cylinder head surface for distortion or warping." },
+
+            // D
+            { term: "De-energize", trans: "Desenergizar / Cortar el flujo eléctrico de alto voltaje.", cat: "EV / Seguridad", letter: "D", context: "De-energize the high voltage system before removing the inverter." },
+            { term: "Diagnostic Trouble Code (DTC)", trans: "Código de falla de diagnóstico (sistema OBD-II).", cat: "Diagnóstico", letter: "D", context: "Read the active DTC codes using an OBD-II scanner." },
+            { term: "Diagnostic port", trans: "Puerto de diagnóstico (conector donde se enchufa el escáner).", cat: "Diagnóstico", letter: "D", context: "The diagnostic port is located beneath the driver side dashboard." },
+            { term: "Direct current (DC)", trans: "Corriente continua / directa.", cat: "EV / Seguridad", letter: "D", context: "EV traction batteries store energy as high voltage direct current." },
+
+            // E
+            { term: "Electric powertrain", trans: "Tren motriz eléctrico.", cat: "EV / Seguridad", letter: "E", context: "The electric powertrain delivers instant full torque output." },
+            { term: "Electric shock", trans: "Descarga eléctrica / Choque eléctrico.", cat: "EV / Seguridad", letter: "E", context: "High voltage insulated gloves protect technicians from electric shock." },
+            { term: "Electrodes", trans: "Electrodos (de las bujías).", cat: "Motor", letter: "E", context: "Adjust spark plug electrodes gap with a wire gauge tool." },
+            { term: "Engine coolant", trans: "Refrigerante del motor.", cat: "Motor", letter: "E", context: "Never open the radiator cap when engine coolant is hot." },
+            { term: "Exhaust", trans: "Sistema de escape / Exosto.", cat: "Motor", letter: "E", context: "Inspect the exhaust manifold for cracks or gas leaks." },
+
+            // F
+            { term: "Feeler gauge", trans: "Calibrador de galgas / Láminas de espesor.", cat: "Herramientas", letter: "F", context: "Use a feeler gauge to measure piston ring end gap." },
+            { term: "Flange / Joint", trans: "Brida / Junta.", cat: "Motor", letter: "F", context: "Inspect exhaust pipe flanges for leaks." },
+            { term: "Fluid level", trans: "Nivel de fluidos (aceite, refrigerante, frenos).", cat: "Repuestos", letter: "F", context: "Check all fluid levels during pre-trip inspection." },
+            { term: "Flywheel", trans: "Volante de inercia / Volante del motor.", cat: "Motor", letter: "F", context: "Inspect the dual-mass flywheel for wear or ring gear damage." },
+            { term: "Foot-pounds (ft-lb)", trans: "Libras-pie (unidad de medida de torque).", cat: "Herramientas", letter: "F", context: "Torque wheel lug nuts to 85 foot-pounds." },
+
+            // G
+            { term: "Gap", trans: "Calibración / Abertura (ej. luz de bujía).", cat: "Motor", letter: "G", context: "Check the spark plug gap prior to installation." },
+            { term: "Gasket", trans: "Empaque / Junta de sellado.", cat: "Motor", letter: "G", context: "Always install a new cylinder head gasket during overhaul." },
+            { term: "Grinding", trans: "Ruido metálico de fricción / Rechinido áspero.", cat: "Diagnóstico", letter: "G", context: "A grinding noise during braking indicates worn friction material." },
+
+            // H
+            { term: "Hand tools", trans: "Herramientas manuales (llaves, alicates, destornilladores).", cat: "Herramientas", letter: "H", context: "Keep hand tools clean and properly organized in the toolbox." },
+            { term: "Harness / Wiring harness", trans: "Arnés de cables / Cableado eléctrico.", cat: "Eléctrico", letter: "H", context: "Check the engine wiring harness for short circuits or chafing." },
+            { term: "High-voltage (HV)", trans: "Alto voltaje.", cat: "EV / Seguridad", letter: "H", context: "Orange conduit cables identify high-voltage electrical lines." },
+            { term: "High-voltage battery / Traction battery", trans: "Batería de tracción / Alto voltaje (EV/HEV).", cat: "EV / Seguridad", letter: "H", context: "The traction battery powers the electric drive motor." },
+            { term: "Hydraulic jack", trans: "Gato hidráulico.", cat: "Herramientas", letter: "H", context: "Lift the vehicle using a rated hydraulic jack and safety stands." },
+
+            // I
+            { term: "Impact gun / Impact wrench", trans: "Pistola de impacto / Llave neumática o inalámbrica.", cat: "Herramientas", letter: "I", context: "Use an impact wrench with impact sockets for wheel lug nuts." },
+            { term: "In stock", trans: "Disponible en inventario / En stock.", cat: "Repuestos", letter: "I", context: "The replacement oil filter is currently in stock." },
+            { term: "Insulated gloves", trans: "Guantes aislantes dieléctricos.", cat: "EV / Seguridad", letter: "I", context: "Class 0 insulated gloves are rated for up to 1000 volts." },
+            { term: "Inverter", trans: "Inversor de corriente (convierte DC a AC en vehículos eléctricos).", cat: "EV / Seguridad", letter: "I", context: "The power inverter converts battery DC voltage to motor AC." },
+
+            // K
+            { term: "Knocking", trans: "Golpeteo del motor / Pistoneo (cascabeleo).", cat: "Diagnóstico", letter: "K", context: "Engine knocking can be caused by low octane fuel or bad timing." },
+
+            // L
+            { term: "Lead time", trans: "Tiempo de entrega / Tiempo de envío.", cat: "Repuestos", letter: "L", context: "Estimated delivery lead time for imported parts is three days." },
+            { term: "Leak / Leaking", trans: "Fuga / Goteo de fluido.", cat: "Diagnóstico", letter: "L", context: "Inspect the water pump casing for coolant leaking." },
+            { term: "Lean system", trans: "Mezcla pobre (exceso de aire o falta de combustible).", cat: "Diagnóstico", letter: "L", context: "DTC P0171 indicates system running too lean." },
+
+            // M
+            { term: "Mass Air Flow (MAF) sensor", trans: "Sensor de flujo de masa de aire.", cat: "Eléctrico", letter: "M", context: "Clean the MAF sensor wire with specialized electronic cleaner." },
+            { term: "Misfire", trans: "Falla de encendido / Salto de chispa erróneo en un cilindro.", cat: "Diagnóstico", letter: "M", context: "Faulty ignition coils cause cylinder misfire events." },
+            { term: "Multimeter", trans: "Multímetro / Polímetro digital.", cat: "Herramientas", letter: "M", context: "Measure circuit voltage and continuity using a multimeter." },
+
+            // O
+            { term: "OBD-II scanner", trans: "Escáner de diagnóstico a bordo generación II.", cat: "Diagnóstico", letter: "O", context: "Connect the OBD-II scanner to view engine live data streams." },
+            { term: "OEM (Original Equipment Manufacturer)", trans: "Repuesto original de equipo / Marca original de fábrica.", cat: "Repuestos", letter: "O", context: "OEM replacement parts ensure exact original fit and performance." },
+            { term: "Open circuit", trans: "Circuito abierto (interrupción de corriente).", cat: "Eléctrico", letter: "O", context: "A blown fuse results in an open circuit condition." },
+            { term: "Out of range", trans: "Fuera de rango de tolerancia o especificación.", cat: "Diagnóstico", letter: "O", context: "Oxygen sensor voltage reading is out of range." },
+            { term: "Overhaul", trans: "Reparación general / Reconstrucción completa del motor o transmisión.", cat: "Motor", letter: "O", context: "Perform a complete engine overhaul following rebuild guidelines." },
+
+            // P
+            { term: "Part number", trans: "Número de parte / Referencia del repuesto.", cat: "Repuestos", letter: "P", context: "Verify the part number in the OEM catalog before ordering." },
+            { term: "Personal Protective Equipment (PPE)", trans: "Equipo de Protección Personal (EPP).", cat: "EV / Seguridad", letter: "P", context: "Always wear safety glasses and steel toe boots as part of PPE." },
+            { term: "Pliers (Pair of pliers)", trans: "Alicates / Pinzas.", cat: "Herramientas", letter: "P", context: "Use a pair of pliers to hold spring hose clamps." },
+            { term: "Power tools", trans: "Herramientas eléctricas o neumáticas.", cat: "Herramientas", letter: "P", context: "Pneumatic impact wrenches are heavy-duty shop power tools." },
+            { term: "Pulling", trans: "Tendencia del vehículo a desviarse hacia un lado.", cat: "Frenos", letter: "P", context: "Unequal tire pressure causes vehicle pulling to one side." },
+
+            // Q
+            { term: "Quarts", trans: "Cuartos de galón (unidad de volumen para fluidos).", cat: "Repuestos", letter: "Q", context: "Engine oil capacity is approximately 4.5 quarts." },
+            { term: "Quote / Price quote", trans: "Cotización / Presupuesto de precios.", cat: "Repuestos", letter: "Q", context: "Send the customer a formal price quote for clutch replacement." },
+
+            // R
+            { term: "Regenerative braking", trans: "Freno regenerativo (recuperación de energía en EV/HEV).", cat: "EV / Seguridad", letter: "R", context: "Regenerative braking converts kinetic energy back into battery charge." },
+            { term: "Retaining clip", trans: "Pin de retención / Anillo de seguridad.", cat: "Herramientas", letter: "R", context: "Remove the axle retaining clip using circlip pliers." },
+            { term: "Rotor discs", trans: "Discos de freno.", cat: "Frenos", letter: "R", context: "Inspect brake rotor discs for scoring or uneven wear." },
+
+            // S
+            { term: "Safety officer", trans: "Inspector / Auditor de seguridad industrial.", cat: "EV / Seguridad", letter: "S", context: "The workshop safety officer verified the high voltage lockout tagout." },
+            { term: "Service manual", trans: "Manual de servicio / Manual de taller del fabricante.", cat: "Diagnóstico", letter: "S", context: "Refer to the OEM service manual for exact bolt torque specs." },
+            { term: "Service plug", trans: "Tapón o desconectador de servicio de alto voltaje.", cat: "EV / Seguridad", letter: "S", context: "Remove the orange service plug to isolate the HV battery pack." },
+            { term: "Short circuit / Short to ground", trans: "Cortocircuito / Corto a masa (tierra).", cat: "Eléctrico", letter: "S", context: "A pinched wire caused a short circuit to ground." },
+            { term: "Socket / Socket wrench", trans: "Copa / Rache o llave de copa.", cat: "Herramientas", letter: "S", context: "Attach a 10mm socket to the ratchet handle." },
+            { term: "Spark plug", trans: "Bujía de encendido.", cat: "Motor", letter: "S", context: "Replace spark plugs every 30,000 miles for smooth combustion." },
+            { term: "Squeaking", trans: "Chillido agudo (común en frenos o correas sueltas).", cat: "Diagnóstico", letter: "S", context: "Loose serpentine belts cause high-pitched squeaking noise." },
+            { term: "Starter motor", trans: "Motor de arranque.", cat: "Eléctrico", letter: "S", context: "Turn the key to engage the starter motor solenoid." },
+            { term: "Steering wheel", trans: "Volante de dirección / Timón.", cat: "Frenos", letter: "S", context: "Steering wheel vibration indicates unbalanced front wheels." },
+            { term: "Suspension", trans: "Sistema de suspensión.", cat: "Frenos", letter: "S", context: "Inspect struts and coil springs on the front suspension." },
+
+            // T
+            { term: "Test drive", trans: "Prueba de ruta / Manejo de comprobación.", cat: "Diagnóstico", letter: "T", context: "Conduct a post-repair test drive to confirm fault resolution." },
+            { term: "Timing belt", trans: "Correa de distribución / Correa de repartición.", cat: "Motor", letter: "T", context: "Replace the timing belt at specified mileage intervals." },
+            { term: "Torque wrench", trans: "Torquímetro / Llave dinamométrica.", cat: "Herramientas", letter: "T", context: "Use a calibrated torque wrench for cylinder head installation." },
+            { term: "Trouble code", trans: "Código de falla.", cat: "Diagnóstico", letter: "T", context: "Clear trouble codes after completing component repairs." },
+
+            // V
+            { term: "Vacuum leak", trans: "Entrada parásita de aire / Fuga de vacío.", cat: "Diagnóstico", letter: "V", context: "A vacuum leak causes erratic rough engine idling." },
+            { term: "Valve stem", trans: "Vástago de la válvula.", cat: "Motor", letter: "V", context: "Check valve stem oil seals during cylinder head service." },
+            { term: "Vibrating", trans: "Vibración.", cat: "Diagnóstico", letter: "V", context: "Excessive engine vibrating may stem from broken motor mounts." },
+
+            // W
+            { term: "Warranty", trans: "Garantía comercial o técnica.", cat: "Repuestos", letter: "W", context: "OEM parts include a 12-month manufacturer warranty." },
+            { term: "Wear out / Worn out", trans: "Desgastado / Deteriorado por uso.", cat: "Diagnóstico", letter: "W", context: "Replace worn out brake pads before disc damage occurs." },
+            { term: "Work order", trans: "Orden de trabajo / Hoja de servicio del taller.", cat: "Repuestos", letter: "W", context: "Record all diagnostic steps and parts on the shop work order." }
+        ];
+
+        /* Application Global State */
+        let dictionary = [...RAW_DICTIONARY_DATA];
+        let favorites = [];
+        let masteredTerms = [];
+        let currentLetterFilter = 'ALL';
+        let currentCategoryFilter = 'ALL';
+        let searchQuery = '';
+        let audioEngineEnabled = true;
+
+        // Flashcards state
+        let flashcardDeck = [];
+        let currentFCIndex = 0;
+        let isFCFlipped = false;
+
+        // Quiz state
+        let quizXP = 0;
+        let currentQuizQuestion = null;
+
+        /* Init function on load */
+        window.onload = function() {
+            loadUserData();
+            initAlphabetBar();
+            renderDictionary();
+            updateStatsBar();
+            initFlashcardDeck();
+        };
+
+        function loadUserData() {
+            try {
+                const savedFavs = localStorage.getItem('sena_alexicon_favs');
+                if (savedFavs) favorites = JSON.parse(savedFavs);
+
+                const savedMastered = localStorage.getItem('sena_alexicon_mastered');
+                if (savedMastered) masteredTerms = JSON.parse(savedMastered);
+
+                const customTerms = localStorage.getItem('sena_alexicon_custom');
+                if (customTerms) {
+                    const parsed = JSON.parse(customTerms);
+                    dictionary = [...RAW_DICTIONARY_DATA, ...parsed];
+                }
+            } catch(e) {
+                console.log('Running in-memory session');
+            }
+            document.getElementById('total-terms-count').innerText = dictionary.length;
+        }
+
+        function saveUserData() {
+            try {
+                localStorage.setItem('sena_alexicon_favs', JSON.stringify(favorites));
+                localStorage.setItem('sena_alexicon_mastered', JSON.stringify(masteredTerms));
+            } catch(e) {}
+            updateStatsBar();
+        }
+
+        function updateStatsBar() {
+            document.getElementById('fav-counter').innerText = favorites.length;
+            document.getElementById('mastered-count').innerText = masteredTerms.length;
+        }
+
+        function toggleAudioEngine() {
+            audioEngineEnabled = !audioEngineEnabled;
+            const icon = document.getElementById('audio-icon');
+            icon.className = audioEngineEnabled ? "fa-solid fa-volume-high text-sena-green" : "fa-solid fa-volume-xmark text-slate-500";
+        }
+
+        function speakTerm(text) {
+            if (!audioEngineEnabled || !('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.88;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        /* Alphabet Bar Generator */
+        function initAlphabetBar() {
+            const bar = document.getElementById('alphabet-bar');
+            bar.innerHTML = '';
+
+            const letters = ['ALL', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')];
+            letters.forEach(l => {
+                const btn = document.createElement('button');
+                btn.className = `alpha-btn px-2.5 py-1 rounded-xl text-xs font-mono font-bold transition border border-slate-800 ${l === 'ALL' ? 'active' : 'bg-slate-900 text-slate-300 hover:bg-slate-800'}`;
+                btn.innerText = l === 'ALL' ? 'TODOS' : l;
+                btn.onclick = () => {
+                    document.querySelectorAll('.alpha-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentLetterFilter = l;
+                    renderDictionary();
+                };
+                bar.appendChild(btn);
+            });
+        }
+
+        /* Filtering & Dictionary Renderer */
+        function renderDictionary() {
+            const grid = document.getElementById('dictionary-grid');
+            const noResults = document.getElementById('no-results');
+            grid.innerHTML = '';
+
+            let filtered = dictionary.filter(item => {
+                // Letter filter
+                if (currentLetterFilter !== 'ALL' && item.letter.toUpperCase() !== currentLetterFilter) return false;
+                
+                // Category filter
+                if (currentCategoryFilter !== 'ALL' && item.cat !== currentCategoryFilter) return false;
+
+                // Search Query
+                if (searchQuery) {
+                    const q = searchQuery.toLowerCase();
+                    const matchTerm = item.term.toLowerCase().includes(q);
+                    const matchTrans = item.trans.toLowerCase().includes(q);
+                    return matchTerm || matchTrans;
+                }
+
+                return true;
+            });
+
+            document.getElementById('filtered-count').innerText = filtered.length;
+
+            if (filtered.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            filtered.forEach(item => {
+                const isFav = favorites.includes(item.term);
+                const isMastered = masteredTerms.includes(item.term);
+
+                const card = document.createElement('div');
+                card.className = `glass-card p-5 rounded-2xl space-y-3 flex flex-col justify-between relative group ${isMastered ? 'border-sena-green/30 bg-sena-green/5' : ''}`;
+
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-800 text-sena-green border border-slate-700">
+                                ${item.cat}
+                            </span>
+                            <div class="flex items-center gap-2">
+                                <button onclick="toggleFavorite('${item.term.replace(/'/g, "\\'")}')" class="text-slate-500 hover:text-amber-400 text-sm transition" title="Guardar en Favoritos">
+                                    <i class="${isFav ? 'fa-solid fa-star text-amber-400' : 'fa-regular fa-star'}"></i>
+                                </button>
+                                <button onclick="toggleMastered('${item.term.replace(/'/g, "\\'")}')" class="text-slate-500 hover:text-sena-green text-sm transition" title="Marcar como Dominado">
+                                    <i class="${isMastered ? 'fa-solid fa-circle-check text-sena-green' : 'fa-regular fa-circle-check'}"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start justify-between gap-2 pt-1">
+                            <div>
+                                <h3 class="text-lg font-bold text-white tracking-tight flex items-center gap-2">
+                                    ${item.term}
+                                </h3>
+                                <p class="text-xs text-amber-300 font-medium mt-0.5 leading-snug">${item.trans}</p>
+                            </div>
+                            <button onclick="speakTerm('${item.term.replace(/'/g, "\\'")}')" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-sena-green flex items-center justify-center shrink-0 border border-slate-700 transition" title="Escuchar">
+                                <i class="fa-solid fa-volume-high text-xs"></i>
+                            </button>
+                        </div>
+
+                        ${item.context ? `<p class="text-xs text-slate-400 italic bg-slate-900/60 p-2.5 rounded-xl border border-slate-800/80 font-mono">"${item.context}"</p>` : ''}
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] text-slate-500 font-mono">
+                        <span>Letra: ${item.letter}</span>
+                        <span>${isMastered ? '✓ Dominado' : 'Pendiente'}</span>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        function handleSearch() {
+            const val = document.getElementById('search-input').value;
+            searchQuery = val;
+            document.getElementById('clear-search-btn').classList.toggle('hidden', !val);
+            renderDictionary();
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            searchQuery = '';
+            document.getElementById('clear-search-btn').classList.add('hidden');
+            renderDictionary();
+        }
+
+        function applyFilters() {
+            currentCategoryFilter = document.getElementById('category-filter').value;
+            renderDictionary();
+        }
+
+        function resetFilters() {
+            currentLetterFilter = 'ALL';
+            currentCategoryFilter = 'ALL';
+            searchQuery = '';
+            document.getElementById('search-input').value = '';
+            document.getElementById('category-filter').value = 'ALL';
+            document.querySelectorAll('.alpha-btn').forEach(b => b.classList.remove('active'));
+            if (document.querySelectorAll('.alpha-btn')[0]) document.querySelectorAll('.alpha-btn')[0].classList.add('active');
+            renderDictionary();
+        }
+
+        function toggleFavorite(term) {
+            const idx = favorites.indexOf(term);
+            if (idx > -1) {
+                favorites.splice(idx, 1);
+            } else {
+                favorites.push(term);
+            }
+            saveUserData();
+            renderDictionary();
+            if (document.getElementById('view-favorites').classList.contains('hidden') === false) {
+                renderFavoritesView();
+            }
+        }
+
+        function toggleMastered(term) {
+            const idx = masteredTerms.indexOf(term);
+            if (idx > -1) {
+                masteredTerms.splice(idx, 1);
+            } else {
+                masteredTerms.push(term);
+            }
+            saveUserData();
+            renderDictionary();
+        }
+
+        function switchTab(tabId) {
+            ['dictionary', 'flashcards', 'quiz', 'favorites'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.add('hidden');
+                const btn = document.getElementById(`nav-${t}`);
+                if (btn) {
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800";
+                }
+            });
+
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 bg-sena-green text-white shadow";
+            }
+
+            if (tabId === 'flashcards') {
+                initFlashcardDeck();
+            } else if (tabId === 'quiz') {
+                startQuiz();
+            } else if (tabId === 'favorites') {
+                renderFavoritesView();
+            }
+        }
+
+        function initFlashcardDeck() {
+            const deckFilter = document.getElementById('flashcard-deck-filter').value;
+            
+            if (deckFilter === 'FAVORITES') {
+                flashcardDeck = dictionary.filter(item => favorites.includes(item.term));
+            } else if (deckFilter === 'UNMASTERED') {
+                flashcardDeck = dictionary.filter(item => !masteredTerms.includes(item.term));
+            } else {
+                flashcardDeck = [...dictionary];
+            }
+
+            currentFCIndex = 0;
+            isFCFlipped = false;
+            
+            if (flashcardDeck.length === 0) {
+                // Fallback to full dictionary if deck empty
+                flashcardDeck = [...dictionary];
+            }
+
+            renderCurrentFlashcard();
+        }
+
+        function shuffleFlashcards() {
+            flashcardDeck.sort(() => Math.random() - 0.5);
+            currentFCIndex = 0;
+            isFCFlipped = false;
+            renderCurrentFlashcard();
+        }
+
+        function renderCurrentFlashcard() {
+            const item = flashcardDeck[currentFCIndex];
+            if (!item) return;
+
+            document.getElementById('fc-card-counter').innerText = `Tarjeta ${currentFCIndex + 1} de ${flashcardDeck.length}`;
+            document.getElementById('fc-category-front').innerText = item.cat;
+            document.getElementById('fc-term-front').innerText = item.term;
+            document.getElementById('fc-translation-back').innerText = item.trans;
+            document.getElementById('fc-context-back').innerText = item.context ? `"${item.context}"` : `Término técnico de ${item.cat}`;
+
+            // Mastery badge
+            const isMastered = masteredTerms.includes(item.term);
+            const masteredBadge = document.getElementById('fc-mastered-badge');
+            masteredBadge.innerHTML = isMastered ? '<i class="fa-solid fa-check"></i> Dominada' : '<i class="fa-regular fa-clock"></i> Pendiente';
+            masteredBadge.className = isMastered ? 'text-sena-green font-bold' : 'text-slate-500 font-bold';
+
+            // Favorite button
+            const isFav = favorites.includes(item.term);
+            document.getElementById('fc-fav-btn').innerHTML = `<i class="${isFav ? 'fa-solid fa-star text-amber-400' : 'fa-regular fa-star'}"></i>`;
+
+            // Reset card flip position
+            isFCFlipped = false;
+            document.getElementById('flashcard-object').classList.remove('flipped');
+        }
+
+        function toggleFlashcardFlip() {
+            isFCFlipped = !isFCFlipped;
+            document.getElementById('flashcard-object').classList.toggle('flipped', isFCFlipped);
+        }
+
+        function speakCurrentTerm() {
+            const item = flashcardDeck[currentFCIndex];
+            if (item) speakTerm(item.term);
+        }
+
+        function toggleCurrentFavorite() {
+            const item = flashcardDeck[currentFCIndex];
+            if (item) toggleFavorite(item.term);
+            renderCurrentFlashcard();
+        }
+
+        function markCurrentMastery(status) {
+            const item = flashcardDeck[currentFCIndex];
+            if (!item) return;
+
+            const idx = masteredTerms.indexOf(item.term);
+            if (status && idx === -1) {
+                masteredTerms.push(item.term);
+            } else if (!status && idx > -1) {
+                masteredTerms.splice(idx, 1);
+            }
+            saveUserData();
+            renderCurrentFlashcard();
+            nextFlashcard();
+        }
+
+        function nextFlashcard() {
+            currentFCIndex = (currentFCIndex + 1) % flashcardDeck.length;
+            renderCurrentFlashcard();
+        }
+
+        function prevFlashcard() {
+            currentFCIndex = (currentFCIndex - 1 + flashcardDeck.length) % flashcardDeck.length;
+            renderCurrentFlashcard();
+        }
+
+        /* Keyboard Shortcuts for Flashcards */
+        document.addEventListener('keydown', function(e) {
+            if (document.getElementById('view-flashcards').classList.contains('hidden')) return;
+
+            if (e.code === 'Space') {
+                e.preventDefault();
+                toggleFlashcardFlip();
+            } else if (e.code === 'ArrowRight') {
+                nextFlashcard();
+            } else if (e.code === 'ArrowLeft') {
+                prevFlashcard();
+            } else if (e.code === 'ArrowUp') {
+                speakCurrentTerm();
+            }
+        });
+
+        function startQuiz() {
+            nextQuizQuestion();
+        }
+
+        function nextQuizQuestion() {
+            document.getElementById('quiz-feedback').classList.add('hidden');
+            document.getElementById('quiz-next-btn').classList.add('hidden');
+
+            // Pick random target item
+            const randomIndex = Math.floor(Math.random() * dictionary.length);
+            currentQuizQuestion = dictionary[randomIndex];
+
+            document.getElementById('quiz-target-term').innerText = currentQuizQuestion.term;
+
+            // Generate 3 random wrong options + 1 correct
+            const wrongOptions = dictionary
+                .filter(i => i.term !== currentQuizQuestion.term)
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 3)
+                .map(i => i.trans);
+
+            const allOptions = [...wrongOptions, currentQuizQuestion.trans].sort(() => Math.random() - 0.5);
+
+            const container = document.getElementById('quiz-options-container');
+            container.innerHTML = '';
+
+            allOptions.forEach((optText, optIdx) => {
+                const btn = document.createElement('button');
+                btn.className = "quiz-opt-btn p-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold border border-slate-700 text-left transition flex items-center justify-between";
+                btn.innerHTML = `
+                    <span>${optText}</span>
+                    <i class="fa-regular fa-circle text-slate-500"></i>
+                `;
+                btn.onclick = () => checkQuizAnswer(optText, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function speakQuizTerm() {
+            if (currentQuizQuestion) speakTerm(currentQuizQuestion.term);
+        }
+
+        function checkQuizAnswer(selected, buttonEl) {
+            const isCorrect = selected === currentQuizQuestion.trans;
+            const feedback = document.getElementById('quiz-feedback');
+
+            // Disable option buttons
+            document.querySelectorAll('.quiz-opt-btn').forEach(btn => btn.disabled = true);
+
+            if (isCorrect) {
+                buttonEl.className = "quiz-opt-btn p-4 rounded-2xl bg-sena-green/20 text-sena-green font-bold border border-sena-green text-left flex items-center justify-between";
+                buttonEl.querySelector('i').className = "fa-solid fa-circle-check text-sena-green";
+
+                quizXP += 15;
+                document.getElementById('quiz-score').innerText = `${quizXP} XP`;
+
+                feedback.className = "p-4 rounded-2xl bg-sena-green/10 text-sena-green border border-sena-green/30 text-xs font-semibold space-y-1";
+                feedback.innerHTML = `<div><i class="fa-solid fa-circle-check"></i> ¡Respuesta Correcta! +15 XP</div><div class="text-slate-300 font-normal">"${currentQuizQuestion.context || ''}"</div>`;
+            } else {
+                buttonEl.className = "quiz-opt-btn p-4 rounded-2xl bg-red-950/40 text-red-300 font-bold border border-red-800 text-left flex items-center justify-between";
+                buttonEl.querySelector('i').className = "fa-solid fa-circle-xmark text-red-400";
+
+                feedback.className = "p-4 rounded-2xl bg-red-950/30 text-red-300 border border-red-900/50 text-xs font-semibold space-y-1";
+                feedback.innerHTML = `<div><i class="fa-solid fa-circle-xmark"></i> Traducción correcta: <span class="font-bold text-amber-300">${currentQuizQuestion.trans}</span></div>`;
+            }
+
+            feedback.classList.remove('hidden');
+            document.getElementById('quiz-next-btn').classList.remove('hidden');
+        }
+
+        function renderFavoritesView() {
+            const grid = document.getElementById('favorites-grid');
+            const noFavs = document.getElementById('no-favorites');
+            grid.innerHTML = '';
+
+            const favItems = dictionary.filter(item => favorites.includes(item.term));
+
+            if (favItems.length === 0) {
+                noFavs.classList.remove('hidden');
+            } else {
+                noFavs.classList.add('hidden');
+            }
+
+            favItems.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "glass-card p-5 rounded-2xl space-y-3 flex flex-col justify-between";
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-800 text-sena-green border border-slate-700">
+                                ${item.cat}
+                            </span>
+                            <button onclick="toggleFavorite('${item.term.replace(/'/g, "\\'")}')" class="text-amber-400 text-sm" title="Quitar de Favoritos">
+                                <i class="fa-solid fa-star"></i>
+                            </button>
+                        </div>
+                        <h3 class="text-lg font-bold text-white">${item.term}</h3>
+                        <p class="text-xs text-amber-300 font-medium">${item.trans}</p>
+                    </div>
+                    <button onclick="speakTerm('${item.term.replace(/'/g, "\\'")}')" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-sena-green font-bold flex items-center justify-center gap-1.5 transition">
+                        <i class="fa-solid fa-volume-high"></i> Escuchar Pronunciación
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function startFavoritesDeck() {
+            document.getElementById('flashcard-deck-filter').value = 'FAVORITES';
+            switchTab('flashcards');
+        }
+
+        function openAddTermModal() {
+            document.getElementById('add-term-modal').classList.remove('hidden');
+        }
+
+        function closeAddTermModal() {
+            document.getElementById('add-term-modal').classList.add('hidden');
+        }
+
+        function saveCustomTerm(e) {
+            e.preventDefault();
+            const term = document.getElementById('new-term-en').value.trim();
+            const trans = document.getElementById('new-term-es').value.trim();
+            const cat = document.getElementById('new-term-cat').value;
+            let letter = document.getElementById('new-term-letter').value.trim().toUpperCase();
+            if (!letter) letter = term.charAt(0).toUpperCase();
+            const context = document.getElementById('new-term-context').value.trim();
+
+            const newItem = { term, trans, cat, letter, context };
+            dictionary.unshift(newItem);
+
+            // Save custom terms to LocalStorage
+            try {
+                const existingCustom = JSON.parse(localStorage.getItem('sena_alexicon_custom') || '[]');
+                existingCustom.push(newItem);
+                localStorage.setItem('sena_alexicon_custom', JSON.stringify(existingCustom));
+            } catch(err) {}
+
+            closeAddTermModal();
+            renderDictionary();
+            switchTab('dictionary');
+        }
+    </script>
+</body>
+</html>
