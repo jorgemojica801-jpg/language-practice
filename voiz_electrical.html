@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="es" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VOIZ - Automotive Electrical Diagnostics English Practice</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#312e81',
+            },
+            tech: {
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+            },
+            accent: {
+              400: '#34d399',
+              500: '#10b981',
+            },
+            amber: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .timer-circle {
+      transition: stroke-dashoffset 1s linear;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+    
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.2); }
+      50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.6); }
+    }
+
+    .recording-glow {
+      animation: pulseGlow 1.5s infinite;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #020617;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #334155;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+
+  <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-lg border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-brand-600 to-tech-500 flex items-center justify-center text-white font-extrabold text-xl shadow-lg shadow-brand-500/20">
+          <i class="ph-bold ph-lightning"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xl font-black tracking-tight bg-gradient-to-r from-white via-slate-200 to-amber-400 bg-clip-text text-transparent">VOIZ</span>
+            <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono">AUTOMOTIVE DIAGNOSTICS</span>
+          </div>
+          <p class="text-[10px] text-slate-400 tracking-wide font-medium hidden sm:block">10s Oral Sprint Engine for High-End Vehicle Diagnostic Technicians</p>
+        </div>
+      </div>
+      
+      <nav class="hidden md:flex items-center gap-1 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+        <button onclick="showTab('sprint')" id="tab-btn-sprint" class="px-3.5 py-2 text-xs font-bold rounded-lg transition-all text-white bg-brand-600 shadow-sm flex items-center gap-2">
+          <i class="ph-bold ph-lightning"></i> 10s Oral Sprint
+        </button>
+        <button onclick="showTab('grammar')" id="tab-btn-grammar" class="px-3.5 py-2 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-2">
+          <i class="ph-bold ph-book-bookmark"></i> Diagnostic Grammar
+        </button>
+        <button onclick="showTab('vocab')" id="tab-btn-vocab" class="px-3.5 py-2 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-2">
+          <i class="ph-bold ph-wrench"></i> Diagnostic Glossary
+        </button>
+        <button onclick="showTab('stats')" id="tab-btn-stats" class="px-3.5 py-2 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-2">
+          <i class="ph-bold ph-chart-line-up"></i> Progress
+        </button>
+      </nav>
+
+      <div class="flex items-center gap-2 md:hidden">
+        <button onclick="showTab('sprint')" class="p-2 rounded-lg bg-slate-800 text-brand-400 border border-slate-700"><i class="ph-bold ph-lightning text-lg"></i></button>
+        <button onclick="showTab('grammar')" class="p-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700"><i class="ph-bold ph-book-bookmark text-lg"></i></button>
+        <button onclick="showTab('vocab')" class="p-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700"><i class="ph-bold ph-wrench text-lg"></i></button>
+        <button onclick="showTab('stats')" class="p-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700"><i class="ph-bold ph-chart-line-up text-lg"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none"></div>
+
+    <!-- ==================== TAB 1: SPRINT ENGINE ==================== -->
+    <section id="sec-sprint" class="space-y-6">
+      
+      <!-- Top Control Bar: Prompt Navigation & Catalog Toggle -->
+      <div class="bg-slate-900/80 border border-slate-800/80 rounded-2xl p-4 sm:p-5 shadow-xl flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3 w-full md:w-auto">
+          <button onclick="prevPrompt()" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition border border-slate-700/80 hover:border-slate-600 active:scale-95">
+            <i class="ph-bold ph-caret-left text-lg"></i>
+          </button>
+          <div class="flex-1">
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Diagnostic Practice Prompt</span>
+              <span id="prompt-completed-badge" class="hidden text-[10px] font-extrabold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">COMPLETED</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span id="prompt-number-badge" class="text-2xl font-black text-amber-400 font-mono">01</span>
+              <span class="text-xl font-bold text-slate-600 font-mono">/ 25</span>
+              <span id="prompt-grammar-tag" class="ml-2 text-xs font-semibold px-2.5 py-1 rounded-full bg-tech-500/10 text-tech-300 border border-tech-500/20">
+                Present Simple
+              </span>
+            </div>
+          </div>
+          <button onclick="nextPrompt()" class="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 transition border border-slate-700/80 hover:border-slate-600 active:scale-95">
+            <i class="ph-bold ph-caret-right text-lg"></i>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+          <button onclick="randomPrompt()" class="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-bold flex items-center gap-2 transition active:scale-95">
+            <i class="ph-bold ph-shuffle text-brand-400"></i> Random Prompt
+          </button>
+          <button onclick="toggleGridModal()" class="px-4 py-2.5 rounded-xl bg-brand-600/20 hover:bg-brand-600/30 text-brand-300 border border-brand-500/30 text-xs font-bold flex items-center gap-2 transition active:scale-95">
+            <i class="ph-bold ph-squares-four text-base"></i> Prompts Catalog (25)
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Challenge Display & Sprint Engine Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Side: Scenario, Question, Target Vocab & Benchmark Answer -->
+        <div class="lg:col-span-7 bg-slate-900/90 border border-slate-800/80 rounded-2xl p-6 sm:p-8 flex flex-col justify-between space-y-6 shadow-xl relative overflow-hidden">
+          
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 px-3 py-1 rounded-md border border-amber-500/20">
+                <i class="ph-bold ph-car-profile"></i> Vehicle Diagnostic Scenario
+              </span>
+              <span id="prompt-category-badge" class="text-xs font-mono text-slate-400 bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">
+                ECU & Network Systems
+              </span>
+            </div>
+
+            <div>
+              <h2 id="prompt-question" class="text-2xl sm:text-3xl font-extrabold text-white leading-tight">
+                Loading practice prompt...
+              </h2>
+              <p id="prompt-translation" class="text-slate-400 text-sm mt-2 italic font-sans">
+                Traducción...
+              </p>
+            </div>
+          </div>
+
+          <div class="space-y-3 bg-slate-950/70 p-4 rounded-xl border border-slate-800/90">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5 font-mono">
+                <i class="ph-bold ph-check-square-offset text-brand-400 text-base"></i> Target Vocab (Include in 10s):
+              </span>
+              <span class="text-[11px] text-slate-400">Click word to mark used</span>
+            </div>
+            <div id="prompt-vocab-list" class="flex flex-wrap gap-2 pt-1">
+              <!-- Dynamically populated tags -->
+            </div>
+          </div>
+
+          <div class="border-t border-slate-800/80 pt-5 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5 font-mono">
+                <i class="ph-bold ph-shield-check text-base"></i> Benchmark Technical Model Answer
+              </span>
+              <div class="flex items-center gap-2">
+                <button onclick="speakBenchmark()" title="Listen to Native AI Model Answer" class="text-xs text-tech-400 hover:text-tech-300 flex items-center gap-1 font-semibold px-2 py-1 rounded bg-tech-500/10 border border-tech-500/20">
+                  <i class="ph-bold ph-speaker-high text-sm"></i> Listen
+                </button>
+                <button onclick="toggleBenchmark()" id="benchmark-toggle-btn" class="text-xs text-slate-400 hover:text-white flex items-center gap-1 font-semibold px-2 py-1 rounded bg-slate-800 border border-slate-700">
+                  <i class="ph-bold ph-eye text-sm"></i> Show Answer
+                </button>
+              </div>
+            </div>
+
+            <div id="benchmark-box" class="hidden bg-emerald-950/30 border border-emerald-500/30 rounded-xl p-4 text-emerald-200 text-sm leading-relaxed font-sans relative">
+              <p id="prompt-benchmark" class="font-medium">...</p>
+              <div class="mt-2 text-[11px] text-emerald-400/80 font-mono italic">
+                Tip: Speak clearly, maintaining standard automotive technical terminology.
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Side: 10-Second Sprint Recording Engine -->
+        <div class="lg:col-span-5 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border border-slate-800/80 rounded-2xl p-6 sm:p-8 flex flex-col items-center justify-between text-center shadow-xl relative overflow-hidden">
+          
+          <div class="w-full flex items-center justify-between text-xs text-slate-400">
+            <span class="flex items-center gap-1 bg-slate-950 px-2.5 py-1 rounded-full border border-slate-800 text-[11px] font-mono text-brand-300">
+              <i class="ph-bold ph-microphone"></i> MediaRecorder Engine
+            </span>
+            <span class="flex items-center gap-1 bg-slate-950 px-2.5 py-1 rounded-full border border-slate-800 text-[11px] font-mono text-amber-400">
+              <i class="ph-bold ph-timer"></i> 10.0s Limit
+            </span>
+          </div>
+
+          <!-- Circular SVG Countdown Timer -->
+          <div class="relative w-48 h-48 my-6 flex items-center justify-center">
+            <svg class="w-full h-full" viewBox="0 0 100 100">
+              <circle class="text-slate-800/80" stroke-width="7" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"/>
+              <circle id="timer-ring" class="text-amber-500 timer-circle" stroke-width="7" stroke-dasharray="251.2" stroke-dashoffset="0" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"/>
+            </svg>
+
+            <div class="absolute inset-0 flex flex-col items-center justify-center">
+              <span id="timer-display" class="text-5xl font-black tracking-tight text-white font-mono">10</span>
+              <span id="timer-status" class="text-[11px] font-extrabold uppercase tracking-widest text-slate-400 mt-1 font-mono">READY</span>
+            </div>
+          </div>
+
+          <!-- Action Buttons & Audio Playback Box -->
+          <div class="w-full space-y-3">
+            <button id="btn-start-sprint" onclick="startSprint()" class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-500 via-brand-600 to-tech-600 hover:from-amber-600 hover:to-tech-500 text-white font-bold text-sm shadow-lg shadow-amber-500/25 transition active:scale-95 flex items-center justify-center gap-2.5">
+              <i class="ph-bold ph-microphone-stage text-xl"></i> Start 10s Oral Sprint
+            </button>
+
+            <!-- Recording Playback Container (hidden initially) -->
+            <div id="recording-playback-box" class="hidden w-full bg-slate-950 p-4 rounded-xl border border-slate-800 space-y-3 text-left">
+              <div class="flex items-center justify-between text-xs font-semibold text-slate-300">
+                <span class="flex items-center gap-1.5 text-tech-400 font-mono"><i class="ph-bold ph-waveform"></i> Spoken Audio Recording</span>
+                <span id="rec-duration" class="font-mono text-slate-400">10.0s</span>
+              </div>
+              
+              <audio id="audio-preview" controls class="w-full h-9 rounded-lg accent-brand-500 bg-slate-900"></audio>
+
+              <!-- Self Evaluation / Rating -->
+              <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between">
+                <span class="text-[11px] text-slate-400 font-medium">Rate your pronunciation:</span>
+                <div class="flex items-center gap-1">
+                  <button onclick="rateAttempt(1)" class="p-1 text-slate-600 hover:text-amber-400 text-base transition"><i class="ph-fill ph-star"></i></button>
+                  <button onclick="rateAttempt(2)" class="p-1 text-slate-600 hover:text-amber-400 text-base transition"><i class="ph-fill ph-star"></i></button>
+                  <button onclick="rateAttempt(3)" class="p-1 text-slate-600 hover:text-amber-400 text-base transition"><i class="ph-fill ph-star"></i></button>
+                  <button onclick="rateAttempt(4)" class="p-1 text-slate-600 hover:text-amber-400 text-base transition"><i class="ph-fill ph-star"></i></button>
+                  <button onclick="rateAttempt(5)" class="p-1 text-slate-600 hover:text-amber-400 text-base transition"><i class="ph-fill ph-star"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-[11px] text-slate-400 mt-3 font-medium leading-relaxed">
+            Press start, wait for the audio beep, and speak your technical answer clearly within 10 seconds!
+          </p>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TAB 2: DIAGNOSTIC GRAMMAR & GUIDE ==================== -->
+    <section id="sec-grammar" class="hidden space-y-6">
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+        
+        <div class="flex items-center gap-3 border-b border-slate-800 pb-5">
+          <div class="p-3 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20">
+            <i class="ph-bold ph-book-open-text text-2xl"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-extrabold text-white">Automotive Diagnostic English Grammar Framework</h2>
+            <p class="text-slate-400 text-xs sm:text-sm">Based on official diagnostic procedures for complex electrical faults in high-end vehicles.</p>
+          </div>
+        </div>
+
+        <!-- Instructional Usage Guide -->
+        <div class="bg-gradient-to-r from-brand-900/30 via-slate-950 to-tech-900/20 border border-brand-500/20 rounded-xl p-5 space-y-3">
+          <h3 class="text-sm font-bold text-brand-300 flex items-center gap-2 font-mono">
+            <i class="ph-bold ph-info text-lg"></i> Instructions for VOIZ Vehicle Diagnostic Sprints
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Diagnosing high-end vehicle faults requires rapid, logical communication with team leads, master technicians, and customers.
+            Use this 3-step grammar system to answer diagnostic prompts in under 10 seconds:
+          </p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono text-xs pt-1">
+            <div class="bg-slate-900/90 p-3 rounded-lg border border-slate-800">
+              <span class="text-amber-400 font-bold block mb-1">1. State System Status (Present)</span>
+              <p class="text-slate-300">"Multiple ECUs communicate across the CAN network."</p>
+            </div>
+            <div class="bg-slate-900/90 p-3 rounded-lg border border-slate-800">
+              <span class="text-brand-300 font-bold block mb-1">2. State Findings (Past)</span>
+              <p class="text-slate-300">"The scanner read fault code P0300 from the engine ECU."</p>
+            </div>
+            <div class="bg-slate-900/90 p-3 rounded-lg border border-slate-800">
+              <span class="text-emerald-400 font-bold block mb-1">3. State Diagnostic Action (Must/Future)</span>
+              <p class="text-slate-300">"I must test voltage and clear codes after repair."</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Present Simple for Systems & Tools -->
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-5 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h3 class="font-bold text-amber-400 text-base font-mono">1. Present Simple</h3>
+              <span class="text-[10px] bg-amber-500/10 text-amber-300 border border-amber-500/20 px-2 py-0.5 rounded font-mono">System Functions & Tools</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed">Used to describe how ECUs operate, what diagnostic tools do, and continuous electrical signals.</p>
+            <div class="text-xs font-mono bg-slate-900/90 p-3 rounded-lg border border-slate-800 text-slate-300 space-y-1.5">
+              <p><strong class="text-amber-300">(+)</strong> The ECU manages the braking system.</p>
+              <p><strong class="text-amber-300">(+)</strong> Oscilloscopes display live signals.</p>
+              <p><strong class="text-rose-400">(-)</strong> The scanner does not replace parts.</p>
+              <p><strong class="text-emerald-400">(?)</strong> Do you compare expected values?</p>
+            </div>
+          </div>
+
+          <!-- Past Simple for Symptoms & Inspection Findings -->
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-5 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h3 class="font-bold text-brand-400 text-base font-mono">2. Past Simple</h3>
+              <span class="text-[10px] bg-brand-500/10 text-brand-300 border border-brand-500/20 px-2 py-0.5 rounded font-mono">Customer Reports & Findings</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed">Used to describe when fault symptoms started, what the visual inspection revealed, and recorded measurements.</p>
+            <div class="text-xs font-mono bg-slate-900/90 p-3 rounded-lg border border-slate-800 text-slate-300 space-y-1.5">
+              <p><strong class="text-brand-300">(+)</strong> The warning light appeared yesterday.</p>
+              <p><strong class="text-brand-300">(+)</strong> I found corrosion on the ground wire.</p>
+              <p><strong class="text-rose-400">(-)</strong> The multimeter didn't show voltage.</p>
+              <p><strong class="text-emerald-400">(?)</strong> Did the customer explain symptoms?</p>
+            </div>
+          </div>
+
+          <!-- Future, Modals & Process Steps -->
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-5 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+              <h3 class="font-bold text-emerald-400 text-base font-mono">3. Imperatives, Modals & Future</h3>
+              <span class="text-[10px] bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 px-2 py-0.5 rounded font-mono">Diagnostic Procedures & Repairs</span>
+            </div>
+            <p class="text-xs text-slate-400 leading-relaxed">Used for mandatory diagnostic steps, clearing fault codes, calibrating sensors, and road testing.</p>
+            <div class="text-xs font-mono bg-slate-900/90 p-3 rounded-lg border border-slate-800 text-slate-300 space-y-1.5">
+              <p><strong class="text-emerald-300">(+)</strong> Technicians must clear fault codes.</p>
+              <p><strong class="text-emerald-300">(+)</strong> I am going to test one possibility.</p>
+              <p><strong class="text-rose-400">(-)</strong> Do not replace expensive parts.</p>
+              <p><strong class="text-emerald-400">(?)</strong> Will you road test the vehicle?</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== TAB 3: TECHNICAL GLOSSARY ==================== -->
+    <section id="sec-vocab" class="hidden space-y-6">
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+          <div class="flex items-center gap-3">
+            <div class="p-3 bg-tech-500/10 text-tech-400 rounded-xl border border-tech-500/20">
+              <i class="ph-bold ph-wrench text-2xl"></i>
+            </div>
+            <div>
+              <h2 class="text-2xl font-extrabold text-white">Automotive Electrical Diagnostic Glossary</h2>
+              <p class="text-slate-400 text-xs sm:text-sm">Key terms extracted directly from high-end vehicle diagnostic procedures.</p>
+            </div>
+          </div>
+
+          <!-- Vocabulary Search Filter -->
+          <div class="relative w-full sm:w-64">
+            <i class="ph-bold ph-magnifying-glass absolute left-3 top-3 text-slate-500"></i>
+            <input type="text" id="vocab-search-input" onkeyup="filterVocab()" placeholder="Search diagnostic terms..." class="w-full bg-slate-950 border border-slate-800 text-xs text-white rounded-xl pl-9 pr-3 py-2.5 focus:outline-none focus:border-brand-500 transition">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="vocab-glossary-container">
+          <!-- Dynamically populated from JS -->
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==================== TAB 4: PROGRESS & ANALYTICS ==================== -->
+    <section id="sec-stats" class="hidden space-y-6">
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+        
+        <div class="flex items-center gap-3 border-b border-slate-800 pb-5">
+          <div class="p-3 bg-accent-500/10 text-accent-400 rounded-xl border border-accent-500/20">
+            <i class="ph-bold ph-chart-donut text-2xl"></i>
+          </div>
+          <div>
+            <h2 class="text-2xl font-extrabold text-white">Your Speaking Practice Performance</h2>
+            <p class="text-slate-400 text-xs sm:text-sm">Track completed diagnostic scenarios and 10-second oral sprints.</p>
+          </div>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-slate-950/80 border border-slate-800 p-5 rounded-xl flex items-center gap-4">
+            <div class="p-3 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20 text-xl">
+              <i class="ph-bold ph-check-circle"></i>
+            </div>
+            <div>
+              <p class="text-xs text-slate-400 font-medium">Completed Prompts</p>
+              <h3 id="stat-completed" class="text-2xl font-black text-white font-mono">0 / 25</h3>
+            </div>
+          </div>
+
+          <div class="bg-slate-950/80 border border-slate-800 p-5 rounded-xl flex items-center gap-4">
+            <div class="p-3 bg-tech-500/10 text-tech-400 rounded-xl border border-tech-500/20 text-xl">
+              <i class="ph-bold ph-lightning"></i>
+            </div>
+            <div>
+              <p class="text-xs text-slate-400 font-medium">Total Sprints Run</p>
+              <h3 id="stat-sprints-count" class="text-2xl font-black text-white font-mono">0</h3>
+            </div>
+          </div>
+
+          <div class="bg-slate-950/80 border border-slate-800 p-5 rounded-xl flex items-center gap-4">
+            <div class="p-3 bg-brand-500/10 text-brand-400 rounded-xl border border-brand-500/20 text-xl">
+              <i class="ph-bold ph-star"></i>
+            </div>
+            <div>
+              <p class="text-xs text-slate-400 font-medium">Avg Clarity Rating</p>
+              <h3 id="stat-avg-rating" class="text-2xl font-black text-white font-mono">0.0 / 5</h3>
+            </div>
+          </div>
+
+          <div class="bg-slate-950/80 border border-slate-800 p-5 rounded-xl flex items-center gap-4">
+            <div class="p-3 bg-accent-500/10 text-accent-400 rounded-xl border border-accent-500/20 text-xl">
+              <i class="ph-bold ph-fire"></i>
+            </div>
+            <div>
+              <p class="text-xs text-slate-400 font-medium">Practice Streak</p>
+              <h3 id="stat-streak" class="text-2xl font-black text-white font-mono">1 Day</h3>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-slate-800 flex justify-end">
+          <button onclick="resetUserProgress()" class="px-4 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs font-bold transition flex items-center gap-2">
+            <i class="ph-bold ph-trash"></i> Reset Progress Data
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== PROMPT CATALOG MODAL ==================== -->
+  <div id="grid-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-4xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      
+      <div class="p-4 sm:p-6 border-b border-slate-800 flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-bold text-white flex items-center gap-2">
+            <i class="ph-bold ph-squares-four text-amber-400"></i> Vehicle Diagnostic Prompts Catalog
+          </h3>
+          <p class="text-xs text-slate-400">Select any of the 25 High-End Vehicle Diagnostic Scenarios</p>
+        </div>
+        <button onclick="toggleGridModal()" class="p-2 text-slate-400 hover:text-white rounded-lg bg-slate-800 border border-slate-700">
+          <i class="ph-bold ph-x text-lg"></i>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 gap-3" id="modal-prompt-grid">
+        <!-- Rendered by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT APPLICATION LOGIC ==================== -->
+  <script>
+    // 25 Technical Prompts based directly on PDF: "Diagnosing Complex Electrical and Electronic Faults in High-End Vehicles"
+    const PROMPTS = [
+      // Present Simple Tense (1-9)
+      {
+        id: 1,
+        grammar: "Present Simple",
+        category: "ECU Communication",
+        question: "How do Electronic Control Units (ECUs) communicate in high-end vehicles?",
+        translation: "¿Cómo se comunican las Unidades de Control Electrónico (ECUs) en vehículos de alta gama?",
+        vocab: ["ECUs", "communicate", "manage", "braking system", "suspension"],
+        benchmark: "Multiple ECUs communicate with each other to manage the engine, braking system, and driver assistance systems."
+      },
+      {
+        id: 2,
+        grammar: "Present Simple",
+        category: "Diagnostic Scanner",
+        question: "What primary function does a professional diagnostic scanner perform?",
+        translation: "¿Qué función principal realiza un escáner de diagnóstico profesional?",
+        vocab: ["diagnostic scanner", "reads", "fault codes", "ECUs", "indicates"],
+        benchmark: "A professional diagnostic scanner reads fault codes from different ECUs and indicates possible electrical problems."
+      },
+      {
+        id: 3,
+        grammar: "Present Simple",
+        category: "Documentation",
+        question: "Why do technicians consult technical documentation and wiring diagrams?",
+        translation: "¿Por qué los técnicos consultan documentación técnica y diagramas de cableado?",
+        vocab: ["technical documentation", "wiring diagrams", "understand", "operates", "system"],
+        benchmark: "Technicians consult wiring diagrams and technical documentation to understand how each electronic system operates."
+      },
+      {
+        id: 4,
+        grammar: "Present Simple",
+        category: "Digital Multimeter",
+        question: "What electrical properties does a digital multimeter measure?",
+        translation: "¿Qué propiedades eléctricas mide un multímetro digital?",
+        vocab: ["digital multimeter", "measures", "voltage", "resistance", "current"],
+        benchmark: "A digital multimeter measures voltage, resistance, and current during advanced electrical system diagnosis."
+      },
+      {
+        id: 5,
+        grammar: "Present Simple",
+        category: "Oscilloscope",
+        question: "How does an oscilloscope help identify complex sensor faults?",
+        translation: "¿Cómo ayuda un osciloscopio a identificar fallas complejas de sensores?",
+        vocab: ["oscilloscope", "displays", "electrical signals", "sensor outputs", "interruptions"],
+        benchmark: "An oscilloscope displays live electrical signals to identify irregular sensor outputs and circuit interruptions."
+      },
+      {
+        id: 6,
+        grammar: "Present Simple",
+        category: "Communication Networks",
+        question: "Which networks handle communication between ECUs in modern vehicles?",
+        translation: "¿Qué redes manejan la comunicación entre ECUs en vehículos modernos?",
+        vocab: ["CAN network", "LIN network", "communication", "investigate", "faults"],
+        benchmark: "Specialized diagnostic tools investigate faults in CAN and LIN communication networks between control units."
+      },
+      {
+        id: 7,
+        grammar: "Present Simple",
+        category: "Testing Strategy",
+        question: "How do technicians avoid replacing expensive components unnecessarily?",
+        translation: "¿Cómo evitan los técnicos reemplazar componentes costosos innecesariamente?",
+        vocab: ["compare", "expected values", "actual measurements", "record", "test one possibility"],
+        benchmark: "Technicians compare expected values with actual measurements and test one possibility at a time."
+      },
+      {
+        id: 8,
+        grammar: "Present Simple",
+        category: "Ground Connections",
+        question: "Why are poor ground connections critical during visual inspection?",
+        translation: "¿Por qué las conexiones a tierra defectuosas son críticas durante la inspección visual?",
+        vocab: ["poor ground connections", "produce", "complex symptoms", "affect", "multiple systems"],
+        benchmark: "Poor ground connections and loose connectors produce complex symptoms that affect several vehicle systems simultaneously."
+      },
+      {
+        id: 9,
+        grammar: "Present Simple",
+        category: "Methodology",
+        question: "What does successful electrical diagnosis depend on?",
+        translation: "¿De qué depende un diagnóstico eléctrico exitoso?",
+        vocab: ["depends on", "accurate measurements", "logical reasoning", "reliable information", "verification"],
+        benchmark: "Successful diagnosis depends on accurate measurements, logical reasoning, reliable information, and careful verification."
+      },
+
+      // Past Simple Tense (10-17)
+      {
+        id: 10,
+        grammar: "Past Simple",
+        category: "Customer Information",
+        question: "What questions did the technician ask the customer about the fault?",
+        translation: "¿Qué preguntas le hizo el técnico al cliente sobre la falla?",
+        vocab: ["asked", "symptoms", "started", "conditions", "intermittent"],
+        benchmark: "The technician asked the customer about the symptoms, when they started, and under what operating conditions they occurred."
+      },
+      {
+        id: 11,
+        grammar: "Past Simple",
+        category: "Intermittent Faults",
+        question: "When did the intermittent warning light appear during driving?",
+        translation: "¿Cuándo apareció la luz de advertencia intermitente durante la conducción?",
+        vocab: ["appeared", "engine was hot", "reached", "speed", "warning light"],
+        benchmark: "The intermittent warning light appeared only when the engine was hot and the vehicle reached eighty kilometers per hour."
+      },
+      {
+        id: 12,
+        grammar: "Past Simple",
+        category: "Visual Inspection",
+        question: "What physical issues did you find during the initial visual inspection?",
+        translation: "¿Qué problemas físicos encontraste durante la inspección visual inicial?",
+        vocab: ["inspected", "damaged wiring", "loose connectors", "found", "corrosion"],
+        benchmark: "During visual inspection, I inspected the harness and found damaged wiring, loose connectors, and corrosion."
+      },
+      {
+        id: 13,
+        grammar: "Past Simple",
+        category: "Reading Fault Codes",
+        question: "What fault code did the diagnostic scanner display from the ECU?",
+        translation: "¿Qué código de falla mostró el escáner de diagnóstico desde la ECU?",
+        vocab: ["scanner", "read", "fault code", "indicated", "ECU"],
+        benchmark: "The diagnostic scanner read a stored fault code from the transmission ECU and indicated a potential sensor error."
+      },
+      {
+        id: 14,
+        grammar: "Past Simple",
+        category: "Multimeter Measurements",
+        question: "What voltage measurement did you record on the sensor circuit?",
+        translation: "¿Qué medición de voltaje registraste en el circuito del sensor?",
+        vocab: ["measured", "voltage", "resistance", "recorded", "multimeter"],
+        benchmark: "I measured the circuit with a digital multimeter and recorded zero point five volts across the sensor terminals."
+      },
+      {
+        id: 15,
+        grammar: "Past Simple",
+        category: "Signal Analysis",
+        question: "How did the oscilloscope reveal the CAN bus communication problem?",
+        translation: "¿Cómo reveló el osciloscopio el problema de comunicación del bus CAN?",
+        vocab: ["displayed", "electrical signal", "revealed", "interruption", "CAN network"],
+        benchmark: "The oscilloscope displayed the live electrical signal and revealed a severe interruption in the CAN communication network."
+      },
+      {
+        id: 16,
+        grammar: "Past Simple",
+        category: "Circuit Verification",
+        question: "Why didn't you replace the high-pressure sensor immediately?",
+        translation: "¿Por qué no reemplazaste el sensor de alta presión inmediatamente?",
+        vocab: ["avoided", "replacing", "insufficient evidence", "tested", "confirmed"],
+        benchmark: "I avoided replacing the component without evidence, tested the wiring first, and confirmed a loose ground wire."
+      },
+      {
+        id: 17,
+        grammar: "Past Simple",
+        category: "Repair Execution",
+        question: "How did you repair the damaged wiring harness in the vehicle?",
+        translation: "¿Cómo reparaste el mazo de cables dañado en el vehículo?",
+        vocab: ["repaired", "connector", "cleaned", "corrosion", "restored connection"],
+        benchmark: "I repaired the damaged harness, cleaned the corrosion off the connector, and restored the ground connection."
+      },
+
+      // Future, Modals & Process Procedures (18-25)
+      {
+        id: 18,
+        grammar: "Procedure & Modals",
+        category: "Step 1: Info Collection",
+        question: "What is the very first step in diagnosing complex vehicle faults?",
+        translation: "¿Cuál es el primer paso para diagnosticar fallas complejas en vehículos?",
+        vocab: ["first step", "collect information", "ask customer", "identify", "causes"],
+        benchmark: "The first step is to collect information about the fault and ask the customer under what conditions it occurs."
+      },
+      {
+        id: 19,
+        grammar: "Procedure & Modals",
+        category: "Step 2: Visual Check",
+        question: "What must technicians check during the visual inspection phase?",
+        translation: "¿Qué deben revisar los técnicos durante la fase de inspección visual?",
+        vocab: ["must check", "damaged wiring", "loose connectors", "corrosion", "poor ground"],
+        benchmark: "Technicians must perform a visual inspection to check for damaged wiring, loose connectors, and poor ground connections."
+      },
+      {
+        id: 20,
+        grammar: "Procedure & Modals",
+        category: "Diagnostic Rule",
+        question: "Should a technician replace a part immediately after getting a fault code?",
+        translation: "¿Debería un técnico reemplazar una pieza inmediatamente tras obtener un código de falla?",
+        vocab: ["should not replace", "fault code", "further testing", "confirm", "real cause"],
+        benchmark: "Technicians should not replace a component simply because a fault code appears; further testing is necessary to confirm the cause."
+      },
+      {
+        id: 21,
+        grammar: "Procedure & Modals",
+        category: "Step 3: Signal Testing",
+        question: "How will you verify irregular sensor signals using an oscilloscope?",
+        translation: "¿Cómo verificarás señales irregulares de sensores usando un osciloscopio?",
+        vocab: ["will connect", "oscilloscope", "display", "electrical signals", "verify"],
+        benchmark: "I will connect an oscilloscope to display live electrical signals and verify if there are any circuit interruptions."
+      },
+      {
+        id: 22,
+        grammar: "Procedure & Modals",
+        category: "Post-Repair Step 1",
+        question: "What must you do with stored fault codes after completing the repair?",
+        translation: "¿Qué debes hacer con los códigos de falla almacenados tras completar la reparación?",
+        vocab: ["after repairing", "must clear", "relevant codes", "scanner", "ECU"],
+        benchmark: "After repairing the fault, the technician must clear the relevant codes from the ECU using the diagnostic scanner."
+      },
+      {
+        id: 23,
+        grammar: "Procedure & Modals",
+        category: "Post-Repair Step 2",
+        question: "Why are sensor calibrations necessary following an electrical repair?",
+        translation: "¿Por qué son necesarias las calibraciones de sensores tras una reparación eléctrica?",
+        vocab: ["perform", "necessary calibrations", "ensure", "systems", "operating conditions"],
+        benchmark: "We must perform necessary calibrations to ensure driver assistance systems operate correctly under all conditions."
+      },
+      {
+        id: 24,
+        grammar: "Procedure & Modals",
+        category: "Post-Repair Step 3",
+        question: "How will you test the vehicle after clearing fault codes?",
+        translation: "¿Cómo probarás el vehículo después de borrar los códigos de falla?",
+        vocab: ["will road test", "operating conditions", "perform", "final scan", "confirm"],
+        benchmark: "I will test the vehicle under appropriate operating conditions and perform a final scan to confirm system reliability."
+      },
+      {
+        id: 25,
+        grammar: "Procedure & Modals",
+        category: "Final Outcome",
+        question: "What outcome does this systematic diagnostic approach guarantee?",
+        translation: "¿Qué resultado garantiza este enfoque de diagnóstico sistemático?",
+        vocab: ["reduces", "unnecessary repairs", "ensures", "safety", "reliability"],
+        benchmark: "This systematic approach reduces unnecessary repairs and ensures the performance, safety, and reliability of high-end vehicles."
+      }
+    ];
+
+    // Master Glossary Data from the PDF Document
+    const GLOSSARY = [
+      { 
+        category: "Diagnostic Equipment & Tools", 
+        items: [
+          "Diagnostic scanner (Escáner de diagnóstico)",
+          "Digital multimeter (Multímetro digital)",
+          "Oscilloscope (Osciloscopio)",
+          "Battery tester (Probador de baterías)",
+          "Wiring diagram (Diagrama de cableado)"
+        ] 
+      },
+      { 
+        category: "Control Units & Networks", 
+        items: [
+          "ECU - Electronic Control Unit (Unidad de control electrónico)",
+          "CAN communication network (Red de comunicación CAN)",
+          "LIN network (Red de comunicación LIN)",
+          "Driver assistance systems (Sistemas de asistencia al conductor)",
+          "Braking system (Sistema de frenado)"
+        ] 
+      },
+      { 
+        category: "Electrical Fault Terminology", 
+        items: [
+          "Fault code / DTC (Código de falla)",
+          "Intermittent warning light (Luz de advertencia intermitente)",
+          "Damaged wiring (Cableado dañado)",
+          "Loose connector (Conector suelto)",
+          "Poor ground connection (Conexión a tierra defectuosa)",
+          "Corrosion (Corrosión)",
+          "Irregular sensor output (Salida irregular del sensor)"
+        ] 
+      },
+      { 
+        category: "Measurement & Analysis", 
+        items: [
+          "Voltage / Current / Resistance (Voltaje / Corriente / Resistencia)",
+          "Electrical signal (Señal eléctrica)",
+          "Expected values vs actual (Valores esperados vs reales)",
+          "Root cause (Causa raíz)",
+          "Circuit interruption (Interrupción del circuito)"
+        ] 
+      },
+      { 
+        category: "Verification & Repair Actions", 
+        items: [
+          "Clear fault codes (Borrar códigos de falla)",
+          "Perform calibrations (Realizar calibraciones)",
+          "Road test / Test drive (Prueba en ruta)",
+          "Visual inspection (Inspección visual)",
+          "Systematic approach (Enfoque sistemático)"
+        ] 
+      }
+    ];
+
+    let currentIndex = 0;
+    let timerInterval = null;
+    let secondsLeft = 10;
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let audioContext = null;
+    
+    // User Metrics Persistence
+    let userStats = JSON.parse(localStorage.getItem('voiz_auto_stats')) || {
+      completedPrompts: [],
+      sprintCount: 0,
+      ratings: [],
+      streak: 1
+    };
+
+    function playAudioBeep(freq = 600, duration = 0.1) {
+      try {
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        osc.start();
+        osc.stop(audioContext.currentTime + duration);
+      } catch (e) {
+        console.warn("Audio Context beep error:", e);
+      }
+    }
+
+    function renderPrompt() {
+      const p = PROMPTS[currentIndex];
+      document.getElementById('prompt-number-badge').innerText = p.id < 10 ? `0${p.id}` : p.id;
+      document.getElementById('prompt-grammar-tag').innerText = p.grammar;
+      document.getElementById('prompt-category-badge').innerText = p.category;
+      document.getElementById('prompt-question').innerText = p.question;
+      document.getElementById('prompt-translation').innerText = p.translation;
+      document.getElementById('prompt-benchmark').innerText = p.benchmark;
+
+      // Completion badge status
+      const completedBadge = document.getElementById('prompt-completed-badge');
+      if (userStats.completedPrompts.includes(p.id)) {
+        completedBadge.classList.remove('hidden');
+      } else {
+        completedBadge.classList.add('hidden');
+      }
+
+      // Render Vocab Chips
+      const vocabContainer = document.getElementById('prompt-vocab-list');
+      vocabContainer.innerHTML = p.vocab.map(v => 
+        `<button onclick="toggleVocabChip(this)" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-amber-300 border border-slate-700/80 text-xs font-mono transition flex items-center gap-1.5 active:scale-95">
+          <i class="ph-bold ph-circle text-[10px] text-slate-500"></i> ${v}
+        </button>`
+      ).join('');
+
+      // Reset Benchmark Visibility & Recording UI
+      document.getElementById('benchmark-box').classList.add('hidden');
+      document.getElementById('benchmark-toggle-btn').innerHTML = `<i class="ph-bold ph-eye text-sm"></i> Show Answer`;
+      resetSprintState();
+    }
+
+    function toggleVocabChip(el) {
+      const icon = el.querySelector('i');
+      if (el.classList.contains('bg-amber-500/20')) {
+        el.className = "px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-amber-300 border border-slate-700/80 text-xs font-mono transition flex items-center gap-1.5 active:scale-95";
+        icon.className = "ph-bold ph-circle text-[10px] text-slate-500";
+      } else {
+        el.className = "px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-200 border border-amber-500/40 text-xs font-mono transition flex items-center gap-1.5 active:scale-95";
+        icon.className = "ph-bold ph-check-circle text-[10px] text-emerald-400";
+      }
+    }
+
+    function toggleBenchmark() {
+      const box = document.getElementById('benchmark-box');
+      const btn = document.getElementById('benchmark-toggle-btn');
+      if (box.classList.contains('hidden')) {
+        box.classList.remove('hidden');
+        btn.innerHTML = `<i class="ph-bold ph-eye-slash text-sm"></i> Hide Answer`;
+      } else {
+        box.classList.add('hidden');
+        btn.innerHTML = `<i class="ph-bold ph-eye text-sm"></i> Show Answer`;
+      }
+    }
+
+    function speakBenchmark() {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const text = PROMPTS[currentIndex].benchmark;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.88;
+        window.speechSynthesis.speak(utterance);
+        showToast("Playing Native AI Diagnostic Answer...", "info");
+      } else {
+        showToast("Speech synthesis not supported in this browser.", "warning");
+      }
+    }
+
+    function prevPrompt() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        renderPrompt();
+      }
+    }
+
+    function nextPrompt() {
+      if (currentIndex < PROMPTS.length - 1) {
+        currentIndex++;
+        renderPrompt();
+      }
+    }
+
+    function randomPrompt() {
+      currentIndex = Math.floor(Math.random() * PROMPTS.length);
+      renderPrompt();
+      showToast(`Switched to Diagnostic Prompt #${PROMPTS[currentIndex].id}`, "info");
+    }
+
+    function selectPrompt(index) {
+      currentIndex = index;
+      renderPrompt();
+      toggleGridModal();
+    }
+
+    function showTab(tabName) {
+      ['sprint', 'grammar', 'vocab', 'stats'].forEach(t => {
+        const sec = document.getElementById(`sec-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (sec) sec.classList.add('hidden');
+        if (btn) btn.className = "px-3.5 py-2 text-xs font-bold rounded-lg transition-all text-slate-400 hover:text-white hover:bg-slate-800 flex items-center gap-2";
+      });
+
+      document.getElementById(`sec-${tabName}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+      if (activeBtn) {
+        activeBtn.className = "px-3.5 py-2 text-xs font-bold rounded-lg transition-all text-white bg-brand-600 shadow-sm flex items-center gap-2";
+      }
+
+      if (tabName === 'stats') {
+        renderStats();
+      }
+    }
+
+    function toggleGridModal() {
+      const modal = document.getElementById('grid-modal');
+      modal.classList.toggle('hidden');
+      if (!modal.classList.contains('hidden')) {
+        const grid = document.getElementById('modal-prompt-grid');
+        grid.innerHTML = PROMPTS.map((p, idx) => {
+          const isDone = userStats.completedPrompts.includes(p.id);
+          return `
+            <button onclick="selectPrompt(${idx})" class="p-3.5 text-left rounded-xl border ${idx === currentIndex ? 'border-amber-500 bg-amber-500/10' : 'border-slate-800 bg-slate-950/60 hover:border-slate-700'} transition flex flex-col gap-1.5">
+              <div class="flex items-center justify-between text-xs font-mono">
+                <span class="font-bold text-amber-400">#${p.id < 10 ? '0'+p.id : p.id}</span>
+                <span class="text-[10px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded">${p.grammar}</span>
+              </div>
+              <p class="text-xs font-semibold text-white line-clamp-1">${p.question}</p>
+              <div class="flex items-center justify-between text-[11px] text-slate-400">
+                <span>${p.category}</span>
+                ${isDone ? '<span class="text-emerald-400 font-bold flex items-center gap-1"><i class="ph-bold ph-check"></i> Done</span>' : '<span class="text-slate-600">Pending</span>'}
+              </div>
+            </button>
+          `;
+        }).join('');
+      }
+    }
+
+    function resetSprintState() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      secondsLeft = 10;
+      updateTimerCircle(10);
+      document.getElementById('timer-display').innerText = "10";
+      document.getElementById('timer-status').innerText = "READY";
+      document.getElementById('timer-status').className = "text-[11px] font-extrabold uppercase tracking-widest text-slate-400 mt-1 font-mono";
+      document.getElementById('recording-playback-box').classList.add('hidden');
+      
+      const btn = document.getElementById('btn-start-sprint');
+      btn.disabled = false;
+      btn.innerHTML = `<i class="ph-bold ph-microphone-stage text-xl"></i> Start 10s Oral Sprint`;
+      btn.className = "w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-amber-500 via-brand-600 to-tech-600 hover:from-amber-600 hover:to-tech-500 text-white font-bold text-sm shadow-lg shadow-amber-500/25 transition active:scale-95 flex items-center justify-center gap-2.5";
+
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      }
+    }
+
+    function updateTimerCircle(seconds) {
+      const circle = document.getElementById('timer-ring');
+      const circumference = 2 * Math.PI * 40; // 251.32
+      const offset = circumference - (seconds / 10) * circumference;
+      circle.style.strokeDashoffset = offset;
+    }
+
+    async function startSprint() {
+      audioChunks = [];
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+        mediaRecorder.onstop = saveAndPresentRecording;
+      } catch (err) {
+        showToast("Microphone access is required to practice speaking. Please enable browser permissions.", "error");
+        return;
+      }
+
+      // Update Sprint Stats
+      userStats.sprintCount++;
+      saveStats();
+
+      const btn = document.getElementById('btn-start-sprint');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="ph-bold ph-record text-xl animate-pulse text-rose-400"></i> Recording... Speak Now!`;
+      btn.className = "w-full py-3.5 px-6 rounded-xl bg-slate-900 text-slate-400 font-bold text-sm border border-slate-800 flex items-center justify-center gap-2 cursor-not-allowed recording-glow";
+
+      document.getElementById('timer-status').innerText = "RECORDING";
+      document.getElementById('timer-status').className = "text-[11px] font-extrabold uppercase tracking-widest text-rose-400 animate-pulse mt-1 font-mono";
+
+      secondsLeft = 10;
+      updateTimerCircle(10);
+      document.getElementById('timer-display').innerText = "10";
+
+      mediaRecorder.start();
+      playAudioBeep(850, 0.25); // Start Beep
+
+      timerInterval = setInterval(() => {
+        secondsLeft--;
+        document.getElementById('timer-display').innerText = secondsLeft;
+        updateTimerCircle(secondsLeft);
+
+        if (secondsLeft > 0 && secondsLeft <= 3) {
+          playAudioBeep(550, 0.12); // Warning Ticks
+        }
+
+        if (secondsLeft <= 0) {
+          clearInterval(timerInterval);
+          playAudioBeep(1100, 0.45); // High Finish Beep
+          
+          if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+          }
+
+          document.getElementById('timer-status').innerText = "FINISHED";
+          document.getElementById('timer-status').className = "text-[11px] font-extrabold uppercase tracking-widest text-emerald-400 mt-1 font-mono";
+          
+          btn.disabled = false;
+          btn.innerHTML = `<i class="ph-bold ph-arrow-counter-clockwise text-lg"></i> Retry 10s Sprint`;
+          btn.className = "w-full py-3.5 px-6 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-sm transition flex items-center justify-center gap-2 active:scale-95";
+        }
+      }, 1000);
+    }
+
+    function saveAndPresentRecording() {
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      const audioUrl = URL.createObjectURL(audioBlob);
+      const preview = document.getElementById('audio-preview');
+      preview.src = audioUrl;
+      document.getElementById('recording-playback-box').classList.remove('hidden');
+
+      // Auto mark prompt as completed
+      const currentId = PROMPTS[currentIndex].id;
+      if (!userStats.completedPrompts.includes(currentId)) {
+        userStats.completedPrompts.push(currentId);
+        saveStats();
+        document.getElementById('prompt-completed-badge').classList.remove('hidden');
+        showToast("Diagnostic Sprint finished! Prompt marked completed.", "success");
+      }
+    }
+
+    function rateAttempt(stars) {
+      userStats.ratings.push(stars);
+      saveStats();
+      showToast(`Recorded ${stars}-star rating!`, "success");
+    }
+
+    function renderGlossary(filterText = '') {
+      const container = document.getElementById('vocab-glossary-container');
+      const filtered = GLOSSARY.map(g => {
+        const items = g.items.filter(i => i.toLowerCase().includes(filterText.toLowerCase()));
+        return { ...g, items };
+      }).filter(g => g.items.length > 0);
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p class="col-span-full text-xs text-slate-500 text-center py-8">No terms found matching "${filterText}".</p>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(g => `
+        <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-4 space-y-2.5">
+          <h3 class="text-xs font-bold text-amber-400 border-b border-slate-800/80 pb-2 flex items-center gap-2 font-mono">
+            <i class="ph-bold ph-tag"></i> ${g.category}
+          </h3>
+          <ul class="space-y-1.5">
+            ${g.items.map(item => `
+              <li class="text-xs text-slate-300 font-medium flex items-center gap-2 font-sans">
+                <i class="ph-bold ph-dot text-brand-400 text-lg"></i> ${item}
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      `).join('');
+    }
+
+    function filterVocab() {
+      const val = document.getElementById('vocab-search-input').value;
+      renderGlossary(val);
+    }
+
+    function renderStats() {
+      document.getElementById('stat-completed').innerText = `${userStats.completedPrompts.length} / 25`;
+      document.getElementById('stat-sprints-count').innerText = userStats.sprintCount;
+
+      if (userStats.ratings.length > 0) {
+        const sum = userStats.ratings.reduce((a, b) => a + b, 0);
+        const avg = (sum / userStats.ratings.length).toFixed(1);
+        document.getElementById('stat-avg-rating').innerText = `${avg} / 5`;
+      } else {
+        document.getElementById('stat-avg-rating').innerText = "0.0 / 5";
+      }
+
+      document.getElementById('stat-streak').innerText = `${userStats.streak} Day${userStats.streak > 1 ? 's' : ''}`;
+    }
+
+    function saveStats() {
+      localStorage.setItem('voiz_auto_stats', JSON.stringify(userStats));
+    }
+
+    function resetUserProgress() {
+      userStats = { completedPrompts: [], sprintCount: 0, ratings: [], streak: 1 };
+      saveStats();
+      renderStats();
+      renderPrompt();
+      showToast("Diagnostic practice data reset successfully.", "info");
+    }
+
+    function showToast(msg, type = "info") {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      const colors = {
+        success: "bg-emerald-950 border-emerald-500/40 text-emerald-200",
+        error: "bg-rose-950 border-rose-500/40 text-rose-200",
+        warning: "bg-amber-950 border-amber-500/40 text-amber-200",
+        info: "bg-slate-900 border-slate-700 text-slate-200"
+      };
+
+      toast.className = `p-3.5 rounded-xl border ${colors[type]} text-xs font-medium shadow-2xl flex items-center gap-2 transition-all transform translate-y-2 pointer-events-auto`;
+      toast.innerHTML = `<i class="ph-bold ph-bell-ringing text-base"></i> ${msg}`;
+      
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    window.onload = function() {
+      renderPrompt();
+      renderGlossary();
+    };
+  </script>
+</body>
+</html>
