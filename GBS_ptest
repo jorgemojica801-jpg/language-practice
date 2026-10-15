@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turia GBS Placement test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #1a202c;
+        }
+        .reading-passage {
+            font-family: 'Merriweather', serif;
+            line-height: 1.8;
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        turia: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<!-- MAIN CONTAINER: h-screen flex flex-col overflow-hidden to prevent body scroll -->
+<body class="h-screen w-screen flex flex-col overflow-hidden bg-white">
+
+    <!-- Header (Fixed height) -->
+    <header class="flex-none bg-turia-900 text-white px-6 py-4 flex justify-between items-center z-20 shadow-md">
+        <div>
+            <h1 class="text-xl md:text-2xl font-bold tracking-tight">Turia GBS Placement test</h1>
+            <p class="text-turia-100 text-xs md:text-sm mt-1">Comprehensive English Assessment (IELTS Format)</p>
+        </div>
+        <div class="hidden sm:block">
+            <span class="bg-turia-800 px-3 py-1.5 rounded text-sm font-semibold border border-turia-700 shadow-inner">A1 to C1 Level</span>
+        </div>
+    </header>
+
+    <!-- CONTENT AREA: flex-1 overflow-hidden handles dynamic views -->
+    <main class="flex-1 relative overflow-hidden bg-gray-50">
+        
+        <!-- 1. WELCOME VIEW -->
+        <div id="welcome-view" class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-white z-10 fade-in overflow-y-auto">
+            <div class="max-w-2xl w-full py-10">
+                <div class="w-20 h-20 bg-turia-50 text-turia-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-2">Welcome to the Assessment</h2>
+                <p class="text-gray-600 mb-6 text-lg">
+                    This test evaluates your English proficiency across Grammar, Vocabulary, Reading, and Writing.
+                </p>
+                
+                <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-6 text-left">
+                    <h3 class="font-semibold text-gray-800 mb-4">Candidate Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">First Name *</label>
+                            <input type="text" id="first-name" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-turia-500 focus:border-turia-500 outline-none transition-shadow" placeholder="e.g. John">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Last Name *</label>
+                            <input type="text" id="last-name" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-turia-500 focus:border-turia-500 outline-none transition-shadow" placeholder="e.g. Doe">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                        <input type="email" id="email" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-turia-500 focus:border-turia-500 outline-none transition-shadow" placeholder="john.doe@example.com">
+                    </div>
+                    <p id="form-error" class="hidden text-red-600 text-sm font-medium mt-3 flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Please fill in all required fields to proceed.</p>
+                </div>
+
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg mb-8 text-left flex items-start gap-3 shadow-sm">
+                    <svg class="w-6 h-6 text-red-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <div>
+                        <h4 class="text-red-800 font-bold">Strictly Prohibited</h4>
+                        <p class="text-red-700 text-sm mt-1">The use of Artificial Intelligence (AI) tools, external translators, dictionaries, or any outside assistance during this assessment is strictly forbidden. This test must measure your true unassisted English proficiency.</p>
+                    </div>
+                </div>
+
+                <button id="start-btn" class="w-full sm:w-auto bg-turia-600 hover:bg-turia-700 text-white font-bold py-4 px-12 rounded-xl transition-all shadow-lg text-lg">
+                    Begin Assessment
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. MCQ VIEW (Strict Layout) -->
+        <div id="mcq-view" class="hidden absolute inset-0 flex flex-col bg-white z-10">
+            <!-- Progress Bar (Fixed top) -->
+            <div class="flex-none w-full bg-gray-200 h-1.5 z-10">
+                <div id="mcq-progress" class="bg-turia-600 h-1.5 transition-all duration-300 ease-out" style="width: 0%"></div>
+            </div>
+            
+            <!-- Split Columns Area (Flexible middle) -->
+            <div class="flex-1 flex flex-col md:flex-row overflow-hidden bg-white">
+                
+                <!-- Reading Passage (Left Column) - Independently scrollable -->
+                <div id="passage-container" class="hidden md:flex flex-col w-full md:w-1/2 border-b md:border-b-0 md:border-r border-gray-200 bg-gray-50 h-1/2 md:h-full">
+                    <div class="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-10">
+                        <span class="text-xs font-bold text-turia-700 uppercase tracking-widest mb-3 block">Reading Comprehension</span>
+                        <h3 id="passage-title" class="text-2xl font-bold text-gray-900 mb-6"></h3>
+                        <div id="passage-text" class="text-gray-800 text-base md:text-lg reading-passage text-justify">
+                            <!-- Passage text injected here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Questions Area (Right Column) - Independently scrollable -->
+                <div id="question-wrapper" class="flex-1 flex flex-col h-full bg-white">
+                    <div class="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-10">
+                        <div class="mb-6 flex justify-between items-center">
+                            <span id="question-counter" class="text-sm font-bold text-turia-700 bg-turia-50 px-4 py-2 rounded-lg border border-turia-100">Part 1: Q 1 / 59</span>
+                        </div>
+                        
+                        <h3 id="mcq-text" class="text-xl md:text-2xl font-semibold text-gray-900 mb-8 leading-relaxed">
+                            Question text
+                        </h3>
+                        
+                        <div id="mcq-options" class="space-y-4">
+                            <!-- Options injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Bar (Fixed bottom - The core fix) -->
+            <div class="flex-none p-4 md:p-6 bg-gray-100 border-t border-gray-300 flex justify-between items-center z-20 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)]">
+                <button id="prev-btn" class="px-6 md:px-10 py-3 md:py-4 border-2 border-gray-400 text-gray-700 bg-white rounded-xl text-base md:text-lg font-bold hover:bg-gray-50 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2">
+                    <span>&larr;</span> Previous
+                </button>
+                <button id="next-btn" class="px-8 md:px-12 py-3 md:py-4 bg-turia-600 text-white rounded-xl text-base md:text-lg font-bold hover:bg-turia-700 transition-all shadow-md ml-auto disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2">
+                    Next <span>&rarr;</span>
+                </button>
+                <button id="to-writing-btn" class="hidden px-8 md:px-12 py-3 md:py-4 bg-gray-900 text-white rounded-xl text-base md:text-lg font-bold hover:bg-black transition-all shadow-md ml-auto disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+                    Continue to Writing <span>&rarr;</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 3. WRITING VIEW -->
+        <div id="writing-view" class="hidden absolute inset-0 flex flex-col bg-white z-10">
+            <!-- Progress indicator -->
+            <div class="flex-none w-full bg-turia-900 h-1.5 z-10"></div>
+            
+            <!-- Writing Content (Scrollable) -->
+            <div class="flex-1 overflow-y-auto custom-scrollbar p-6 md:p-10 flex flex-col">
+                <div class="mb-6 flex-none">
+                    <span class="text-sm font-bold text-gray-500 uppercase tracking-widest block mb-2">Part 2: Writing Task (IELTS Task 2)</span>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">Essay Response</h2>
+                    
+                    <div class="bg-turia-50 border-l-4 border-turia-600 p-5 rounded-r-lg mb-6 shadow-sm">
+                        <p class="font-semibold text-gray-900 mb-2">You should spend about 40 minutes on this task.</p>
+                        <p class="text-gray-800 italic mb-3">Write about the following topic:</p>
+                        <p class="text-gray-900 font-bold text-lg mb-4">
+                            "Some people believe that unpaid community service should be a compulsory part of high school programmes. To what extent do you agree or disagree?"
+                        </p>
+                        <p class="text-sm text-gray-600">Give reasons for your answer and include any relevant examples from your own knowledge or experience. Write at least 250 words.</p>
+                    </div>
+                </div>
+                
+                <!-- Textarea expands to fill remaining space -->
+                <textarea id="writing-area" class="flex-1 w-full min-h-[250px] p-5 border-2 border-gray-300 rounded-xl focus:ring-0 focus:border-turia-500 transition-all resize-none text-gray-800 text-base md:text-lg custom-scrollbar shadow-inner" placeholder="Begin your essay here..."></textarea>
+            </div>
+
+            <!-- Writing Navigation Footer (Fixed) -->
+            <div class="flex-none p-4 md:p-6 bg-gray-100 border-t border-gray-300 flex justify-between items-center z-20">
+                <span id="word-count" class="text-sm font-medium text-gray-500 bg-white border border-gray-300 px-4 py-2 rounded-lg">Word count: 0</span>
+                <button id="finish-btn" class="px-8 md:px-12 py-3 md:py-4 bg-green-600 text-white rounded-xl text-base md:text-lg font-bold hover:bg-green-700 transition-colors shadow-md">
+                    Submit Final Test
+                </button>
+            </div>
+        </div>
+
+        <!-- 4. RESULTS VIEW -->
+        <div id="result-view" class="hidden absolute inset-0 overflow-y-auto custom-scrollbar bg-white z-10">
+            <div class="p-8 md:p-12 max-w-4xl mx-auto w-full pb-20">
+                <div class="text-center mb-10 border-b border-gray-200 pb-10">
+                    <h2 class="text-3xl font-bold text-gray-900 mb-2">Assessment Completed</h2>
+                    <p class="text-gray-500 mb-6">Thank you for taking the Turia GBS Placement test.</p>
+                    
+                    <div class="inline-flex flex-col items-center justify-center bg-turia-50 px-8 py-4 rounded-2xl mb-8 border border-turia-100 shadow-sm">
+                        <span id="result-name" class="font-bold text-turia-900 text-xl mb-1">Candidate Name</span>
+                        <span id="result-email" class="text-sm font-medium text-turia-700">email@example.com</span>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row justify-center gap-6">
+                        <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6 shadow-sm flex-1 max-w-xs mx-auto">
+                            <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Part 1: Objective Score</h3>
+                            <div class="text-5xl font-black text-turia-600 mb-1"><span id="final-score">0</span><span class="text-2xl text-gray-400 font-medium">/59</span></div>
+                            <p class="text-sm text-gray-500">Correct answers</p>
+                        </div>
+                        
+                        <div class="bg-turia-900 border border-turia-800 rounded-2xl p-6 shadow-lg flex-1 max-w-xs mx-auto text-white">
+                            <h3 class="text-sm font-bold text-turia-200 uppercase tracking-wider mb-2">Estimated Level</h3>
+                            <div id="final-level" class="text-5xl font-black text-white mb-1">B2</div>
+                            <p id="level-desc" class="text-sm text-turia-200 font-medium">Upper Intermediate</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-xl font-bold text-gray-900">Part 2: Writing Submission</h3>
+                        <span class="text-xs font-semibold bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full border border-yellow-200">Pending Manual Grading</span>
+                    </div>
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-inner">
+                        <div id="submitted-essay" class="text-gray-800 whitespace-pre-wrap leading-relaxed font-serif text-base">
+                            <!-- Essay text will appear here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-12 text-center">
+                    <button onclick="window.location.reload()" class="text-turia-600 hover:text-turia-800 font-semibold text-sm underline decoration-2 underline-offset-4 transition-colors">
+                        Return to Start
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Confirmation Modal -->
+    <div id="submit-modal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-2xl p-6 md:p-8 max-w-sm w-full shadow-2xl text-center transform transition-transform">
+            <div class="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Submit Assessment?</h3>
+            <p class="text-gray-600 mb-8">Are you sure you want to finish the test? You cannot change your answers after submission.</p>
+            <div class="flex gap-4">
+                <button id="cancel-submit-btn" class="flex-1 px-4 py-3 border-2 border-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-50 transition-colors">Cancel</button>
+                <button id="confirm-submit-btn" class="flex-1 px-4 py-3 bg-green-600 text-white rounded-xl font-bold hover:bg-green-700 transition-colors shadow-md">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Reading Passages Data
+        const passages = {
+            p1: {
+                title: "The Psychology of Advertising",
+                text: "Advertising is a powerful tool used by companies to persuade people to buy their products or services. Psychologists have long studied how advertisements influence consumer behavior. One common technique is the use of emotional appeal. By associating a product with positive emotions like happiness, security, or success, advertisers create a subconscious desire in the consumer. For instance, a car commercial might not just focus on engine specifications; instead, it might show a happy family enjoying a road trip, suggesting that buying the car will lead to family bonding and joy. Another prevalent strategy is the 'bandwagon effect,' which implies that since everyone else is using the product, you should too, tapping into the human desire to belong and not miss out. Critics, however, argue that these techniques manipulate vulnerable populations, especially children, prompting calls for stricter regulations."
+            },
+            p2: {
+                title: "Artificial Intelligence in Modern Healthcare",
+                text: "The integration of Artificial Intelligence (AI) into healthcare systems is revolutionizing the paradigm of medical diagnostics and patient care. Historically, diagnostic processes have relied heavily on the subjective expertise of medical professionals, which, while invaluable, is inherently susceptible to human error and fatigue. Conversely, AI algorithms, particularly deep learning models, exhibit an unprecedented capacity to analyze vast datasets of medical imagery—such as MRIs and X-rays—with striking precision. These models can detect microscopic anomalies that might elude even the most seasoned radiologists. Furthermore, predictive analytics driven by AI can foresee patient deterioration by continuously monitoring vital signs, thereby facilitating preemptive interventions. However, the ubiquitous adoption of AI in this sector is not devoid of ethical complexities. Concerns regarding data privacy, the opacity of algorithmic decision-making (the 'black box' dilemma), and the potential obsolescence of certain medical roles necessitate a nuanced regulatory framework."
+            }
+        };
+
+        // 59 Questions Array (A1 to C1) - Reading passages placed at the end. Heavily randomized correct answers.
+        const questions = [
+            // Grammar & Vocabulary (Q1 - Q45)
+            { q: "Hello, my name _____ John.", options: ["am", "is", "are", "be"], a: 1 },
+            { q: "I _____ from Canada.", options: ["come", "comes", "coming", "am"], a: 3 },
+            { q: "_____ you have a brother?", options: ["Do", "Does", "Are", "Has"], a: 0 },
+            { q: "She _____ play tennis very well.", options: ["not", "isn't", "doesn't", "don't"], a: 2 },
+            { q: "They go to work _____ bus.", options: ["on", "by", "in", "with"], a: 1 },
+            { q: "Where _____ you yesterday?", options: ["were", "was", "did", "are"], a: 0 },
+            { q: "I have two _____. A boy and a girl.", options: ["childs", "child", "childrens", "children"], a: 3 },
+            { q: "I usually wake up _____ 7 o'clock.", options: ["in", "on", "at", "to"], a: 2 },
+            { q: "Look at _____ birds in the sky!", options: ["those", "this", "that", "these"], a: 0 },
+            { q: "Did you _____ to the party last night?", options: ["went", "go", "going", "gone"], a: 1 },
+            { q: "He is the _____ boy in the class.", options: ["more tall", "tall", "taller", "tallest"], a: 3 },
+            { q: "I _____ never eaten sushi before.", options: ["was", "did", "have", "has"], a: 2 },
+            { q: "We _____ to Spain next summer.", options: ["are going", "go", "went", "gone"], a: 0 },
+            { q: "You _____ smoke in the hospital.", options: ["needn't", "mustn't", "don't have to", "won't"], a: 1 },
+            { q: "There isn't _____ milk in the fridge.", options: ["a", "many", "some", "any"], a: 3 },
+            { q: "How _____ money do you have?", options: ["much", "many", "long", "far"], a: 0 },
+            { q: "If it rains, we _____ stay at home.", options: ["would", "are", "will", "did"], a: 2 },
+            { q: "I've been learning English _____ three years.", options: ["since", "for", "in", "from"], a: 1 },
+            { q: "If I _____ you, I would study harder.", options: ["am", "be", "was", "were"], a: 3 },
+            { q: "The letter _____ yesterday.", options: ["was sent", "is sent", "has sent", "sent"], a: 0 },
+            { q: "He asked me where I _____.", options: ["live", "was live", "lived", "did live"], a: 2 },
+            { q: "She is used _____ up early.", options: ["to wake", "to waking", "waking", "wake"], a: 1 },
+            { q: "I look forward _____ from you soon.", options: ["to hear", "hear", "hearing", "to hearing"], a: 3 },
+            { q: "I wish I _____ speak French.", options: ["could", "can", "would", "will"], a: 0 },
+            { q: "By next year, I _____ my university degree.", options: ["finish", "will have finished", "am finishing", "will finish"], a: 1 },
+            { q: "I _____ my car repaired tomorrow.", options: ["make", "have", "am having", "am doing"], a: 2 },
+            { q: "We haven't seen each other _____ we were in school.", options: ["since", "for", "until", "when"], a: 0 },
+            { q: "You had better _____ now, or you'll be late.", options: ["to leave", "left", "leaving", "leave"], a: 3 },
+            { q: "If he had known, he _____.", options: ["would help", "would have helped", "helped", "will help"], a: 1 },
+            { q: "Despite _____ tired, she continued working.", options: ["to be", "she was", "being", "been"], a: 2 },
+            { q: "He denied _____ the window.", options: ["breaking", "to break", "break", "broke"], a: 0 },
+            { q: "It’s high time you _____ a job.", options: ["get", "getting", "will get", "got"], a: 3 },
+            { q: "The project, _____ was delayed by a month, is finally finished.", options: ["that", "which", "who", "whose"], a: 1 },
+            { q: "Hardly had I arrived _____ it started to pour.", options: ["when", "than", "that", "then"], a: 0 },
+            { q: "She succeeded _____ passing the difficult exam.", options: ["with", "on", "in", "at"], a: 2 },
+            { q: "I'd rather you _____ smoke in the house.", options: ["won't", "don't", "wouldn't", "didn't"], a: 3 },
+            { q: "Not only _____ the exam, but she also got the highest score.", options: ["she passed", "did she pass", "passed she", "she did pass"], a: 1 },
+            { q: "Were _____ to ask, what would you say?", options: ["they", "them", "their", "theirs"], a: 0 },
+            { q: "The committee _____ unable to reach a consensus.", options: ["have", "has", "was", "were"], a: 2 },
+            { q: "The government introduced strict measures to _____ the economic crisis.", options: ["aggravate", "alleviate", "instigate", "obliterate"], a: 1 },
+            { q: "She has a _____ for learning languages quickly.", options: ["stint", "flaw", "quirk", "knack"], a: 3 },
+            { q: "No sooner _____ than the lights went out.", options: ["had he sat down", "he had sat down", "did he sat down", "he sat down"], a: 0 },
+            { q: "I was completely _____ by the complexity of the instructions.", options: ["appeased", "enlightened", "baffled", "thrilled"], a: 2 },
+            { q: "It is imperative that he _____ present at the meeting.", options: ["is", "be", "was", "to be"], a: 1 },
+            { q: "_____ having studied extensively, the exam still proved challenging.", options: ["Although", "Despite", "However", "Notwithstanding"], a: 3 },
+            
+            // Reading Comprehension 1 (Q46 - Q52)
+            { passage: "p1", q: "What is the primary purpose of the 'emotional appeal' technique?", options: ["To create a subconscious desire through positive association.", "To make the product cheaper.", "To highlight engine specifications.", "To prove the product is scientifically better."], a: 0 },
+            { passage: "p1", q: "The 'bandwagon effect' relies on the consumer's desire to:", options: ["Understand complex psychology.", "Save money.", "Belong and not miss out.", "Be completely unique."], a: 2 },
+            { passage: "p1", q: "In the context of the text, what does 'prevalent' mean?", options: ["Rare", "Widespread", "Ineffective", "Secretive"], a: 1 },
+            { passage: "p1", q: "According to the text, a car commercial might focus on a happy family to suggest:", options: ["The car is very safe.", "The car is affordable.", "The car has a large trunk.", "Buying the car brings joy and family bonding."], a: 3 },
+            { passage: "p1", q: "What is a consequence of these advertising techniques according to critics?", options: ["They manipulate vulnerable populations.", "They increase production costs.", "They make commercials too long.", "They confuse adult consumers."], a: 0 },
+            { passage: "p1", q: "Who is mentioned as being particularly vulnerable to these advertising techniques?", options: ["Psychologists", "Advertisers", "Children", "Car manufacturers"], a: 2 },
+            { passage: "p1", q: "What do critics call for in response to these manipulative techniques?", options: ["More emotional appeal.", "Stricter regulations.", "Cheaper products.", "Better engine specifications."], a: 1 },
+            
+            // Reading Comprehension 2 (Q53 - Q59)
+            { passage: "p2", q: "What is the main advantage of AI algorithms over human professionals mentioned?", options: ["They are more empathetic towards patients.", "They are cheaper to employ.", "They can perform physical surgeries better.", "They exhibit unprecedented capacity to analyze vast datasets with precision."], a: 3 },
+            { passage: "p2", q: "What does the 'black box' dilemma refer to in the passage?", options: ["The opacity of algorithmic decision-making.", "The physical hardware storing the AI.", "The secure storage of patient data.", "The ethical board reviewing AI practices."], a: 0 },
+            { passage: "p2", q: "According to the passage, predictive analytics can help by:", options: ["Generating new medications in the lab.", "Automatically billing patients for treatments.", "Foreseeing patient deterioration to facilitate preemptive interventions.", "Replacing nurses entirely."], a: 2 },
+            { passage: "p2", q: "Which word best describes the author's tone regarding the integration of AI in healthcare?", options: ["Blindly optimistic", "Cautiously optimistic and analytical", "Harshly critical", "Completely indifferent"], a: 1 },
+            { passage: "p2", q: "What is historically mentioned about diagnostic processes?", options: ["They were always perfect.", "They relied solely on machinery.", "They were faster than AI.", "They were susceptible to human error and fatigue."], a: 3 },
+            { passage: "p2", q: "What kind of AI models are specifically mentioned as analyzing medical imagery?", options: ["Deep learning models", "Natural language processors", "Robotic surgery arms", "Basic statistical algorithms"], a: 0 },
+            { passage: "p2", q: "What is required due to the ethical complexities of AI in healthcare?", options: ["Immediate cessation of AI use.", "More 'black boxes'.", "A nuanced regulatory framework.", "Complete replacement of human doctors."], a: 2 }
+        ];
+
+        let currentQuestionIndex = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        
+        const views = {
+            welcome: document.getElementById('welcome-view'),
+            mcq: document.getElementById('mcq-view'),
+            writing: document.getElementById('writing-view'),
+            result: document.getElementById('result-view')
+        };
+        
+        const welcomeUI = {
+            firstName: document.getElementById('first-name'),
+            lastName: document.getElementById('last-name'),
+            email: document.getElementById('email'),
+            error: document.getElementById('form-error')
+        };
+
+        const modalUI = {
+            overlay: document.getElementById('submit-modal'),
+            cancelBtn: document.getElementById('cancel-submit-btn'),
+            confirmBtn: document.getElementById('confirm-submit-btn')
+        };
+        
+        const mcqUI = {
+            progress: document.getElementById('mcq-progress'),
+            counter: document.getElementById('question-counter'),
+            text: document.getElementById('mcq-text'),
+            options: document.getElementById('mcq-options'),
+            prevBtn: document.getElementById('prev-btn'),
+            nextBtn: document.getElementById('next-btn'),
+            toWritingBtn: document.getElementById('to-writing-btn'),
+            passageContainer: document.getElementById('passage-container'),
+            passageTitle: document.getElementById('passage-title'),
+            passageText: document.getElementById('passage-text')
+        };
+
+        const writingUI = {
+            area: document.getElementById('writing-area'),
+            wordCount: document.getElementById('word-count'),
+            finishBtn: document.getElementById('finish-btn')
+        };
+
+        function switchView(viewName) {
+            Object.values(views).forEach(v => v.classList.add('hidden'));
+            views[viewName].classList.remove('hidden');
+        }
+
+        document.getElementById('start-btn').addEventListener('click', () => {
+            const fName = welcomeUI.firstName.value.trim();
+            const lName = welcomeUI.lastName.value.trim();
+            const email = welcomeUI.email.value.trim();
+
+            if (!fName || !lName || !email) {
+                welcomeUI.error.classList.remove('hidden');
+                return;
+            }
+            
+            welcomeUI.error.classList.add('hidden');
+            
+            // Set data for results view
+            document.getElementById('result-name').textContent = `${fName} ${lName}`;
+            document.getElementById('result-email').textContent = email;
+
+            switchView('mcq');
+            renderQuestion();
+        });
+
+        function renderQuestion() {
+            const q = questions[currentQuestionIndex];
+            
+            // Progress
+            const progressPct = ((currentQuestionIndex) / questions.length) * 100;
+            mcqUI.progress.style.width = `${progressPct}%`;
+            mcqUI.counter.textContent = `Part 1: Q ${currentQuestionIndex + 1} / 59`;
+
+            // Animations
+            mcqUI.text.classList.remove('fade-in');
+            mcqUI.options.classList.remove('fade-in');
+            void mcqUI.text.offsetWidth; 
+            mcqUI.text.classList.add('fade-in');
+            mcqUI.options.classList.add('fade-in');
+
+            // Handling Reading Passages layout
+            if (q.passage && passages[q.passage]) {
+                const p = passages[q.passage];
+                mcqUI.passageTitle.textContent = p.title;
+                mcqUI.passageText.textContent = p.text;
+                // Show left column
+                mcqUI.passageContainer.classList.remove('hidden');
+                mcqUI.passageContainer.classList.add('flex');
+            } else {
+                // Hide left column entirely
+                mcqUI.passageContainer.classList.add('hidden');
+                mcqUI.passageContainer.classList.remove('flex');
+            }
+
+            mcqUI.text.textContent = q.q;
+            mcqUI.options.innerHTML = '';
+
+            q.options.forEach((optText, index) => {
+                const isSelected = userAnswers[currentQuestionIndex] === index;
+                
+                const optDiv = document.createElement('div');
+                optDiv.className = `cursor-pointer p-4 md:p-5 border-2 rounded-xl flex items-center gap-4 transition-all duration-200
+                    ${isSelected ? 'bg-turia-50 border-turia-600 shadow-md' : 'border-gray-200 hover:border-turia-400 hover:bg-gray-50'}`;
+                
+                optDiv.onclick = () => {
+                    userAnswers[currentQuestionIndex] = index;
+                    renderQuestion();
+                };
+
+                const letterBox = document.createElement('div');
+                const letters = ['A', 'B', 'C', 'D'];
+                letterBox.className = `w-10 h-10 rounded-lg flex items-center justify-center font-bold text-base shrink-0 transition-colors
+                    ${isSelected ? 'bg-turia-600 text-white' : 'bg-gray-200 text-gray-600'}`;
+                letterBox.textContent = letters[index];
+
+                const textSpan = document.createElement('span');
+                textSpan.className = `text-gray-800 font-medium text-lg ${isSelected ? 'text-turia-900' : ''}`;
+                textSpan.textContent = optText;
+
+                optDiv.appendChild(letterBox);
+                optDiv.appendChild(textSpan);
+                mcqUI.options.appendChild(optDiv);
+            });
+
+            // Reset scroll position for the question wrapper when moving to a new question
+            document.querySelector('#question-wrapper > div').scrollTop = 0;
+            
+            updateMCQButtons();
+        }
+
+        function updateMCQButtons() {
+            const hasAnswered = userAnswers[currentQuestionIndex] !== null;
+
+            mcqUI.prevBtn.disabled = currentQuestionIndex === 0;
+
+            if (currentQuestionIndex === questions.length - 1) {
+                mcqUI.nextBtn.classList.add('hidden');
+                mcqUI.toWritingBtn.classList.remove('hidden');
+                mcqUI.toWritingBtn.disabled = !hasAnswered;
+            } else {
+                mcqUI.toWritingBtn.classList.add('hidden');
+                mcqUI.nextBtn.classList.remove('hidden');
+                mcqUI.nextBtn.disabled = !hasAnswered;
+            }
+        }
+
+        mcqUI.prevBtn.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        });
+
+        mcqUI.nextBtn.addEventListener('click', () => {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            }
+        });
+
+        mcqUI.toWritingBtn.addEventListener('click', () => {
+            mcqUI.progress.style.width = '100%';
+            setTimeout(() => {
+                switchView('writing');
+            }, 300);
+        });
+
+        writingUI.area.addEventListener('input', () => {
+            const text = writingUI.area.value.trim();
+            const words = text === '' ? 0 : text.split(/\s+/).length;
+            writingUI.wordCount.textContent = `Word count: ${words}`;
+            
+            if (words > 0 && words < 250) {
+                writingUI.wordCount.classList.add('text-red-600', 'border-red-300', 'bg-red-50');
+                writingUI.wordCount.classList.remove('text-gray-500', 'border-gray-300', 'bg-white');
+            } else {
+                writingUI.wordCount.classList.remove('text-red-600', 'border-red-300', 'bg-red-50');
+                writingUI.wordCount.classList.add('text-gray-500', 'border-gray-300', 'bg-white');
+            }
+        });
+
+        writingUI.finishBtn.addEventListener('click', () => {
+            modalUI.overlay.classList.remove('hidden');
+        });
+
+        modalUI.cancelBtn.addEventListener('click', () => {
+            modalUI.overlay.classList.add('hidden');
+        });
+
+        modalUI.confirmBtn.addEventListener('click', () => {
+            modalUI.overlay.classList.add('hidden');
+            calculateAndShowResults();
+        });
+
+        function calculateAndShowResults() {
+            let score = 0;
+            userAnswers.forEach((ans, idx) => {
+                if (ans === questions[idx].a) {
+                    score++;
+                }
+            });
+
+            document.getElementById('final-score').textContent = score;
+
+            let cefr = '';
+            let desc = '';
+            
+            if (score <= 12) { cefr = 'A1'; desc = 'Beginner'; } 
+            else if (score <= 24) { cefr = 'A2'; desc = 'Elementary'; } 
+            else if (score <= 36) { cefr = 'B1'; desc = 'Intermediate'; } 
+            else if (score <= 48) { cefr = 'B2'; desc = 'Upper Intermediate'; } 
+            else { cefr = 'C1'; desc = 'Advanced'; }
+
+            document.getElementById('final-level').textContent = cefr;
+            document.getElementById('level-desc').textContent = desc;
+
+            const essayText = writingUI.area.value.trim();
+            const essayContainer = document.getElementById('submitted-essay');
+            if (essayText === '') {
+                essayContainer.innerHTML = '<span class="text-gray-400 italic">No essay submitted.</span>';
+            } else {
+                essayContainer.textContent = essayText; 
+            }
+
+            switchView('result');
+        }
+
+    </script>
+</body>
+</html>
