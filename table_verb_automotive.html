@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en" class="dark h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOIZ ESOL | Automotive Verb Mastery (3 Tenses)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        voiz: {
+                            bg: '#0F172A',
+                            card: '#1E293B',
+                            border: '#334155',
+                            cyan: '#06B6D4',
+                            blue: '#3B82F6',
+                            amber: '#F59E0B',
+                            emerald: '#10B981',
+                            rose: '#EF4444'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0F172A;
+            color: #F8FAFC;
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #1E293B; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #06B6D4; }
+
+        .perspective { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+
+        @keyframes pulse-cyan {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.4); }
+            50% { box-shadow: 0 0 0 12px rgba(6, 182, 212, 0); }
+        }
+        .pulse-active { animation: pulse-cyan 2s infinite; }
+    </style>
+</head>
+<body class="h-full flex flex-col antialiased selection:bg-cyan-500 selection:text-slate-900">
+
+    <!-- Top Navigation Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Brand Logo -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-black text-slate-900 text-xl shadow-lg shadow-cyan-500/20">
+                        V
+                    </div>
+                    <div>
+                        <span class="text-xl font-extrabold tracking-wider bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">VOIZ</span>
+                        <span class="text-xs text-slate-400 font-semibold block -mt-1 tracking-widest">VERB MASTERY · AUTOMOTIVE ESOL</span>
+                    </div>
+                </div>
+
+                <!-- Global Stats -->
+                <div class="flex items-center gap-4 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700">
+                    <div class="flex items-center gap-1.5 text-xs">
+                        <i class="fa-solid fa-fire text-amber-400"></i>
+                        <span class="text-slate-400">Streak:</span>
+                        <span id="stat-streak" class="font-bold text-amber-400">0</span>
+                    </div>
+                    <div class="h-4 w-px bg-slate-700"></div>
+                    <div class="flex items-center gap-1.5 text-xs">
+                        <i class="fa-solid fa-trophy text-emerald-400"></i>
+                        <span class="text-slate-400">Mastered:</span>
+                        <span id="stat-mastered" class="font-bold text-emerald-400">0/20</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- Navigation Tabs for Exercise Modes -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800">
+            <button id="tab-verbs" onclick="switchMode('verbs')" class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md">
+                <i class="fa-solid fa-book-open"></i>
+                <span>1. Glosario 3T</span>
+            </button>
+            <button id="tab-drill" onclick="switchMode('drill')" class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all text-slate-400 hover:text-white hover:bg-slate-800">
+                <i class="fa-solid fa-dumbbell"></i>
+                <span>2. Matcher 3-Tiempos</span>
+            </button>
+            <button id="tab-repair" onclick="switchMode('repair')" class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all text-slate-400 hover:text-white hover:bg-slate-800">
+                <i class="fa-solid fa-wrench"></i>
+                <span>3. Ordenes de Taller</span>
+            </button>
+            <button id="tab-sprint" onclick="switchMode('sprint')" class="py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all text-slate-400 hover:text-white hover:bg-slate-800">
+                <i class="fa-solid fa-stopwatch text-amber-400"></i>
+                <span>4. Speed Sprint</span>
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- MODE 1: VERB GLOSSARY MATRIX               -->
+        <!-- ========================================== -->
+        <section id="sec-verbs" class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <span class="text-xs font-bold text-cyan-400 uppercase tracking-widest">Base de Datos de Verbos Automotrices</span>
+                    <h1 class="text-2xl font-extrabold text-white mt-1">Presente, Pasado Simple y Pasado Participio</h1>
+                    <p class="text-xs text-slate-400 mt-1">Haz clic en los iconos de audio para memorizar la pronunciación técnica exacta.</p>
+                </div>
+                <!-- Filter Toggle -->
+                <div class="flex items-center gap-2">
+                    <button onclick="filterVerbType('all')" id="btn-vfilter-all" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500 text-slate-950">Todos (20)</button>
+                    <button onclick="filterVerbType('irregular')" id="btn-vfilter-irreg" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700">Irregulares</button>
+                    <button onclick="filterVerbType('regular')" id="btn-vfilter-reg" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700">Regulares</button>
+                </div>
+            </div>
+
+            <!-- Table of Verbs -->
+            <div class="overflow-x-auto bg-slate-900/60 rounded-2xl border border-slate-800 shadow-xl">
+                <table class="w-full text-left text-xs sm:text-sm">
+                    <thead>
+                        <tr class="bg-slate-800/80 text-slate-400 font-bold uppercase tracking-wider border-b border-slate-700">
+                            <th class="py-3 px-4">Present (Base)</th>
+                            <th class="py-3 px-4">Past Simple</th>
+                            <th class="py-3 px-4">Past Participle</th>
+                            <th class="py-3 px-4">Español</th>
+                            <th class="py-3 px-4">Ejemplo en Taller</th>
+                        </tr>
+                    </thead>
+                    <tbody id="verb-table-body" class="divide-y divide-slate-800 text-slate-200">
+                        <!-- Populated dynamically via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- MODE 2: 3-TENSE MATCHER DRILL              -->
+        <!-- ========================================== -->
+        <section id="sec-drill" class="space-y-6 hidden">
+            <div class="border-b border-slate-800 pb-4">
+                <span class="text-xs font-bold text-cyan-400 uppercase tracking-widest">Ejercicio 2 · Transformación de Tiempos</span>
+                <h1 class="text-2xl font-extrabold text-white mt-1">Completa el Trío de Verbos</h1>
+                <p class="text-xs text-slate-400 mt-1">Ingresa el Pasado Simple y Pasado Participio correcto para el verbo presentado.</p>
+            </div>
+
+            <div class="max-w-2xl mx-auto bg-slate-800/90 rounded-2xl border border-slate-700 p-6 sm:p-8 space-y-6 shadow-2xl">
+                <!-- Target Verb Card -->
+                <div class="text-center space-y-2 bg-slate-900/80 p-6 rounded-2xl border border-slate-700">
+                    <span id="drill-badge-type" class="px-3 py-1 bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[10px] font-bold rounded-full uppercase tracking-wider">Verbo Irregular</span>
+                    <h2 id="drill-present-verb" class="text-4xl font-extrabold text-white tracking-wide">BREAK</h2>
+                    <p id="drill-spanish" class="text-sm text-cyan-300 font-medium">Romper / Quebrar</p>
+                    <p id="drill-context" class="text-xs text-slate-400 italic">"Over-tightening bolts will ______ the thread."</p>
+                </div>
+
+                <!-- Input Fields for Past & Past Participle -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-slate-300 uppercase tracking-wider block">1. Past Simple (Ayer...)</label>
+                        <input type="text" id="input-past" placeholder="ej. broke" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyan-500 font-mono">
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-slate-300 uppercase tracking-wider block">2. Past Participle (Ha sido...)</label>
+                        <input type="text" id="input-participle" placeholder="ej. broken" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-cyan-500 font-mono">
+                    </div>
+                </div>
+
+                <!-- Feedback Area -->
+                <div id="drill-feedback" class="hidden p-4 rounded-xl text-xs font-medium space-y-1"></div>
+
+                <!-- Buttons -->
+                <div class="flex items-center gap-3">
+                    <button onclick="checkDrillAnswer()" id="btn-check-drill" class="flex-1 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-extrabold rounded-xl text-sm transition-all shadow-lg shadow-cyan-500/20">
+                        Verificar Respuestas
+                    </button>
+                    <button onclick="loadNextDrill()" id="btn-next-drill" class="px-5 py-3 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl text-sm hidden">
+                        Siguiente <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- MODE 3: AUTOMOTIVE REPAIR LOG (PASSIVE VOICE) -->
+        <!-- ========================================== -->
+        <section id="sec-repair" class="space-y-6 hidden">
+            <div class="border-b border-slate-800 pb-4">
+                <span class="text-xs font-bold text-cyan-400 uppercase tracking-widest">Ejercicio 3 · Contexto de Taller Mecánico</span>
+                <h1 class="text-2xl font-extrabold text-white mt-1">Completa la Orden de Servicio</h1>
+                <p class="text-xs text-slate-400 mt-1">Aplica el **Pasado Participio** correcto para reportar trabajos completados al cliente.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: Question Console -->
+                <div class="lg:col-span-7 bg-slate-800/90 rounded-2xl border border-slate-700 p-6 space-y-6 shadow-xl">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono text-cyan-400 font-bold bg-cyan-500/10 px-2.5 py-1 rounded border border-cyan-500/20">
+                            WORK ORDER #8092
+                        </span>
+                        <span id="repair-q-counter" class="text-xs text-slate-400 font-mono">1 / 10</span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider">Caso de Diagnóstico:</h3>
+                        <p id="repair-scenario-text" class="text-sm text-slate-200 bg-slate-900/80 p-4 rounded-xl border border-slate-700/80 leading-relaxed">
+                            El técnico necesitó drenar el aceite quemado del motor antes de remover el filtro.
+                        </p>
+                    </div>
+
+                    <!-- Sentence Completion Box -->
+                    <div class="bg-slate-900 p-5 rounded-2xl border border-cyan-500/30 space-y-3">
+                        <span class="text-[11px] font-bold text-cyan-400 uppercase tracking-wider">Escribe la forma correcta del verbo entre paréntesis:</span>
+                        <p id="repair-sentence-prompt" class="text-base text-white font-medium leading-loose">
+                            "The old engine oil has been <span class="bg-slate-800 px-2 py-1 rounded border border-slate-700 text-amber-400 font-mono font-bold">[DRAIN]</span> completely."
+                        </p>
+                        <div class="flex gap-2">
+                            <input type="text" id="repair-user-input" placeholder="Escribe el pasado participio..." class="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-cyan-500 font-mono">
+                            <button onclick="checkRepairAnswer()" class="px-5 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold rounded-xl text-sm">
+                                Confirmar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="repair-feedback" class="hidden p-4 rounded-xl text-xs font-medium"></div>
+                </div>
+
+                <!-- Right: AI Sentence Doctor (Gemini) -->
+                <div class="lg:col-span-5 bg-slate-800/90 rounded-2xl border border-slate-700 p-6 space-y-4 shadow-xl flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-2 text-cyan-400">
+                            <i class="fa-solid fa-sparkles"></i>
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider">AI Work Order Doctor</h3>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Escribe una frase corta de reporte de taller usando cualquier verbo en pasado participio. Gemini AI evaluará tu precisión técnica en inglés.
+                        </p>
+                        <textarea id="ai-custom-sentence" rows="3" placeholder="Ej. The timing belt was replaced because it was cracked." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-cyan-500"></textarea>
+                    </div>
+
+                    <div class="space-y-3">
+                        <button onclick="evaluateCustomSentenceWithAI()" id="btn-ai-eval" class="w-full py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 text-xs font-extrabold rounded-xl shadow-lg shadow-cyan-500/20">
+                            <i class="fa-solid fa-microchip mr-1"></i> Evaluar con IA Gemini
+                        </button>
+                        <div id="ai-response-box" class="p-3 bg-slate-900 rounded-xl border border-slate-700 text-xs text-slate-300 min-h-[80px] flex items-center justify-center text-center italic">
+                            Tu evaluación aparecerá aquí...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- MODE 4: SPEED SPRINT CHALLENGE             -->
+        <!-- ========================================== -->
+        <section id="sec-sprint" class="space-y-6 hidden">
+            <div class="border-b border-slate-800 pb-4">
+                <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">Ejercicio 4 · Desafío de Velocidad</span>
+                <h1 class="text-2xl font-extrabold text-white mt-1">60 Seconds Verb Sprint</h1>
+                <p class="text-xs text-slate-400 mt-1">¿Cuántos pasados y participios puedes acertar antes de que se agote el tiempo?</p>
+            </div>
+
+            <div class="max-w-xl mx-auto bg-slate-800/90 rounded-2xl border border-slate-700 p-6 sm:p-8 space-y-6 text-center shadow-2xl relative overflow-hidden">
+                <!-- Sprint Header Stats -->
+                <div class="flex items-center justify-around bg-slate-900/80 p-4 rounded-xl border border-slate-700">
+                    <div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Tiempo</span>
+                        <span id="sprint-timer" class="text-3xl font-black text-amber-400 font-mono">60s</span>
+                    </div>
+                    <div class="h-8 w-px bg-slate-700"></div>
+                    <div>
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Puntaje</span>
+                        <span id="sprint-score" class="text-3xl font-black text-cyan-400 font-mono">0</span>
+                    </div>
+                </div>
+
+                <!-- Start Screen -->
+                <div id="sprint-start-card" class="space-y-4 py-6">
+                    <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center text-2xl mx-auto">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">¿Listo para el reto?</h3>
+                    <p class="text-xs text-slate-400 max-w-sm mx-auto">
+                        Selecciona la opción correcta en milisegundos para ganar multiplicadores de puntos.
+                    </p>
+                    <button onclick="startSpeedSprint()" class="px-8 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold rounded-xl text-sm shadow-lg shadow-amber-500/20 transition-all transform hover:scale-105">
+                        ¡Iniciar Sprint!
+                    </button>
+                </div>
+
+                <!-- Game Active Screen -->
+                <div id="sprint-game-card" class="space-y-6 hidden">
+                    <div class="space-y-1">
+                        <span id="sprint-prompt-target" class="text-xs font-bold text-cyan-400 uppercase tracking-widest">¿Cuál es el PASADO SIMPLE de...?</span>
+                        <h2 id="sprint-verb-word" class="text-3xl font-extrabold text-white font-mono">DRIVE</h2>
+                    </div>
+
+                    <!-- Multiple Choice Options -->
+                    <div id="sprint-options-grid" class="grid grid-cols-2 gap-3">
+                        <!-- Dynamic Buttons -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        /* =========================================================================
+           VERB DATABASE (20 Core Automotive Verbs)
+           ========================================================================= */
+        const VERBS_DATABASE = [
+            { id: 1, present: "Break", past: "Broke", participle: "Broken", spanish: "Romper / Quebrar", type: "irregular", ex: "The torque broke the bolt head." },
+            { id: 2, present: "Drive", past: "Drove", participle: "Driven", spanish: "Conducir / Probar", type: "irregular", ex: "The car was driven for 5 miles." },
+            { id: 3, present: "Weld", past: "Welded", participle: "Welded", spanish: "Soldar", type: "regular", ex: "The exhaust pipe has been welded." },
+            { id: 4, present: "Drain", past: "Drained", participle: "Drained", spanish: "Drenar / Purgar", type: "regular", ex: "The oil was completely drained." },
+            { id: 5, present: "Grind", past: "Ground", participle: "Ground", spanish: "Rectificar / Esmerilar", type: "irregular", ex: "The brake rotors were ground smooth." },
+            { id: 6, present: "Write", past: "Wrote", participle: "Written", spanish: "Escribir (Orden)", type: "irregular", ex: "The work order has been written." },
+            { id: 7, present: "Blow", past: "Blew", participle: "Blown", spanish: "Soplar / Fundir (Junta)", type: "irregular", ex: "The head gasket has blown." },
+            { id: 8, present: "Replace", past: "Replaced", participle: "Replaced", spanish: "Reemplazar", type: "regular", ex: "The spark plugs were replaced." },
+            { id: 9, present: "Inspect", past: "Inspected", participle: "Inspected", spanish: "Inspeccionar", type: "regular", ex: "The brakes have been inspected." },
+            { id: 10, present: "Wear", past: "Wore", participle: "Worn", spanish: "Desgastar", type: "irregular", ex: "The brake pads are severely worn." },
+            { id: 11, present: "Tighten", past: "Tightened", participle: "Tightened", spanish: "Apretar / Torquear", type: "regular", ex: "Lug nuts were tightened with a torque wrench." },
+            { id: 12, present: "Find", past: "Found", participle: "Found", spanish: "Encontrar (Falla)", type: "irregular", ex: "A fluid leak was found near the radiator." },
+            { id: 13, present: "Leak", past: "Leaked", participle: "Leaked", spanish: "Fugar / Derramar", type: "regular", ex: "Coolant has leaked from the hose." },
+            { id: 14, present: "Clean", past: "Cleaned", participle: "Cleaned", spanish: "Limpiar", type: "regular", ex: "The fuel injectors were cleaned." },
+            { id: 15, present: "Set", past: "Set", participle: "Set", spanish: "Ajustar / Configurar", type: "irregular", ex: "Tire pressure has been set to 35 PSI." },
+            { id: 16, present: "Run", past: "Ran", participle: "Run", spanish: "Funcionar / Encender", type: "irregular", ex: "The engine was run for 10 minutes." },
+            { id: 17, present: "Bend", past: "Bent", participle: "Bent", spanish: "Doblar / Deformar", type: "irregular", ex: "The valve was bent during compression." },
+            { id: 18, present: "Cut", past: "Cut", participle: "Cut", spanish: "Cortar", type: "irregular", ex: "The main wire was cut accidentally." },
+            { id: 19, present: "Adjust", past: "Adjusted", participle: "Adjusted", spanish: "Ajustar / Alinear", type: "regular", ex: "The clutch pedal was adjusted." },
+            { id: 20, present: "Align", past: "Aligned", participle: "Aligned", spanish: "Alinear", type: "regular", ex: "The front wheels have been aligned." }
+        ];
+
+        /* =========================================================================
+           STATE MANAGEMENT
+           ========================================================================= */
+        let streak = 0;
+        let masteredVerbs = new Set();
+        let currentDrillIndex = 0;
+        let currentFilter = 'all';
+
+        // Sprint State
+        let sprintTimerInterval = null;
+        let sprintTimeLeft = 60;
+        let sprintScore = 0;
+        let currentSprintVerb = null;
+        let currentSprintMode = 'past'; // 'past' or 'participle'
+
+        window.onload = function() {
+            renderGlossaryTable();
+            loadNextDrill();
+            loadNextRepairScenario();
+        };
+
+        function switchMode(mode) {
+            document.getElementById('sec-verbs').classList.add('hidden');
+            document.getElementById('sec-drill').classList.add('hidden');
+            document.getElementById('sec-repair').classList.add('hidden');
+            document.getElementById('sec-sprint').classList.add('hidden');
+
+            const tabs = ['verbs', 'drill', 'repair', 'sprint'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                btn.className = "py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all text-slate-400 hover:text-white hover:bg-slate-800";
+            });
+
+            document.getElementById(`sec-${mode}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${mode}`);
+            activeBtn.className = "py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shadow-md";
+        }
+
+        /* =========================================================================
+           AUDIO TTS HELPER
+           ========================================================================= */
+        function speakWord(word) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(word);
+                u.lang = 'en-US';
+                u.rate = 0.85;
+                window.speechSynthesis.speak(u);
+            }
+        }
+
+        /* =========================================================================
+           MODE 1: GLOSSARY RENDER
+           ========================================================================= */
+        function renderGlossaryTable() {
+            const tbody = document.getElementById('verb-table-body');
+            tbody.innerHTML = '';
+
+            const filtered = currentFilter === 'all' 
+                ? VERBS_DATABASE 
+                : VERBS_DATABASE.filter(v => v.type === currentFilter);
+
+            filtered.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-bold text-white font-mono">
+                        <div class="flex items-center gap-2">
+                            <button onclick="speakWord('${item.present}')" class="text-slate-500 hover:text-cyan-400">
+                                <i class="fa-solid fa-volume-high text-xs"></i>
+                            </button>
+                            <span>${item.present}</span>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4 font-mono text-cyan-300">
+                        <div class="flex items-center gap-2">
+                            <button onclick="speakWord('${item.past}')" class="text-slate-500 hover:text-cyan-400">
+                                <i class="fa-solid fa-volume-high text-xs"></i>
+                            </button>
+                            <span>${item.past}</span>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4 font-mono text-emerald-400 font-bold">
+                        <div class="flex items-center gap-2">
+                            <button onclick="speakWord('${item.participle}')" class="text-slate-500 hover:text-cyan-400">
+                                <i class="fa-solid fa-volume-high text-xs"></i>
+                            </button>
+                            <span>${item.participle}</span>
+                        </div>
+                    </td>
+                    <td class="py-3 px-4 text-slate-300 text-xs">${item.spanish}</td>
+                    <td class="py-3 px-4 text-xs italic text-slate-400 font-serif">"${item.ex}"</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterVerbType(type) {
+            currentFilter = type;
+            document.getElementById('btn-vfilter-all').className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700";
+            document.getElementById('btn-vfilter-irreg').className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700";
+            document.getElementById('btn-vfilter-reg').className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700";
+
+            if (type === 'all') document.getElementById('btn-vfilter-all').className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500 text-slate-950";
+            if (type === 'irregular') document.getElementById('btn-vfilter-irreg').className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500 text-slate-950";
+            if (type === 'regular') document.getElementById('btn-vfilter-reg').className = "px-3 py-1.5 rounded-lg text-xs font-bold bg-cyan-500 text-slate-950";
+
+            renderGlossaryTable();
+        }
+
+        /* =========================================================================
+           MODE 2: 3-TENSE MATCHER DRILL LOGIC
+           ========================================================================= */
+        function loadNextDrill() {
+            currentDrillIndex = Math.floor(Math.random() * VERBS_DATABASE.length);
+            const target = VERBS_DATABASE[currentDrillIndex];
+
+            document.getElementById('drill-present-verb').innerText = target.present.toUpperCase();
+            document.getElementById('drill-spanish').innerText = target.spanish;
+            document.getElementById('drill-context').innerText = `"${target.ex}"`;
+            document.getElementById('drill-badge-type').innerText = target.type === 'irregular' ? 'Verbo Irregular' : 'Verbo Regular';
+
+            document.getElementById('input-past').value = '';
+            document.getElementById('input-participle').value = '';
+            document.getElementById('drill-feedback').classList.add('hidden');
+            document.getElementById('btn-check-drill').classList.remove('hidden');
+            document.getElementById('btn-next-drill').classList.add('hidden');
+        }
+
+        function checkDrillAnswer() {
+            const target = VERBS_DATABASE[currentDrillIndex];
+            const userPast = document.getElementById('input-past').value.trim().toLowerCase();
+            const userParticiple = document.getElementById('input-participle').value.trim().toLowerCase();
+
+            const isPastOk = userPast === target.past.toLowerCase();
+            const isParticipleOk = userParticiple === target.participle.toLowerCase();
+
+            const feedback = document.getElementById('drill-feedback');
+            feedback.classList.remove('hidden');
+
+            if (isPastOk && isParticipleOk) {
+                feedback.className = "p-4 rounded-xl text-xs font-medium bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 space-y-1";
+                feedback.innerHTML = `
+                    <p class="font-bold"><i class="fa-solid fa-circle-check"></i> ¡Excelente! Respuestas correctas.</p>
+                    <p class="font-mono text-[11px]">${target.present} → ${target.past} → ${target.participle}</p>
+                `;
+                streak++;
+                masteredVerbs.add(target.id);
+                updateStats();
+
+                document.getElementById('btn-check-drill').classList.add('hidden');
+                document.getElementById('btn-next-drill').classList.remove('hidden');
+            } else {
+                streak = 0;
+                updateStats();
+                feedback.className = "p-4 rounded-xl text-xs font-medium bg-rose-500/10 border border-rose-500/30 text-rose-400 space-y-1";
+                feedback.innerHTML = `
+                    <p class="font-bold"><i class="fa-solid fa-circle-xmark"></i> Revisa la conjugación:</p>
+                    <p>• Past Simple esperado: <span class="font-mono text-white">${target.past}</span></p>
+                    <p>• Past Participle esperado: <span class="font-mono text-white">${target.participle}</span></p>
+                `;
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('stat-streak').innerText = streak;
+            document.getElementById('stat-mastered').innerText = `${masteredVerbs.size}/20`;
+        }
+
+        /* =========================================================================
+           MODE 3: REPAIR LOG & GEMINI AI DOCTOR
+           ========================================================================= */
+        let currentRepairIndex = 0;
+
+        function loadNextRepairScenario() {
+            currentRepairIndex = Math.floor(Math.random() * VERBS_DATABASE.length);
+            const target = VERBS_DATABASE[currentRepairIndex];
+
+            document.getElementById('repair-scenario-text').innerText = `Uso práctico en taller para el verbo "${target.present}" (${target.spanish}):`;
+            document.getElementById('repair-sentence-prompt').innerHTML = `
+                "The component has been <span class="bg-slate-800 px-2.5 py-1 rounded border border-slate-700 text-amber-400 font-mono font-bold">[${target.present.toUpperCase()}]</span> during service."
+            `;
+            document.getElementById('repair-user-input').value = '';
+            document.getElementById('repair-feedback').classList.add('hidden');
+        }
+
+        function checkRepairAnswer() {
+            const target = VERBS_DATABASE[currentRepairIndex];
+            const val = document.getElementById('repair-user-input').value.trim().toLowerCase();
+            const feedback = document.getElementById('repair-feedback');
+            feedback.classList.remove('hidden');
+
+            if (val === target.participle.toLowerCase()) {
+                feedback.className = "p-4 rounded-xl text-xs font-medium bg-emerald-500/10 border border-emerald-500/30 text-emerald-400";
+                feedback.innerText = `¡Correcto! "has been ${target.participle}" (Pasado participio para voz pasiva).`;
+                setTimeout(loadNextRepairScenario, 1800);
+            } else {
+                feedback.className = "p-4 rounded-xl text-xs font-medium bg-rose-500/10 border border-rose-500/30 text-rose-400";
+                feedback.innerText = `Incorrecto. El Pasado Participio de "${target.present}" es "${target.participle}".`;
+            }
+        }
+
+        async function evaluateCustomSentenceWithAI() {
+            const sentence = document.getElementById('ai-custom-sentence').value.trim();
+            const box = document.getElementById('ai-response-box');
+            const btn = document.getElementById('btn-ai-eval');
+
+            if (!sentence) {
+                box.innerText = "Escribe una oración primero.";
+                return;
+            }
+
+            btn.disabled = true;
+            box.innerHTML = '<div class="text-cyan-400"><i class="fa-solid fa-spinner animate-spin mr-1"></i> Evaluando gramática con Gemini...</div>';
+
+            const systemPrompt = "Act as an ESOL tutor for automotive mechanics. Evaluate the user's sentence for correct use of past participle and technical clarity in an auto shop environment. Reply in Spanish in 2 short bullet points.";
+            const userQuery = `Sentence: "${sentence}"`;
+
+            const apiKey = "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+            try {
+                const res = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: userQuery }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] }
+                    })
+                });
+                const data = await res.json();
+                const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "No se pudo obtener respuesta.";
+                box.className = "p-3 bg-slate-900 rounded-xl border border-slate-700 text-xs text-slate-200 text-left whitespace-pre-line";
+                box.innerText = reply;
+            } catch (err) {
+                box.innerText = "Error de conexión con la IA.";
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        /* =========================================================================
+           MODE 4: SPEED SPRINT GAME ENGINE
+           ========================================================================= */
+        function startSpeedSprint() {
+            document.getElementById('sprint-start-card').classList.add('hidden');
+            document.getElementById('sprint-game-card').classList.remove('hidden');
+
+            sprintScore = 0;
+            sprintTimeLeft = 60;
+            document.getElementById('sprint-score').innerText = '0';
+            document.getElementById('sprint-timer').innerText = '60s';
+
+            loadSprintQuestion();
+
+            sprintTimerInterval = setInterval(() => {
+                sprintTimeLeft--;
+                document.getElementById('sprint-timer').innerText = `${sprintTimeLeft}s`;
+
+                if (sprintTimeLeft <= 0) {
+                    clearInterval(sprintTimerInterval);
+                    finishSprintGame();
+                }
+            }, 1000);
+        }
+
+        function loadSprintQuestion() {
+            currentSprintVerb = VERBS_DATABASE[Math.floor(Math.random() * VERBS_DATABASE.length)];
+            currentSprintMode = Math.random() > 0.5 ? 'past' : 'participle';
+
+            const promptText = currentSprintMode === 'past' 
+                ? '¿Cuál es el PASADO SIMPLE de...?' 
+                : '¿Cuál es el PASADO PARTICIPIO de...?';
+
+            document.getElementById('sprint-prompt-target').innerText = promptText;
+            document.getElementById('sprint-verb-word').innerText = currentSprintVerb.present.toUpperCase();
+
+            // Generate options
+            const correctAnswer = currentSprintMode === 'past' ? currentSprintVerb.past : currentSprintVerb.participle;
+            
+            // Distractors
+            let options = [correctAnswer];
+            while (options.length < 4) {
+                const randomVerb = VERBS_DATABASE[Math.floor(Math.random() * VERBS_DATABASE.length)];
+                const candidate = Math.random() > 0.5 ? randomVerb.past : randomVerb.participle;
+                if (!options.includes(candidate)) {
+                    options.push(candidate);
+                }
+            }
+
+            // Shuffle
+            options.sort(() => Math.random() - 0.5);
+
+            const grid = document.getElementById('sprint-options-grid');
+            grid.innerHTML = '';
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "py-3 px-4 bg-slate-900 hover:bg-slate-700 text-white font-mono font-bold text-sm rounded-xl border border-slate-700 transition-all";
+                btn.innerText = opt;
+                btn.onclick = () => checkSprintOption(opt, correctAnswer);
+                grid.appendChild(btn);
+            });
+        }
+
+        function checkSprintOption(selected, correct) {
+            if (selected === correct) {
+                sprintScore += 10;
+                document.getElementById('sprint-score').innerText = sprintScore;
+                speakWord("Correct");
+            } else {
+                sprintScore = Math.max(0, sprintScore - 5);
+                document.getElementById('sprint-score').innerText = sprintScore;
+            }
+            loadSprintQuestion();
+        }
+
+        function finishSprintGame() {
+            document.getElementById('sprint-game-card').classList.add('hidden');
+            document.getElementById('sprint-start-card').classList.remove('hidden');
+            alert(`¡Tiempo terminado! Puntaje final alcanzado: ${sprintScore} puntos.`);
+        }
+    </script>
+</body>
+</html>
