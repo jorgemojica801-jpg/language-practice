@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOIZ Mechanics - EFL A1 Automotive English</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#0f172a',
+                            card: '#1e293b',
+                            border: '#334155',
+                            accent: '#06b6d4',
+                            emerald: '#10b981',
+                            pink: '#f43f5e'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        .glow-accent {
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
+        }
+        .glow-emerald {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06b6d4;
+        }
+        
+        /* Circular Timer SVG Animation */
+        .circle-bg {
+            fill: none;
+            stroke: #334155;
+            stroke-width: 8;
+        }
+        .circle-progress {
+            fill: none;
+            stroke: #06b6d4;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            transition: stroke-dashoffset 0.1s linear, stroke 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-900 text-slate-100 antialiased selection:bg-cyan-500 selection:text-slate-900">
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Brand Logo -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center font-black text-slate-950 text-xl tracking-wider shadow-lg shadow-cyan-500/20">
+                        VZ
+                    </div>
+                    <div>
+                        <span class="text-xl font-black tracking-tight bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">VOIZ</span>
+                        <span class="text-xs uppercase tracking-widest text-slate-400 block -mt-1 font-semibold">Mechanics A1</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex space-x-1 sm:space-x-2 bg-slate-950/60 p-1.5 rounded-xl border border-slate-800/80">
+                    <button onclick="switchTab('glossary')" id="tab-btn-glossary" class="nav-tab text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-cyan-400 bg-slate-800 shadow-sm">
+                        <i class="fa-solid fa-book"></i>
+                        <span>1. Glossary</span>
+                    </button>
+                    <button onclick="switchTab('grammar')" id="tab-btn-grammar" class="nav-tab text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                        <i class="fa-solid fa-diagram-project"></i>
+                        <span>2. Grammar</span>
+                    </button>
+                    <button onclick="switchTab('voiz')" id="tab-btn-voiz" class="nav-tab text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                        <i class="fa-solid fa-microphone"></i>
+                        <span>3. Voiz (25 Prompts)</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- SECTION 1: GLOSSARY -->
+        <section id="sec-glossary" class="space-y-6">
+            <!-- Header Banner -->
+            <div class="bg-gradient-to-r from-slate-800 via-slate-800/80 to-slate-900 border border-slate-700/60 rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-cyan-400 text-9xl pointer-events-none">
+                    <i class="fa-solid fa-gears"></i>
+                </div>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-3">
+                        A1 Automotive Vocabulary
+                    </span>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">Automotive Parts Glossary</h1>
+                    <p class="text-slate-400 text-sm sm:text-base">
+                        Aprende el vocabulario esencial para mecánica e ingeniería automotriz en nivel A1. Escucha la pronunciación nativa y revisa ejemplos reales.
+                    </p>
+                </div>
+
+                <!-- Controls Bar -->
+                <div class="mt-6 pt-6 border-t border-slate-700/50 flex flex-col sm:flex-row gap-4 items-center justify-between">
+                    <!-- Search Input -->
+                    <div class="relative w-full sm:w-80">
+                        <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="glossary-search" oninput="filterGlossary()" placeholder="Search part, definition, IPA..." class="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-500 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 outline-none transition-all">
+                    </div>
+
+                    <!-- Category Pills -->
+                    <div class="flex flex-wrap gap-2 w-full sm:w-auto" id="category-filters">
+                        <button onclick="setCategoryFilter('all')" class="cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500 text-slate-950 border border-cyan-400" data-cat="all">
+                            All (<span id="count-all">0</span>)
+                        </button>
+                        <button onclick="setCategoryFilter('Engine')" class="cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500" data-cat="Engine">
+                            Engine
+                        </button>
+                        <button onclick="setCategoryFilter('Electrical')" class="cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500" data-cat="Electrical">
+                            Electrical
+                        </button>
+                        <button onclick="setCategoryFilter('Suspension/Brakes')" class="cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500" data-cat="Suspension/Brakes">
+                            Suspension & Brakes
+                        </button>
+                        <button onclick="setCategoryFilter('Drivetrain')" class="cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500" data-cat="Drivetrain">
+                            Drivetrain
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cards Grid -->
+            <div id="glossary-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- SECTION 2: GRAMMAR IN PRACTICE -->
+        <section id="sec-grammar" class="space-y-8 hidden">
+            <!-- Header Banner -->
+            <div class="bg-gradient-to-r from-slate-800 via-slate-800/80 to-slate-900 border border-slate-700/60 rounded-2xl p-6 sm:p-8">
+                <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-3">
+                    EFL Grammar Framework
+                </span>
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">Grammar in Technical Context</h1>
+                <p class="text-slate-400 text-sm sm:text-base">
+                    Domina las 4 estructuras clave usadas en talleres y reportes técnicos: Present Simple, Past Simple, Future Simple y "Used to".
+                </p>
+            </div>
+
+            <!-- Grammar Structures Cards -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- 1. Present Simple -->
+                <div class="bg-slate-800/80 border border-slate-700/70 rounded-2xl p-6 flex flex-col justify-between hover:border-cyan-500/40 transition-all">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold text-cyan-400 uppercase tracking-widest bg-cyan-500/10 px-2.5 py-1 rounded-md border border-cyan-500/20">Habits & Technical Facts</span>
+                            <i class="fa-solid fa-arrows-rotate text-cyan-400 text-xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white mb-2">Present Simple</h2>
+                        <p class="text-slate-300 text-sm mb-4">Se usa para rutinas, hechos universales y funcionamiento permanente de componentes.</p>
+                        
+                        <!-- Formulas -->
+                        <div class="space-y-2 mb-6 text-xs bg-slate-950/70 p-3.5 rounded-xl border border-slate-800 font-mono">
+                            <div class="text-emerald-400"><span class="text-slate-500">[+]</span> Subject + Verb (s/es) + Object</div>
+                            <div class="text-rose-400"><span class="text-slate-500">[-]</span> Subject + do/does not + Verb + Object</div>
+                            <div class="text-cyan-400"><span class="text-slate-500">[?]</span> Do/Does + Subject + Verb + Object?</div>
+                        </div>
+
+                        <!-- Timeline SVG Diagram -->
+                        <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 mb-4">
+                            <div class="text-xs text-slate-400 font-medium mb-2 flex justify-between">
+                                <span>PAST</span>
+                                <span class="text-cyan-400 font-bold">PRESENT (PERMANENT)</span>
+                                <span>FUTURE</span>
+                            </div>
+                            <svg class="w-full h-12" viewBox="0 0 300 40">
+                                <line x1="10" y1="20" x2="290" y2="20" stroke="#334155" stroke-width="3" stroke-dasharray="4" />
+                                <circle cx="150" cy="20" r="8" fill="#06b6d4" />
+                                <circle cx="150" cy="20" r="14" fill="none" stroke="#06b6d4" stroke-width="2" opacity="0.6" />
+                                <path d="M 50 20 Q 150 5 250 20" fill="none" stroke="#06b6d4" stroke-width="2" stroke-dasharray="2" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-300 bg-slate-900/50 p-3 rounded-lg border border-slate-800">
+                        <strong class="text-cyan-400 block mb-1">Example:</strong>
+                        "The alternator <em>charges</em> the battery when the engine <em>runs</em>."
+                    </div>
+                </div>
+
+                <!-- 2. Past Simple -->
+                <div class="bg-slate-800/80 border border-slate-700/70 rounded-2xl p-6 flex flex-col justify-between hover:border-emerald-500/40 transition-all">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">Completed Actions</span>
+                            <i class="fa-solid fa-clock-rotate-left text-emerald-400 text-xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white mb-2">Past Simple</h2>
+                        <p class="text-slate-300 text-sm mb-4">Se usa para reparaciones finalizadas, inspecciones o eventos en un momento específico del pasado.</p>
+                        
+                        <!-- Formulas -->
+                        <div class="space-y-2 mb-6 text-xs bg-slate-950/70 p-3.5 rounded-xl border border-slate-800 font-mono">
+                            <div class="text-emerald-400"><span class="text-slate-500">[+]</span> Subject + Verb (-ed / irregular) + Object</div>
+                            <div class="text-rose-400"><span class="text-slate-500">[-]</span> Subject + did not + Verb (base) + Object</div>
+                            <div class="text-cyan-400"><span class="text-slate-500">[?]</span> Did + Subject + Verb (base) + Object?</div>
+                        </div>
+
+                        <!-- Timeline SVG Diagram -->
+                        <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 mb-4">
+                            <div class="text-xs text-slate-400 font-medium mb-2 flex justify-between">
+                                <span class="text-emerald-400 font-bold">FINISHED PAST</span>
+                                <span>PRESENT</span>
+                                <span>FUTURE</span>
+                            </div>
+                            <svg class="w-full h-12" viewBox="0 0 300 40">
+                                <line x1="10" y1="20" x2="290" y2="20" stroke="#334155" stroke-width="3" />
+                                <circle cx="60" cy="20" r="8" fill="#10b981" />
+                                <path d="M52 12 L68 28 M68 12 L52 28" stroke="#0f172a" stroke-width="2" />
+                                <circle cx="200" cy="20" r="5" fill="#475569" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-300 bg-slate-900/50 p-3 rounded-lg border border-slate-800">
+                        <strong class="text-emerald-400 block mb-1">Example:</strong>
+                        "The mechanic <em>replaced</em> the spark plugs yesterday morning."
+                    </div>
+                </div>
+
+                <!-- 3. Future Simple (Will & Going to) -->
+                <div class="bg-slate-800/80 border border-slate-700/70 rounded-2xl p-6 flex flex-col justify-between hover:border-amber-500/40 transition-all">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold text-amber-400 uppercase tracking-widest bg-amber-500/10 px-2.5 py-1 rounded-md border border-amber-500/20">Plans & Predictions</span>
+                            <i class="fa-solid fa-forward-fast text-amber-400 text-xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white mb-2">Future Simple</h2>
+                        <p class="text-slate-300 text-sm mb-4">Usamos <strong>Will</strong> para decisiones/promesas inmediatas y <strong>Going to</strong> para planes o servicios programados.</p>
+                        
+                        <!-- Formulas -->
+                        <div class="space-y-2 mb-6 text-xs bg-slate-950/70 p-3.5 rounded-xl border border-slate-800 font-mono">
+                            <div class="text-emerald-400"><span class="text-slate-500">[Will]</span> Subj + will + Verb + Object</div>
+                            <div class="text-amber-400"><span class="text-slate-500">[Going to]</span> Subj + am/is/are + going to + Verb</div>
+                        </div>
+
+                        <!-- Timeline SVG Diagram -->
+                        <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 mb-4">
+                            <div class="text-xs text-slate-400 font-medium mb-2 flex justify-between">
+                                <span>PAST</span>
+                                <span>PRESENT</span>
+                                <span class="text-amber-400 font-bold">FUTURE</span>
+                            </div>
+                            <svg class="w-full h-12" viewBox="0 0 300 40">
+                                <line x1="10" y1="20" x2="290" y2="20" stroke="#334155" stroke-width="3" />
+                                <circle cx="100" cy="20" r="5" fill="#475569" />
+                                <line x1="100" y1="20" x2="240" y2="20" stroke="#f59e0b" stroke-width="3" />
+                                <polygon points="240,14 255,20 240,26" fill="#f59e0b" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-300 bg-slate-900/50 p-3 rounded-lg border border-slate-800">
+                        <strong class="text-amber-400 block mb-1">Example:</strong>
+                        "We <em>are going to install</em> a new radiator tomorrow."
+                    </div>
+                </div>
+
+                <!-- 4. Used to -->
+                <div class="bg-slate-800/80 border border-slate-700/70 rounded-2xl p-6 flex flex-col justify-between hover:border-purple-500/40 transition-all">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-xs font-bold text-purple-400 uppercase tracking-widest bg-purple-500/10 px-2.5 py-1 rounded-md border border-purple-500/20">Past Habits / Contrast</span>
+                            <i class="fa-solid fa-history text-purple-400 text-xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white mb-2">Expression: "Used to"</h2>
+                        <p class="text-slate-300 text-sm mb-4">Se usa para hábitos o estados del pasado que <strong>ya no ocurren</strong> en el presente.</p>
+                        
+                        <!-- Formulas -->
+                        <div class="space-y-2 mb-6 text-xs bg-slate-950/70 p-3.5 rounded-xl border border-slate-800 font-mono">
+                            <div class="text-emerald-400"><span class="text-slate-500">[+]</span> Subject + used to + Verb (base)</div>
+                            <div class="text-rose-400"><span class="text-slate-500">[-]</span> Subject + didn't use to + Verb (base)</div>
+                        </div>
+
+                        <!-- Timeline SVG Diagram -->
+                        <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800 mb-4">
+                            <div class="text-xs text-slate-400 font-medium mb-2 flex justify-between">
+                                <span class="text-purple-400 font-bold">PAST HABIT (STOPPED)</span>
+                                <span class="text-slate-500">NOW (DIFFERENT)</span>
+                            </div>
+                            <svg class="w-full h-12" viewBox="0 0 300 40">
+                                <line x1="10" y1="20" x2="290" y2="20" stroke="#334155" stroke-width="3" />
+                                <rect x="30" y="14" width="90" height="12" rx="6" fill="#a855f7" opacity="0.8" />
+                                <line x1="130" y1="12" x2="130" y2="28" stroke="#ef4444" stroke-width="3" />
+                                <circle cx="220" cy="20" r="5" fill="#475569" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="text-xs text-slate-300 bg-slate-900/50 p-3 rounded-lg border border-slate-800">
+                        <strong class="text-purple-400 block mb-1">Contrast with Past Simple:</strong>
+                        "I <em>used to drive</em> an old truck, but yesterday I <em>bought</em> a modern EV."
+                    </div>
+                </div>
+            </div>
+
+            <!-- INTERACTIVE GRAMMAR CHECK QUIZ -->
+            <div class="bg-slate-800/90 border border-slate-700/80 rounded-2xl p-6 sm:p-8">
+                <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-700">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-cyan-400"></i> Interactive Grammar Check
+                        </h2>
+                        <p class="text-slate-400 text-sm">Pon a prueba tu comprensión de las reglas A1 aplicadas a mecánica.</p>
+                    </div>
+                    <div class="text-right">
+                        <span id="quiz-score" class="text-2xl font-black text-cyan-400">0 / 4</span>
+                        <span class="block text-xs text-slate-500 uppercase">Score</span>
+                    </div>
+                </div>
+
+                <div id="grammar-quiz-container" class="space-y-6">
+                    <!-- Dynamic Quiz Items -->
+                </div>
+
+                <div class="mt-6 flex justify-end">
+                    <button onclick="resetGrammarQuiz()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded-xl transition-all">
+                        <i class="fa-solid fa-rotate-right mr-1"></i> Reset Practice
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: VOIZ 25 SPEAKING PROMPTS -->
+        <section id="sec-voiz" class="space-y-8 hidden">
+            <!-- Header Banner -->
+            <div class="bg-gradient-to-r from-slate-800 via-slate-800/80 to-slate-900 border border-slate-700/60 rounded-2xl p-6 sm:p-8">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                    <div>
+                        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-3">
+                            Voiz Sprint Engine
+                        </span>
+                        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">25 Oral Practice Prompts</h1>
+                        <p class="text-slate-400 text-sm sm:text-base max-w-2xl">
+                            Entrena tu fluidez con sprints de audio de 10 segundos. Selecciona un prompt, revisa las palabras objetivo, graba tu voz y descarga el archivo de audio.
+                        </p>
+                    </div>
+
+                    <!-- Prompt Selector Quick Jump -->
+                    <div class="flex items-center gap-3 bg-slate-950/80 p-3 rounded-2xl border border-slate-800 shrink-0">
+                        <label for="prompt-select" class="text-xs font-bold text-slate-400 uppercase">Jump to:</label>
+                        <select id="prompt-select" onchange="jumpToPrompt(this.value)" class="bg-slate-900 border border-slate-700 text-cyan-400 font-bold rounded-xl px-3 py-1.5 text-sm outline-none focus:border-cyan-500">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROMPT SPRINT ENGINE ACTIVE DISPLAY -->
+            <div id="voiz-sprint-container" class="bg-gradient-to-b from-slate-800/90 to-slate-900/90 border border-cyan-500/30 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+                <div class="flex flex-col lg:flex-row gap-8 items-center lg:items-start">
+                    
+                    <!-- Left: Timer & Recording Control Panel -->
+                    <div class="w-full lg:w-80 flex flex-col items-center justify-center p-6 bg-slate-950/80 border border-slate-800 rounded-2xl shrink-0 text-center">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Sprint Timer</span>
+                        
+                        <!-- SVG Circular Timer -->
+                        <div class="relative w-40 h-40 flex items-center justify-center my-2">
+                            <svg class="w-full h-full" viewBox="0 0 100 100">
+                                <circle class="circle-bg" cx="50" cy="50" r="42"></circle>
+                                <circle id="timer-circle" class="circle-progress" cx="50" cy="50" r="42" stroke-dasharray="263.89" stroke-dashoffset="0"></circle>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span id="timer-display" class="text-4xl font-black text-white font-mono tracking-tighter">10.0</span>
+                                <span id="timer-status" class="text-[10px] uppercase tracking-widest font-bold text-cyan-400">READY</span>
+                            </div>
+                        </div>
+
+                        <!-- Action Controls -->
+                        <div class="w-full space-y-3 mt-4">
+                            <button id="record-btn" onclick="toggleSprintRecord()" class="w-full py-3 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-microphone text-base" id="record-btn-icon"></i>
+                                <span id="record-btn-text">Start 10s Sprint</span>
+                            </button>
+
+                            <!-- Audio Player & Download Controls for User Output -->
+                            <div id="audio-player-container" class="w-full hidden space-y-2 pt-2 border-t border-slate-800">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase block text-left">Your Recording:</label>
+                                <audio id="user-audio" controls class="w-full h-9 rounded-lg bg-slate-900 border border-slate-700"></audio>
+
+                                <!-- Clear Download Button -->
+                                <a id="download-audio-btn" download="voiz-sprint-recording.webm" class="w-full py-2.5 px-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-download"></i>
+                                    <span>Download Audio (.webm / .mp3)</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Prompt Details & Model Answer -->
+                    <div class="flex-grow space-y-6 w-full">
+                        <!-- Navigation Header -->
+                        <div class="flex items-center justify-between pb-4 border-b border-slate-700/80">
+                            <div class="flex items-center gap-3">
+                                <span id="prompt-number-badge" class="px-3 py-1 bg-cyan-500 text-slate-950 font-black text-sm rounded-lg">
+                                    Prompt #1
+                                </span>
+                                <span id="prompt-grammar-tag" class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">
+                                    Present Simple
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="navigatePrompt(-1)" class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-700 flex items-center justify-center">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+                                <button onclick="navigatePrompt(1)" class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-700 flex items-center justify-center">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Main Prompt Text -->
+                        <div>
+                            <h3 id="prompt-text" class="text-xl sm:text-2xl font-bold text-white leading-snug">
+                                <!-- Prompt content -->
+                            </h3>
+                        </div>
+
+                        <!-- Target Vocabulary Chips -->
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Target Vocabulary & Grammar:</h4>
+                            <div id="prompt-target-chips" class="flex flex-wrap gap-2">
+                                <!-- Target words chips -->
+                            </div>
+                        </div>
+
+                        <!-- Model Answer Collapsible -->
+                        <div class="pt-2">
+                            <button onclick="toggleModelAnswer()" class="w-full py-2.5 px-4 bg-slate-800/80 hover:bg-slate-800 border border-slate-700 rounded-xl text-left flex items-center justify-between text-xs font-bold text-cyan-400 transition-all">
+                                <span class="flex items-center gap-2">
+                                    <i class="fa-solid fa-lightbulb text-amber-400"></i> Model Reference Answer (A1 Level)
+                                </span>
+                                <i id="model-chevron" class="fa-solid fa-chevron-down transition-transform duration-200"></i>
+                            </button>
+                            <div id="model-answer-content" class="hidden mt-2 p-4 bg-slate-950/70 border border-slate-800 rounded-xl text-sm text-slate-300 leading-relaxed font-mono">
+                                <p id="prompt-model-answer"></p>
+                                <div class="mt-3 pt-2 border-t border-slate-800 flex justify-end">
+                                    <button onclick="speakText(document.getElementById('prompt-model-answer').innerText)" class="text-xs text-cyan-400 hover:underline flex items-center gap-1.5">
+                                        <i class="fa-solid fa-volume-high"></i> Listen Model Audio
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full List Preview Grid (25 items quick view) -->
+            <div>
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-cyan-400"></i> Complete Catalogue (25 Prompts)
+                </h3>
+                <div id="prompts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            <p>VOIZ Mechanics A1 - EFL Interactive Learning System &copy; 2026. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        /* ==========================================================================
+           1. DATA STRUCTURES (GLOSSARY, GRAMMAR QUIZ, 25 PROMPTS)
+           ========================================================================== */
+
+        const GLOSSARY_DATA = [
+            { id: 'engine', word: 'Engine', es: 'Motor', ipa: '/ˈendʒɪn/', category: 'Engine', def: 'The main part of a car that converts fuel into motion.', example: 'The engine starts smoothly every morning.' },
+            { id: 'camshaft', word: 'Camshaft', es: 'Árbol de levas', ipa: '/ˈkæm.ʃæft/', category: 'Engine', def: 'A rotating rod that opens and closes engine valves.', example: 'The camshaft controls valve timing.' },
+            { id: 'crankshaft', word: 'Crankshaft', es: 'Cigüeñal', ipa: '/ˈkræŋk.ʃæft/', category: 'Engine', def: 'A shaft that converts up-and-down piston motion into rotation.', example: 'The pistons turn the crankshaft.' },
+            { id: 'radiator', word: 'Radiator', es: 'Radiador', ipa: '/ˈreɪ.di.eɪ.tər/', category: 'Engine', def: 'A cooling system component that prevents the engine from overheating.', example: 'Check the water in the radiator.' },
+            { id: 'fuel_injector', word: 'Fuel Injector', es: 'Inyector de combustible', ipa: '/fjuːəl ɪnˈdʒek.tər/', category: 'Engine', def: 'A nozzle that sprays fuel directly into the engine cylinders.', example: 'Clean fuel injectors save gasoline.' },
+            { id: 'cylinder_head', word: 'Cylinder Head', es: 'Culata / Tapa de cilindros', ipa: '/ˈsɪl.ɪn.dər hed/', category: 'Engine', def: 'The top cover of the engine cylinders containing valves.', example: 'The mechanic inspected the cylinder head.' },
+            { id: 'piston', word: 'Piston', es: 'Pistón', ipa: '/ˈpɪs.tən/', category: 'Engine', def: 'A sliding cylinder part moved by combustion force.', example: 'Four pistons move up and down in this engine.' },
+            { id: 'turbocharger', word: 'Turbocharger', es: 'Turbocompresor', ipa: '/ˈtɜː.bəʊˌtʃɑː.dʒər/', category: 'Engine', def: 'A device that forces more air into the engine for power.', example: 'The turbocharger increases engine output.' },
+            { id: 'spark_plug', word: 'Spark Plug', es: 'Bujía', ipa: '/ˈspɑːk plʌɡ/', category: 'Electrical', def: 'A device that produces an electric spark to ignite fuel.', example: 'Change the spark plugs every 20,000 miles.' },
+            { id: 'alternator', word: 'Alternator', es: 'Alternador', ipa: '/ˈɒl.tə.neɪ.tər/', category: 'Electrical', def: 'A generator that charges the battery while driving.', example: 'A bad alternator stops charging the battery.' },
+            { id: 'battery', word: 'Battery', es: 'Batería', ipa: '/ˈbæt.ər.i/', category: 'Electrical', def: 'Stores electrical energy to start the engine.', example: 'The car battery is completely dead.' },
+            { id: 'suspension', word: 'Suspension', es: 'Suspensión', ipa: '/səˈspen.ʃən/', category: 'Suspension/Brakes', def: 'The system of springs and shocks that supports the car.', example: 'A soft suspension gives a comfortable ride.' },
+            { id: 'shock_absorbers', word: 'Shock Absorbers', es: 'Amortiguadores', ipa: '/ˈʃɒk əbˌzɔː.bəz/', category: 'Suspension/Brakes', def: 'Dampers that absorb road bumps and vibrations.', example: 'New shock absorbers keep the vehicle stable.' },
+            { id: 'brake_pad', word: 'Brake Pad', es: 'Pastilla de freno', ipa: '/ˈbreɪk pæd/', category: 'Suspension/Brakes', def: 'Friction pads pressed against discs to slow the car.', example: 'The brake pads need replacement soon.' },
+            { id: 'tire', word: 'Tire', es: 'Neumático / Lanta', ipa: '/taɪər/', category: 'Suspension/Brakes', def: 'The rubber ring around the wheel rim.', example: 'Inflate the tire to 32 PSI.' },
+            { id: 'steering_wheel', word: 'Steering Wheel', es: 'Volante / Timón', ipa: '/ˈstɪə.rɪŋ wiːl/', category: 'Drivetrain', def: 'The wheel controlled by the driver to turn the vehicle.', example: 'Hold the steering wheel with both hands.' },
+            { id: 'transmission', word: 'Transmission', es: 'Transmisión / Caja de cambios', ipa: '/trænzˈmɪʃ.ən/', category: 'Drivetrain', def: 'The gearbox that delivers power from engine to wheels.', example: 'This car has an automatic transmission.' },
+            { id: 'clutch', word: 'Clutch', es: 'Embrague / Clic', ipa: '/klʌtʃ/', category: 'Drivetrain', def: 'A pedal/mechanism to engage or disengage gears in manual cars.', example: 'Press the clutch pedal before changing gear.' },
+            { id: 'timing_belt', word: 'Timing Belt', es: 'Correa de distribución', ipa: '/ˈtaɪ.mɪŋ belt/', category: 'Engine', def: 'A rubber belt synchronizing crankshaft and camshaft.', example: 'Replace the timing belt to prevent engine damage.' },
+            { id: 'exhaust_pipe', word: 'Exhaust Pipe', es: 'Tubo de escape', ipa: '/ɪɡˈzɔːst paɪp/', category: 'Engine', def: 'The pipe through which burned gases leave the engine.', example: 'Smoke came out of the exhaust pipe.' }
+        ];
+
+        const GRAMMAR_QUIZ_DATA = [
+            {
+                q: 'Which sentence correctly uses Present Simple for a technical fact?',
+                options: [
+                    'The radiator cooled the engine yesterday.',
+                    'The radiator cools the engine during operation.',
+                    'The radiator is going to cool the engine.'
+                ],
+                correct: 1,
+                explanation: 'Present Simple ("cools") is used for permanent facts and functions.'
+            },
+            {
+                q: 'Select the correct Past Simple sentence for a finished repair:',
+                options: [
+                    'The technician repaired the fuel injector 2 hours ago.',
+                    'The technician repairs the fuel injector 2 hours ago.',
+                    'The technician used to repair the fuel injector 2 hours ago.'
+                ],
+                correct: 0,
+                explanation: 'Past Simple ("repaired") indicates a completed action at a specific past time.'
+            },
+            {
+                q: 'Which structure describes a past mechanical habit that NO LONGER happens?',
+                options: [
+                    'The car will use a carburetor.',
+                    'The car uses a carburetor.',
+                    'The car used to use a carburetor.'
+                ],
+                correct: 2,
+                explanation: '"Used to" expresses past states or habits that are no longer true.'
+            },
+            {
+                q: 'Identify the correct Future Simple plan for tomorrow:',
+                options: [
+                    'We replaced the shock absorbers tomorrow.',
+                    'We are going to replace the shock absorbers tomorrow.',
+                    'We used to replace the shock absorbers tomorrow.'
+                ],
+                correct: 1,
+                explanation: '"Are going to replace" expresses a planned future action.'
+            }
+        ];
+
+        const PROMPTS_DATA = [
+            { id: 1, text: 'Explain what the radiator does in the engine system.', cat: 'Present Simple', target: ['radiator', 'engine', 'cools'], model: 'The radiator cools the liquid in the engine to prevent overheating.' },
+            { id: 2, text: 'Describe what you replaced in the car yesterday.', cat: 'Past Simple', target: ['spark plug', 'battery', 'replaced'], model: 'Yesterday I replaced the old spark plug and tested the battery.' },
+            { id: 3, text: 'Talk about what fuel delivery system cars used to have in the past.', cat: 'Used to', target: ['fuel injector', 'used to', 'engine'], model: 'Cars used to use carburetors, but now every engine has a fuel injector.' },
+            { id: 4, text: 'Tell the client what service you are going to perform tomorrow.', cat: 'Future Simple', target: ['brake pad', 'going to', 'replace'], model: 'Tomorrow I am going to replace the front brake pads.' },
+            { id: 5, text: 'Describe how the alternator works while driving.', cat: 'Present Simple', target: ['alternator', 'battery', 'charges'], model: 'The alternator charges the car battery when the engine is running.' },
+            { id: 6, text: 'Explain a problem you fixed on the suspension last week.', cat: 'Past Simple', target: ['suspension', 'shock absorbers', 'fixed'], model: 'Last week I inspected the suspension and fixed the shock absorbers.' },
+            { id: 7, text: 'Describe how you used to change tires before having pneumatic tools.', cat: 'Used to', target: ['tire', 'used to', 'change'], model: 'I used to change every tire manually with a simple lug wrench.' },
+            { id: 8, text: 'State what action you will take if the engine light turns on.', cat: 'Future Simple', target: ['engine', 'will', 'check'], model: 'If the engine light comes on, I will check the error codes with a scanner.' },
+            { id: 9, text: 'Explain the relationship between pistons and the crankshaft.', cat: 'Present Simple', target: ['piston', 'crankshaft', 'turns'], model: 'The pistons move up and down and turn the crankshaft.' },
+            { id: 10, text: 'Report what happened to the timing belt during the test drive.', cat: 'Past Simple', target: ['timing belt', 'broke', 'stopped'], model: 'The timing belt broke during the test and the engine stopped immediately.' },
+            { id: 11, text: 'Describe how manual transmission cars used to dominate the market.', cat: 'Used to', target: ['transmission', 'clutch', 'used to'], model: 'Most drivers used to prefer manual transmission with a clutch pedal.' },
+            { id: 12, text: 'Announce the maintenance schedule for the turbocharger.', cat: 'Future Simple', target: ['turbocharger', 'will', 'inspect'], model: 'We will inspect the turbocharger during the next maintenance appointment.' },
+            { id: 13, text: 'Describe the main function of the steering wheel.', cat: 'Present Simple', target: ['steering wheel', 'controls', 'direction'], model: 'The driver uses the steering wheel to control the direction of the vehicle.' },
+            { id: 14, text: 'State what you checked under the cylinder head this morning.', cat: 'Past Simple', target: ['cylinder head', 'camshaft', 'checked'], model: 'This morning I removed the cylinder head and checked the camshaft.' },
+            { id: 15, text: 'Contrast how mechanics used to diagnose engines versus modern scanners.', cat: 'Used to', target: ['used to', 'listen', 'engine'], model: 'Mechanics used to listen to the engine, but today we use digital scanners.' },
+            { id: 16, text: 'Explain what you are going to do with the worn brake pads.', cat: 'Future Simple', target: ['brake pad', 'going to', 'recycle'], model: 'I am going to replace and recycle those worn brake pads.' },
+            { id: 17, text: 'Describe what comes out of the exhaust pipe when the engine is cold.', cat: 'Present Simple', target: ['exhaust pipe', 'engine', 'produces'], model: 'A cold engine produces clean water vapor from the exhaust pipe.' },
+            { id: 18, text: 'Recount when you installed a new set of shock absorbers.', cat: 'Past Simple', target: ['shock absorbers', 'installed', 'suspension'], model: 'I installed four new shock absorbers on the customer suspension on Tuesday.' },
+            { id: 19, text: 'Mention a component you used to struggle to repair as an apprentice.', cat: 'Used to', target: ['transmission', 'used to', 'repair'], model: 'I used to find automatic transmission systems very difficult to repair.' },
+            { id: 20, text: 'Predict if electric vehicles will replace traditional engines soon.', cat: 'Future Simple', target: ['engine', 'will', 'battery'], model: 'Electric battery systems will replace internal combustion engines in many cities.' },
+            { id: 21, text: 'Explain why the fuel injector needs clean gasoline.', cat: 'Present Simple', target: ['fuel injector', 'sprays', 'fuel'], model: 'The fuel injector sprays fine mist, so it requires clean fuel.' },
+            { id: 22, text: 'Describe what happened when the battery died yesterday.', cat: 'Past Simple', target: ['battery', 'alternator', 'failed'], model: 'The alternator failed yesterday, so the battery lost all charge.' },
+            { id: 23, text: 'Talk about where you used to store spare car parts.', cat: 'Used to', target: ['used to', 'keep', 'parts'], model: 'We used to keep all spare pistons and belts in the old workshop cabinet.' },
+            { id: 24, text: 'State when you are going to test the new camshaft installation.', cat: 'Future Simple', target: ['camshaft', 'going to', 'test'], model: 'We are going to test the camshaft performance at 3 PM today.' },
+            { id: 25, text: 'Summarize how the entire engine power system functions in one sentence.', cat: 'Present Simple', target: ['engine', 'crankshaft', 'transmission'], model: 'The engine generates power, turning the crankshaft and sending energy to the transmission.' }
+        ];
+
+        /* ==========================================================================
+           2. STATE & GLOBALS
+           ========================================================================== */
+        let currentTab = 'glossary';
+        let currentCategory = 'all';
+        let activePromptIndex = 0;
+        let quizAnswers = {};
+
+        // Audio & Sprint Recording Globals
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let timerInterval = null;
+        let remainingSeconds = 10.0;
+        let isRecording = false;
+
+        /* ==========================================================================
+           3. UI INITIALIZATION & TAB NAVIGATION
+           ========================================================================== */
+        window.onload = function() {
+            renderGlossary();
+            renderGrammarQuiz();
+            initPromptCatalogue();
+            loadPrompt(0);
+        };
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            const tabs = ['glossary', 'grammar', 'voiz'];
+            
+            tabs.forEach(t => {
+                const sec = document.getElementById(`sec-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                
+                if (t === tabId) {
+                    sec.classList.remove('hidden');
+                    btn.className = "nav-tab text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-cyan-400 bg-slate-800 shadow-sm";
+                } else {
+                    sec.classList.add('hidden');
+                    btn.className = "nav-tab text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50";
+                }
+            });
+
+            // Stop any active recording/timer when leaving Voiz tab
+            if (tabId !== 'voiz' && isRecording) {
+                stopSprintRecord();
+            }
+        }
+
+        /* ==========================================================================
+           4. SECTION 1: GLOSSARY LOGIC
+           ========================================================================== */
+        function renderGlossary() {
+            const grid = document.getElementById('glossary-grid');
+            const searchVal = document.getElementById('glossary-search').value.toLowerCase();
+            
+            const filtered = GLOSSARY_DATA.filter(item => {
+                const matchesCat = (currentCategory === 'all' || item.category === currentCategory);
+                const matchesSearch = item.word.toLowerCase().includes(searchVal) ||
+                                      item.es.toLowerCase().includes(searchVal) ||
+                                      item.def.toLowerCase().includes(searchVal) ||
+                                      item.ipa.toLowerCase().includes(searchVal);
+                return matchesCat && matchesSearch;
+            });
+
+            document.getElementById('count-all').innerText = GLOSSARY_DATA.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-slate-500">
+                        <i class="fa-solid fa-magnifying-glass text-4xl mb-3 block opacity-40"></i>
+                        No automotive parts found matching your criteria.
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(item => `
+                <div class="bg-slate-800/90 border border-slate-700/80 hover:border-cyan-500/50 rounded-2xl p-5 flex flex-col justify-between transition-all duration-200 group">
+                    <div>
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <div>
+                                <h3 class="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors">${item.word}</h3>
+                                <span class="text-xs font-medium text-emerald-400">${item.es}</span>
+                            </div>
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 bg-slate-900 border border-slate-700/80 px-2.5 py-1 rounded-md shrink-0">
+                                ${item.category}
+                            </span>
+                        </div>
+
+                        <!-- Phonetic IPA -->
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="font-mono text-xs text-cyan-300 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/50">${item.ipa}</span>
+                            <button onclick="speakText('${item.word}')" title="Listen Pronunciation" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-cyan-500 hover:text-slate-950 text-slate-200 flex items-center justify-center text-xs transition-all">
+                                <i class="fa-solid fa-volume-high"></i>
+                            </button>
+                        </div>
+
+                        <p class="text-xs text-slate-300 mb-3 leading-relaxed">${item.def}</p>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-700/60 bg-slate-950/40 -mx-5 -mb-5 p-4 rounded-b-2xl">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">In Context:</span>
+                        <p class="text-xs text-slate-300 italic font-serif">"${item.example}"</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterGlossary() {
+            renderGlossary();
+        }
+
+        function setCategoryFilter(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-filter-btn').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.className = "cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500 text-slate-950 border border-cyan-400";
+                } else {
+                    btn.className = "cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500";
+                }
+            });
+            renderGlossary();
+        }
+
+        // Web Speech API Text-to-Speech
+        function speakText(text) {
+            if (!('speechSynthesis' in window)) {
+                alert('Audio synthesis is not supported in this browser.');
+                return;
+            }
+            window.speechSynthesis.cancel(); // cancel previous
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        /* ==========================================================================
+           5. SECTION 2: GRAMMAR QUIZ LOGIC
+           ========================================================================== */
+        function renderGrammarQuiz() {
+            const container = document.getElementById('grammar-quiz-container');
+            container.innerHTML = GRAMMAR_QUIZ_DATA.map((item, idx) => `
+                <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-800 space-y-3" id="quiz-card-${idx}">
+                    <p class="text-sm font-semibold text-slate-200">${idx + 1}. ${item.q}</p>
+                    <div class="space-y-2">
+                        ${item.options.map((opt, optIdx) => `
+                            <button onclick="checkQuizAnswer(${idx}, ${optIdx})" class="quiz-opt-btn w-full text-left p-3 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700 transition-all flex items-center justify-between" id="quiz-btn-${idx}-${optIdx}">
+                                <span>${opt}</span>
+                                <i class="fa-regular fa-circle text-slate-500 quiz-icon"></i>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="quiz-feedback-${idx}" class="hidden p-3 rounded-lg text-xs font-medium"></div>
+                </div>
+            `).join('');
+        }
+
+        function checkQuizAnswer(qIdx, optIdx) {
+            const qData = GRAMMAR_QUIZ_DATA[qIdx];
+            const feedbackEl = document.getElementById(`quiz-feedback-${qIdx}`);
+            
+            // Lock options for this question
+            for (let i = 0; i < qData.options.length; i++) {
+                const btn = document.getElementById(`quiz-btn-${qIdx}-${i}`);
+                btn.disabled = true;
+                btn.classList.add('opacity-70', 'cursor-not-allowed');
+            }
+
+            quizAnswers[qIdx] = (optIdx === qData.correct);
+
+            const selectedBtn = document.getElementById(`quiz-btn-${qIdx}-${optIdx}`);
+            
+            if (optIdx === qData.correct) {
+                selectedBtn.classList.remove('bg-slate-800', 'border-slate-700');
+                selectedBtn.classList.add('bg-emerald-500/20', 'border-emerald-500/60', 'text-emerald-300');
+                selectedBtn.querySelector('.quiz-icon').className = 'fa-solid fa-circle-check text-emerald-400';
+                
+                feedbackEl.className = "p-3 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-500/30";
+                feedbackEl.innerHTML = `<i class="fa-solid fa-check-circle mr-1"></i> <strong>Correct!</strong> ${qData.explanation}`;
+            } else {
+                selectedBtn.classList.remove('bg-slate-800', 'border-slate-700');
+                selectedBtn.classList.add('bg-rose-500/20', 'border-rose-500/60', 'text-rose-300');
+                selectedBtn.querySelector('.quiz-icon').className = 'fa-solid fa-circle-xmark text-rose-400';
+
+                // Highlight correct
+                const correctBtn = document.getElementById(`quiz-btn-${qIdx}-${qData.correct}`);
+                correctBtn.classList.add('bg-emerald-500/20', 'border-emerald-500/60', 'text-emerald-300');
+
+                feedbackEl.className = "p-3 rounded-lg text-xs font-medium bg-rose-500/10 text-rose-300 border border-rose-500/30";
+                feedbackEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> <strong>Incorrect.</strong> ${qData.explanation}`;
+            }
+
+            feedbackEl.classList.remove('hidden');
+
+            // Update score
+            const score = Object.values(quizAnswers).filter(Boolean).length;
+            document.getElementById('quiz-score').innerText = `${score} / ${GRAMMAR_QUIZ_DATA.length}`;
+        }
+
+        function resetGrammarQuiz() {
+            quizAnswers = {};
+            document.getElementById('quiz-score').innerText = `0 / ${GRAMMAR_QUIZ_DATA.length}`;
+            renderGrammarQuiz();
+        }
+
+        /* ==========================================================================
+           6. SECTION 3: VOIZ SPEAKING PROMPTS & 10s SPRINT ENGINE
+           ========================================================================== */
+        function initPromptCatalogue() {
+            const select = document.getElementById('prompt-select');
+            const grid = document.getElementById('prompts-grid');
+
+            select.innerHTML = PROMPTS_DATA.map((p, idx) => `
+                <option value="${idx}">Prompt #${p.id} (${p.cat})</option>
+            `).join('');
+
+            grid.innerHTML = PROMPTS_DATA.map((p, idx) => `
+                <div onclick="selectPromptFromGrid(${idx})" class="p bg-slate-800/80 hover:bg-slate-800 border border-slate-700/70 hover:border-cyan-500/60 rounded-xl p-4 cursor-pointer transition-all flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-extrabold text-cyan-400">#${p.id}</span>
+                            <span class="text-[10px] font-semibold text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">${p.cat}</span>
+                        </div>
+                        <p class="text-xs font-medium text-slate-200 line-clamp-2 mb-3 group-hover:text-white transition-colors">${p.text}</p>
+                    </div>
+                    <div class="flex flex-wrap gap-1">
+                        ${p.target.slice(0, 2).map(t => `<span class="text-[9px] bg-slate-900 text-slate-400 px-1.5 py-0.5 rounded">${t}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectPromptFromGrid(idx) {
+            loadPrompt(idx);
+            // Scroll smoothly to sprint container
+            document.getElementById('voiz-sprint-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function loadPrompt(idx) {
+            activePromptIndex = idx;
+            const prompt = PROMPTS_DATA[idx];
+
+            document.getElementById('prompt-select').value = idx;
+            document.getElementById('prompt-number-badge').innerText = `Prompt #${prompt.id}`;
+            document.getElementById('prompt-grammar-tag').innerText = prompt.cat;
+            document.getElementById('prompt-text').innerText = `"${prompt.text}"`;
+
+            // Render Target Chips
+            const chips = document.getElementById('prompt-target-chips');
+            chips.innerHTML = prompt.target.map(word => `
+                <span class="px-2.5 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-medium text-xs rounded-lg">
+                    <i class="fa-solid fa-tag text-[10px] mr-1 text-cyan-400"></i> ${word}
+                </span>
+            `).join('');
+
+            // Model Answer
+            document.getElementById('prompt-model-answer').innerText = prompt.model;
+            document.getElementById('model-answer-content').classList.add('hidden');
+            document.getElementById('model-chevron').className = "fa-solid fa-chevron-down transition-transform duration-200";
+
+            // Reset recording state
+            resetSprintTimer();
+        }
+
+        function navigatePrompt(dir) {
+            let next = activePromptIndex + dir;
+            if (next < 0) next = PROMPTS_DATA.length - 1;
+            if (next >= PROMPTS_DATA.length) next = 0;
+            loadPrompt(next);
+        }
+
+        function jumpToPrompt(val) {
+            loadPrompt(parseInt(val));
+        }
+
+        function toggleModelAnswer() {
+            const content = document.getElementById('model-answer-content');
+            const chevron = document.getElementById('model-chevron');
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                chevron.className = "fa-solid fa-chevron-up transition-transform duration-200";
+            } else {
+                content.classList.add('hidden');
+                chevron.className = "fa-solid fa-chevron-down transition-transform duration-200";
+            }
+        }
+
+        /* ==========================================================================
+           7. WEB AUDIO API SOUND GENERATOR & SPRINT TIMER LOGIC
+           ========================================================================== */
+        // Synthesizer Beeps using Web Audio API
+        function playBeep(freq = 440, type = 'sine', duration = 0.15) {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = type;
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {
+                console.warn('Audio Context sound play error:', e);
+            }
+        }
+
+        function resetSprintTimer() {
+            if (isRecording) {
+                stopSprintRecord();
+            }
+            clearInterval(timerInterval);
+            remainingSeconds = 10.0;
+            updateTimerDisplay();
+            document.getElementById('timer-status').innerText = 'READY';
+            document.getElementById('timer-status').className = 'text-[10px] uppercase tracking-widest font-bold text-cyan-400';
+            
+            // Audio player & download link clear
+            document.getElementById('audio-player-container').classList.add('hidden');
+            const audioEl = document.getElementById('user-audio');
+            audioEl.src = '';
+            
+            const downloadBtn = document.getElementById('download-audio-btn');
+            downloadBtn.removeAttribute('href');
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timer-display').innerText = remainingSeconds.toFixed(1);
+            
+            // SVG Circle calculations (Circumference ~ 263.89)
+            const circle = document.getElementById('timer-circle');
+            const totalDash = 263.89;
+            const offset = totalDash - (remainingSeconds / 10.0) * totalDash;
+            circle.style.strokeDashoffset = offset;
+
+            // Color changes as time runs out
+            if (remainingSeconds <= 3.0 && remainingSeconds > 0) {
+                circle.style.stroke = '#f43f5e'; // Pink/Red warning
+            } else {
+                circle.style.stroke = '#06b6d4'; // Cyan normal
+            }
+        }
+
+        async function toggleSprintRecord() {
+            if (isRecording) {
+                stopSprintRecord();
+            } else {
+                await startSprintRecord();
+            }
+        }
+
+        async function startSprintRecord() {
+            // Request microphone access
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const mimeType = mediaRecorder.mimeType || 'audio/webm';
+                    const audioBlob = new Blob(audioChunks, { type: mimeType });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audioEl = document.getElementById('user-audio');
+                    audioEl.src = audioUrl;
+
+                    // Configure Download Link
+                    const downloadBtn = document.getElementById('download-audio-btn');
+                    const promptId = PROMPTS_DATA[activePromptIndex].id;
+                    downloadBtn.href = audioUrl;
+                    downloadBtn.download = `voiz-prompt-${promptId}-sprint.webm`;
+
+                    document.getElementById('audio-player-container').classList.remove('hidden');
+
+                    // Stop mic track
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+
+                // UI updates
+                document.getElementById('record-btn-text').innerText = 'Stop & Save';
+                document.getElementById('record-btn-icon').className = 'fa-solid fa-square text-rose-400 animate-pulse';
+                document.getElementById('record-btn').className = 'w-full py-3 px-4 rounded-xl font-bold text-sm bg-rose-600 hover:bg-rose-500 text-white shadow-lg transition-all flex items-center justify-center gap-2';
+                document.getElementById('timer-status').innerText = 'RECORDING...';
+                document.getElementById('timer-status').className = 'text-[10px] uppercase tracking-widest font-bold text-rose-400 animate-pulse';
+
+                // Countdown Timer Logic
+                remainingSeconds = 10.0;
+                playBeep(600, 'sine', 0.1); // Start beep
+
+                const intervalStep = 100; // ms
+                timerInterval = setInterval(() => {
+                    remainingSeconds -= (intervalStep / 1000);
+
+                    // Countdown warning beeps at 3, 2, 1 seconds
+                    if (Math.abs(remainingSeconds - 3.0) < 0.05 ||
+                        Math.abs(remainingSeconds - 2.0) < 0.05 ||
+                        Math.abs(remainingSeconds - 1.0) < 0.05) {
+                        playBeep(440, 'sine', 0.08);
+                    }
+
+                    if (remainingSeconds <= 0) {
+                        remainingSeconds = 0;
+                        updateTimerDisplay();
+                        playBeep(880, 'triangle', 0.4); // Final finish beep
+                        stopSprintRecord();
+                    } else {
+                        updateTimerDisplay();
+                    }
+                }, intervalStep);
+
+            } catch (err) {
+                console.error('Microphone error:', err);
+                alert('Microphone access is required to use the 10s Sprint Recorder.');
+            }
+        }
+
+        function stopSprintRecord() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            clearInterval(timerInterval);
+            isRecording = false;
+
+            // Reset UI controls
+            document.getElementById('record-btn-text').innerText = 'Start 10s Sprint';
+            document.getElementById('record-btn-icon').className = 'fa-solid fa-microphone text-base';
+            document.getElementById('record-btn').className = 'w-full py-3 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center gap-2';
+            
+            if (remainingSeconds <= 0) {
+                document.getElementById('timer-status').innerText = 'FINISHED!';
+                document.getElementById('timer-status').className = 'text-[10px] uppercase tracking-widest font-bold text-emerald-400';
+            } else {
+                document.getElementById('timer-status').innerText = 'STOPPED';
+                document.getElementById('timer-status').className = 'text-[10px] uppercase tracking-widest font-bold text-cyan-400';
+            }
+        }
+    </script>
+</body>
+</html>
