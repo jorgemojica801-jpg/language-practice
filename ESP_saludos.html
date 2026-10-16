@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOIZ Spanish - Saludos y Despedidas (A1-B1)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#0f172a',
+                            card: '#1e293b',
+                            border: '#334155',
+                            cyan: '#06b6d4',
+                            emerald: '#10b981',
+                            amber: '#f59e0b',
+                            rose: '#f43f5e',
+                            purple: '#8b5cf6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06b6d4;
+        }
+        
+        /* Circular Timer SVG Animation */
+        .circle-bg {
+            fill: none;
+            stroke: #334155;
+            stroke-width: 8;
+        }
+        .circle-progress {
+            fill: none;
+            stroke: #06b6d4;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            transition: stroke-dashoffset 0.1s linear, stroke 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-900 text-slate-100 antialiased selection:bg-cyan-500 selection:text-slate-900">
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Brand Logo -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-emerald-400 flex items-center justify-center font-black text-slate-950 text-xl tracking-wider shadow-lg shadow-cyan-500/20">
+                        VZ
+                    </div>
+                    <div>
+                        <span class="text-xl font-black tracking-tight bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">VOIZ</span>
+                        <span class="text-xs uppercase tracking-widest text-slate-400 block -mt-1 font-semibold">Spanish A1-B1</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex space-x-1 sm:space-x-2 bg-slate-950/60 p-1.5 rounded-xl border border-slate-800/80">
+                    <button onclick="switchTab('glossary')" id="tab-btn-glossary" class="nav-tab text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-cyan-400 bg-slate-800 shadow-sm">
+                        <i class="fa-solid fa-book"></i>
+                        <span>1. Glossary</span>
+                    </button>
+                    <button onclick="switchTab('grammar')" id="tab-btn-grammar" class="nav-tab text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                        <i class="fa-solid fa-diagram-project"></i>
+                        <span>2. Grammar</span>
+                    </button>
+                    <button onclick="switchTab('voiz')" id="tab-btn-voiz" class="nav-tab text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+                        <i class="fa-solid fa-microphone"></i>
+                        <span>3. Voiz (25 Prompts)</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- SECTION 1: GLOSSARY -->
+        <section id="sec-glossary" class="space-y-6">
+            <!-- Header Banner -->
+            <div class="bg-gradient-to-r from-slate-800 via-slate-800/80 to-slate-900 border border-slate-700/60 rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-10 text-cyan-400 text-9xl pointer-events-none">
+                    <i class="fa-solid fa-comments"></i>
+                </div>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-3">
+                        PDF Vocabulary Extraction
+                    </span>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">Saludos y Despedidas Glossary</h1>
+                    <p class="text-slate-400 text-sm sm:text-base">
+                        Master the 12 core expressions, time-sensitive greetings, and social registers from the PDF material. Listen to authentic Spanish audio output.
+                    </p>
+                </div>
+
+                <!-- Controls Bar -->
+                <div class="mt-6 pt-6 border-t border-slate-700/50 flex flex-col sm:flex-row gap-4 items-center justify-between">
+                    <!-- Search Input -->
+                    <div class="relative w-full sm:w-80">
+                        <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="glossary-search" oninput="filterGlossary()" placeholder="Search term, IPA, definition..." class="w-full bg-slate-950/80 border border-slate-700 focus:border-cyan-500 rounded-xl pl-10 pr-4 py-2 text-sm text-slate-200 placeholder-slate-500 outline-none transition-all">
+                    </div>
+
+                    <!-- Category Pills -->
+                    <div class="flex flex-wrap gap-2 w-full sm:w-auto" id="category-filters">
+                        <button onclick="setCategoryFilter('all')" class="cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500 text-slate-950 border border-cyan-400" data-cat="all">
+                            All (<span id="count-all">12</span>)
+                        </button>
+                        <button onclick="setCategoryFilter('Saludos')" class="cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500" data-cat="Saludos">
+                            Saludos
+                        </button>
+                        <button onclick="setCategoryFilter('Despedidas')" class="cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500" data-cat="Despedidas">
+                            Despedidas
+                        </button>
+                        <button onclick="setCategoryFilter('Gramática/Registro')" class="cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500" data-cat="Gramática/Registro">
+                            Gramática & Registro
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cards Grid -->
+            <div id="glossary-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- SECTION 2: GRAMMAR IN PRACTICE -->
+        <section id="sec-grammar" class="space-y-8 hidden">
+            <!-- Header Banner -->
+            <div class="bg-gradient-to-r from-slate-800 via-slate-800/80 to-slate-900 border border-slate-700/60 rounded-2xl p-6 sm:p-8">
+                <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-3">
+                    PDF Rules Analysis
+                </span>
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">Grammar & Social Register Matrix</h1>
+                <p class="text-slate-400 text-sm sm:text-base">
+                    Learn the exact rules for time-based greetings and master the fundamental contrast between <strong>Informal (Tú)</strong> and <strong>Formal (Usted)</strong>.
+                </p>
+            </div>
+
+            <!-- 1. TIME OF DAY SIMULATION & RULES -->
+            <div class="bg-slate-800/80 border border-slate-700/70 rounded-2xl p-6 sm:p-8 space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-700">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-clock text-cyan-400"></i> Time-of-Day Greetings Breakdown
+                        </h2>
+                        <p class="text-slate-400 text-xs sm:text-sm">Interactive clock selector based on Section 4 of the PDF worksheet.</p>
+                    </div>
+                    <!-- Time Interactive Simulator -->
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex items-center gap-4 shrink-0">
+                        <div>
+                            <span id="interactive-clock-display" class="text-xl font-mono font-black text-cyan-400">09:00 AM</span>
+                            <span id="interactive-greeting-label" class="block text-[10px] font-bold uppercase text-emerald-400">Buenos días</span>
+                        </div>
+                        <input type="range" id="time-slider" min="0" max="23" value="9" oninput="updateTimeSimulation(this.value)" class="w-32 accent-cyan-500 cursor-pointer">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <!-- Morning -->
+                    <div class="bg-slate-900/90 border border-slate-800 p-5 rounded-xl flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-amber-400 font-extrabold text-sm uppercase flex items-center gap-2">
+                                    <i class="fa-solid fa-sun"></i> Morning
+                                </span>
+                                <span class="text-[10px] font-mono text-slate-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">6:00 AM - 11:59 AM</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-1">Buenos días</h3>
+                            <p class="text-xs text-slate-400 mb-3">Used from morning sunrise until noon.</p>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-lg text-xs font-mono text-slate-300">
+                            <span class="text-amber-400">Ex:</span> "Buenos días, señor Miyamoto."
+                        </div>
+                    </div>
+
+                    <!-- Afternoon -->
+                    <div class="bg-slate-900/90 border border-slate-800 p-5 rounded-xl flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-cyan-400 font-extrabold text-sm uppercase flex items-center gap-2">
+                                    <i class="fa-solid fa-cloud-sun"></i> Afternoon
+                                </span>
+                                <span class="text-[10px] font-mono text-slate-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">12:00 PM - 5:59 PM</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-1">Buenas tardes</h3>
+                            <p class="text-xs text-slate-400 mb-3">Used from noon until dusk / early evening.</p>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-lg text-xs font-mono text-slate-300">
+                            <span class="text-cyan-400">Ex:</span> "Buenas tardes, señora Pérez."
+                        </div>
+                    </div>
+
+                    <!-- Evening / Night -->
+                    <div class="bg-slate-900/90 border border-slate-800 p-5 rounded-xl flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-purple-400 font-extrabold text-sm uppercase flex items-center gap-2">
+                                    <i class="fa-solid fa-moon"></i> Night / Evening
+                                </span>
+                                <span class="text-[10px] font-mono text-slate-400 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">6:00 PM - 5:59 AM</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-white mb-1">Buenas noches</h3>
+                            <p class="text-xs text-slate-400 mb-3">Used for both greeting at night and wishing good night before sleep.</p>
+                        </div>
+                        <div class="bg-slate-950/60 p-2.5 rounded-lg text-xs font-mono text-slate-300">
+                            <span class="text-purple-400">Ex:</span> "Buenas noches, Pedro. Descansa."
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. FORMAL VS INFORMAL MATRIX -->
+            <div class="bg-slate-800/80 border border-slate-700/70 rounded-2xl p-6 sm:p-8 space-y-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-scale-balanced text-emerald-400"></i> Social Register Contrast (Tú vs. Usted)
+                    </h2>
+                    <p class="text-slate-400 text-xs sm:text-sm">Derived from the PDF dialogues (Doctors, Bosses vs. Friends, Family).</p>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-300 border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-700 bg-slate-950/80 text-xs text-slate-400 uppercase tracking-wider">
+                                <th class="p-3 font-extrabold">Grammatical Category</th>
+                                <th class="p-3 font-extrabold text-cyan-400 bg-cyan-950/30">Informal (Tú) - Friends & Family</th>
+                                <th class="p-3 font-extrabold text-emerald-400 bg-emerald-950/30">Formal (Usted) - Authority & Elders</th>
+                            </div>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800 font-mono text-xs">
+                            <tr class="hover:bg-slate-800/40">
+                                <td class="p-3 font-bold text-slate-200">Greetings</td>
+                                <td class="p-3 text-cyan-300">¡Hola! / ¿Qué tal?</td>
+                                <td class="p-3 text-emerald-300">Buenos días / Buenas tardes</td>
+                            </tr>
+                            <tr class="hover:bg-slate-800/40">
+                                <td class="p-3 font-bold text-slate-200">Asking "How are you?"</td>
+                                <td class="p-3 text-cyan-300">¿Cómo estás? / ¿Cómo estás tú?</td>
+                                <td class="p-3 text-emerald-300">¿Cómo está usted? / ¿Cómo le va?</td>
+                            </tr>
+                            <tr class="hover:bg-slate-800/40">
+                                <td class="p-3 font-bold text-slate-200">Wishing a Good Day</td>
+                                <td class="p-3 text-cyan-300">Que teng<strong>as</strong> un buen día</td>
+                                <td class="p-3 text-emerald-300">Que teng<strong>a</strong> un buen día</td>
+                            </tr>
+                            <tr class="hover:bg-slate-800/40">
+                                <td class="p-3 font-bold text-slate-200">Casual Farewells</td>
+                                <td class="p-3 text-cyan-300">Chao / Nos vemos pronto</td>
+                                <td class="p-3 text-emerald-300">Hasta luego, Dr. Sánchez / Adiós, Sr. López</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- INTERACTIVE GRAMMAR PRACTICE QUIZ -->
+            <div class="bg-slate-800/90 border border-slate-700/80 rounded-2xl p-6 sm:p-8">
+                <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-700">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-cyan-400"></i> Interactive Verification Quiz
+                        </h2>
+                        <p class="text-slate-400 text-sm">Practice register corrections and time rules from Section 7 & 8 of the PDF.</p>
+                    </div>
+                    <div class="text-right">
+                        <span id="quiz-score" class="text-2xl font-black text-cyan-400">0 / 5</span>
+                        <span class="block text-xs text-slate-500 uppercase">Score</span>
+                    </div>
+                </div>
+
+                <div id="grammar-quiz-container" class="space-y-6">
+                    <!-- Dynamic Quiz Items -->
+                </div>
+
+                <div class="mt-6 flex justify-end">
+                    <button onclick="resetGrammarQuiz()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold rounded-xl transition-all">
+                        <i class="fa-solid fa-rotate-right mr-1"></i> Reset Practice
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: VOIZ 25 SPEAKING PROMPTS -->
+        <section id="sec-voiz" class="space-y-8 hidden">
+            <!-- Header Banner -->
+            <div class="bg-gradient-to-r from-slate-800 via-slate-800/80 to-slate-900 border border-slate-700/60 rounded-2xl p-6 sm:p-8">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                    <div>
+                        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-3">
+                            Voiz Sprint Engine (10s)
+                        </span>
+                        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">25 Oral Practice Prompts</h1>
+                        <p class="text-slate-400 text-sm sm:text-base max-w-2xl">
+                            Train your oral fluency. Select a prompt, practice register switching (Tú vs. Usted), record your 10-second sprint, and download your audio output.
+                        </p>
+                    </div>
+
+                    <!-- Prompt Selector Quick Jump -->
+                    <div class="flex items-center gap-3 bg-slate-950/80 p-3 rounded-2xl border border-slate-800 shrink-0">
+                        <label for="prompt-select" class="text-xs font-bold text-slate-400 uppercase">Prompt:</label>
+                        <select id="prompt-select" onchange="jumpToPrompt(this.value)" class="bg-slate-900 border border-slate-700 text-cyan-400 font-bold rounded-xl px-3 py-1.5 text-sm outline-none focus:border-cyan-500">
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROMPT SPRINT ENGINE ACTIVE DISPLAY -->
+            <div id="voiz-sprint-container" class="bg-gradient-to-b from-slate-800/90 to-slate-900/90 border border-cyan-500/30 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+                <div class="flex flex-col lg:flex-row gap-8 items-center lg:items-start">
+                    
+                    <!-- Left: Timer & Recording Control Panel -->
+                    <div class="w-full lg:w-80 flex flex-col items-center justify-center p-6 bg-slate-950/80 border border-slate-800 rounded-2xl shrink-0 text-center">
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">10-Second Sprint</span>
+                        
+                        <!-- SVG Circular Timer -->
+                        <div class="relative w-40 h-40 flex items-center justify-center my-2">
+                            <svg class="w-full h-full" viewBox="0 0 100 100">
+                                <circle class="circle-bg" cx="50" cy="50" r="42"></circle>
+                                <circle id="timer-circle" class="circle-progress" cx="50" cy="50" r="42" stroke-dasharray="263.89" stroke-dashoffset="0"></circle>
+                            </svg>
+                            <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                <span id="timer-display" class="text-4xl font-black text-white font-mono tracking-tighter">10.0</span>
+                                <span id="timer-status" class="text-[10px] uppercase tracking-widest font-bold text-cyan-400">READY</span>
+                            </div>
+                        </div>
+
+                        <!-- Action Controls -->
+                        <div class="w-full space-y-3 mt-4">
+                            <button id="record-btn" onclick="toggleSprintRecord()" class="w-full py-3 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-microphone text-base" id="record-btn-icon"></i>
+                                <span id="record-btn-text">Start 10s Sprint</span>
+                            </button>
+
+                            <!-- Audio Player & Download Controls for User Output -->
+                            <div id="audio-player-container" class="w-full hidden space-y-2 pt-2 border-t border-slate-800">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase block text-left">Your Speech Audio:</label>
+                                <audio id="user-audio" controls class="w-full h-9 rounded-lg bg-slate-900 border border-slate-700"></audio>
+
+                                <!-- Clear Download Button -->
+                                <a id="download-audio-btn" download="voiz-spanish-sprint.webm" class="w-full py-2.5 px-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-download"></i>
+                                    <span>Download Recording (.webm)</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Prompt Details & Model Answer -->
+                    <div class="flex-grow space-y-6 w-full">
+                        <!-- Navigation Header -->
+                        <div class="flex items-center justify-between pb-4 border-b border-slate-700/80">
+                            <div class="flex items-center gap-3">
+                                <span id="prompt-number-badge" class="px-3 py-1 bg-cyan-500 text-slate-950 font-black text-sm rounded-lg">
+                                    Prompt #1
+                                </span>
+                                <span id="prompt-grammar-tag" class="text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">
+                                    Formal (Usted)
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="navigatePrompt(-1)" class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-700 flex items-center justify-center">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+                                <button onclick="navigatePrompt(1)" class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-700 flex items-center justify-center">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Main Prompt Text -->
+                        <div>
+                            <h3 id="prompt-text" class="text-xl sm:text-2xl font-bold text-white leading-snug">
+                                <!-- Prompt content -->
+                            </h3>
+                        </div>
+
+                        <!-- Target Vocabulary Chips -->
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Target Vocabulary & Structure:</h4>
+                            <div id="prompt-target-chips" class="flex flex-wrap gap-2">
+                                <!-- Target words chips -->
+                            </div>
+                        </div>
+
+                        <!-- Model Answer Collapsible -->
+                        <div class="pt-2">
+                            <button onclick="toggleModelAnswer()" class="w-full py-2.5 px-4 bg-slate-800/80 hover:bg-slate-800 border border-slate-700 rounded-xl text-left flex items-center justify-between text-xs font-bold text-cyan-400 transition-all">
+                                <span class="flex items-center gap-2">
+                                    <i class="fa-solid fa-lightbulb text-amber-400"></i> Model Reference Answer (Spanish)
+                                </span>
+                                <i id="model-chevron" class="fa-solid fa-chevron-down transition-transform duration-200"></i>
+                            </button>
+                            <div id="model-answer-content" class="hidden mt-2 p-4 bg-slate-950/70 border border-slate-800 rounded-xl text-sm text-slate-300 leading-relaxed font-mono">
+                                <p id="prompt-model-answer"></p>
+                                <div class="mt-3 pt-2 border-t border-slate-800 flex justify-end">
+                                    <button onclick="speakText(document.getElementById('prompt-model-answer').innerText)" class="text-xs text-cyan-400 hover:underline flex items-center gap-1.5">
+                                        <i class="fa-solid fa-volume-high"></i> Listen Spanish Model Audio
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full List Preview Grid (25 items quick view) -->
+            <div>
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-cyan-400"></i> Catalogue Overview (25 Prompts)
+                </h3>
+                <div id="prompts-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            <p>VOIZ Spanish Learning System &copy; 2026. Based on PDF "Saludos y Despedidas". All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        /* ==========================================================================
+           1. DATA STRUCTURES (EXTRACTED FROM PDF + 25 PROMPTS)
+           ========================================================================== */
+
+        const GLOSSARY_DATA = [
+            { id: 'buenos_dias', word: 'Buenos días', es: 'Good morning', ipa: '/ˈbwe.nos ˈdi.as/', category: 'Saludos', def: 'Formal or informal greeting used from sunrise until 12:00 PM.', example: 'Buenos días, Sr. García. ¿Cómo está?' },
+            { id: 'buenas_tardes', word: 'Buenas tardes', es: 'Good afternoon', ipa: '/ˈbwe.nas ˈtaɾ.ðes/', category: 'Saludos', def: 'Greeting used from 12:00 PM until dusk (6:00 PM).', example: 'Buenas tardes, profesora. Me llamo Susana.' },
+            { id: 'buenas_noches', word: 'Buenas noches', es: 'Good evening / Good night', ipa: '/ˈbwe.nas ˈno.tʃes/', category: 'Saludos', def: 'Greeting used after 6:00 PM or as a farewell before sleeping.', example: 'Buenas noches, Pedro. Descansa.' },
+            { id: 'mucho_gusto', word: 'Mucho gusto', es: 'Nice to meet you', ipa: '/ˈmu.tʃo ˈɣus.to/', category: 'Saludos', def: 'Polite phrase spoken when introduced to someone for the first time.', example: 'Soy Juan. — Mucho gusto, soy Luis.' },
+            { id: 'hasta_luego', word: 'Hasta luego', es: 'See you later', ipa: '/ˈas.ta ˈlwe.ɣo/', category: 'Despedidas', def: 'Standard farewell phrase used when parting for a short period.', example: 'Hasta luego, Luis. Nos vemos pronto.' },
+            { id: 'que_tenga_un_buen_dia', word: 'Que tenga un buen día', es: 'Have a good day (Formal)', ipa: '/ke ˈteŋ.ɡa un bwen ˈdi.a/', category: 'Despedidas', def: 'Polite formal farewell wishing someone a good day using "Usted".', example: 'Que tenga un buen día, señor Miyamoto.' },
+            { id: 'chao', word: 'Chao', es: 'Bye / Ciao (Informal)', ipa: '/tʃa.o/', category: 'Despedidas', def: 'Informal farewell widely used among friends and family.', example: '¡Chao Mary! Nos vemos en el gimnasio.' },
+            { id: 'como_esta', word: '¿Cómo está?', es: 'How are you? (Formal)', ipa: '/ˈko.mo esˈta/', category: 'Gramática/Registro', def: 'Formal question asking about someone’s well-being using "Usted".', example: 'Buenas tardes, doctor. ¿Cómo está?' },
+            { id: 'usted', word: 'Usted (Tratamiento formal)', es: 'Formal You', ipa: '/usˈteð/', category: 'Gramática/Registro', def: 'Formal subject pronoun used for authority, elders, doctors, or strangers.', example: 'Estoy bien. Y usted, ¿cómo está?' },
+            { id: 'tu', word: 'Tú (Tratamiento informal)', es: 'Informal You', ipa: '/tu/', category: 'Gramática/Registro', def: 'Informal subject pronoun used for friends, peers, and family.', example: '¡Hola hijo! Muy bien, ¿y tú?' },
+            { id: 'nos_vemos', word: 'Nos vemos', es: 'See you', ipa: '/nos ˈbe.mos/', category: 'Despedidas', def: 'Casual farewell meaning "we will see each other".', example: 'Adiós, chicas. Nos vemos pronto.' },
+            { id: 'hasta_manana', word: 'Hasta mañana', es: 'See you tomorrow', ipa: '/ˈas.ta ma.ɲa.na/', category: 'Despedidas', def: 'Farewell used when expecting to meet again the next day.', example: 'Hasta mañana, Pedro. Que descanse.' }
+        ];
+
+        const GRAMMAR_QUIZ_DATA = [
+            {
+                q: 'At 2:30 PM, which greeting is grammatically correct?',
+                options: [
+                    'Buenos días',
+                    'Buenas tardes',
+                    'Buenas noches'
+                ],
+                correct: 1,
+                explanation: 'Buenas tardes is used between 12:00 PM and 6:00 PM.'
+            },
+            {
+                q: 'Identify the formal greeting to a doctor (Usted register):',
+                options: [
+                    '¿Cómo estás, doctor?',
+                    'Buenas tardes, doctor. ¿Cómo está usted?',
+                    '¡Chao, doctor!'
+                ],
+                correct: 1,
+                explanation: 'Formal register requires "¿Cómo está?" and formal greetings like "Buenas tardes".'
+            },
+            {
+                q: 'In Diálogo 7 of the PDF, what is the error in: "Pedro: Bien, ¿y tú?" spoken to Sr. Landon?',
+                options: [
+                    'Pedro should use formal "¿Y usted?" instead of informal "¿Y tú?".',
+                    'Pedro should say "Buenas noches".',
+                    'Sr. Landon shouldn\'t reply.'
+                ],
+                correct: 0,
+                explanation: 'Speaking to a boss or elder (Sr. Landon) requires the formal pronoun "usted".'
+            },
+            {
+                q: 'Select the correct formal farewell wishing a good day:',
+                options: [
+                    'Que tengas un buen día',
+                    'Que tenga un buen día',
+                    'Chao amigo'
+                ],
+                correct: 1,
+                explanation: '"Que tenga" uses the formal third-person subjunctive for "usted".'
+            },
+            {
+                q: 'Which pair represents an INFORMAL exchange between friends?',
+                options: [
+                    '— Buenas tardes, Sr. García. — Hasta luego, Sr. López.',
+                    '— ¡Hola Miguel! ¿Cómo estás? — ¡Hola! Muy bien, ¿y tú?',
+                    '— Buenos días, doctor. — Adiós, Jesús.'
+                ],
+                correct: 1,
+                explanation: '"¡Hola!" and "¿Cómo estás? / ¿y tú?" are strictly informal.'
+            }
+        ];
+
+        const PROMPTS_DATA = [
+            { id: 1, text: 'Greet your boss at 9:00 AM using the formal register.', cat: 'Formal (Usted)', target: ['Buenos días', 'usted', '¿Cómo está?'], model: 'Buenos días, señor Carlos. ¿Cómo está usted hoy?' },
+            { id: 2, text: 'Say goodbye to a close friend at the end of the day casually.', cat: 'Informal (Tú)', target: ['Chao', 'Nos vemos', 'hasta mañana'], model: '¡Chao Juan! Nos vemos pronto, hasta mañana.' },
+            { id: 3, text: 'Introduce yourself to a new colleague for the first time.', cat: 'Introductions', target: ['Me llamo', 'Mucho gusto', 'Soy'], model: 'Hola, buenas tardes. Me llamo Miguel. Mucho gusto.' },
+            { id: 4, text: 'Greet your doctor at 3:00 PM at the clinic.', cat: 'Formal (Usted)', target: ['Buenas tardes', 'doctor', '¿Cómo está?'], model: 'Buenas tardes, doctor. Estoy bien, gracias. ¿Y usted?' },
+            { id: 5, text: 'Wish your elderly neighbor a good day politely upon leaving.', cat: 'Formal (Usted)', target: ['Hasta luego', 'Que tenga', 'buen día'], model: 'Hasta luego, señora Pérez. Que tenga un muy buen día.' },
+            { id: 6, text: 'Greet your mother when arriving home in the evening.', cat: 'Informal (Tú)', target: ['¡Hola, mamá!', '¿cómo estás?', 'Buenas noches'], model: '¡Hola, mamá! Buenas noches. ¿Cómo estás tú?' },
+            { id: 7, text: 'Correct a colleague who used "tú" with the company director.', cat: 'Register Correction', target: ['formal', 'Usted', '¿Cómo está?'], model: 'Disculpa, con el director debemos usar usted y preguntar ¿Cómo está?' },
+            { id: 8, text: 'Say goodnight to your younger brother before going to sleep.', cat: 'Informal (Tú)', target: ['Buenas noches', 'descansa', 'hasta mañana'], model: 'Buenas noches, Pedro. Descansa. Hasta mañana.' },
+            { id: 9, text: 'Greet your teacher at 1:30 PM as class begins.', cat: 'Formal (Usted)', target: ['Buenas tardes', 'profesora', '¿Cómo está?'], model: 'Buenas tardes, profesora Marisa. ¿Cómo está usted?' },
+            { id: 10, text: 'Say goodbye to your classmates at 6:00 PM.', cat: 'Informal (Tú)', target: ['Adiós', 'nos vemos', 'chicas'], model: 'Adiós, chicas. Nos vemos pronto. ¡Que tengan buena tarde!' },
+            { id: 11, text: 'Greet a client named Mr. Miyamoto in the morning.', cat: 'Formal (Usted)', target: ['Buenos días', 'señor', 'Que tenga'], model: 'Buenos días, señor Miyamoto. Es un placer saludarle.' },
+            { id: 12, text: 'Ask your friend how they are doing and reply that you are fine.', cat: 'Informal (Tú)', target: ['¿Cómo estás?', 'Muy bien', '¿Y tú?'], model: '¡Hola! ¿Cómo estás? — Muy bien, gracias. ¿Y tú?' },
+            { id: 13, text: 'Greet someone at 8:00 PM at a dinner event.', cat: 'Time Rules', target: ['Buenas noches', 'Mucho gusto', 'señor'], model: 'Buenas noches a todos. Soy Luis, mucho gusto.' },
+            { id: 14, text: 'Wish your friend a good day using informal subjunctive.', cat: 'Informal (Tú)', target: ['Que tengas', 'buen día', 'chao'], model: '¡Chao Maria! Que tengas un excelente día.' },
+            { id: 15, text: 'Leave a business meeting at 5:00 PM politely.', cat: 'Formal (Usted)', target: ['Hasta luego', 'Buenas tardes', 'Que tengan'], model: 'Muchas gracias a todos. Hasta luego y que tengan buenas tardes.' },
+            { id: 16, text: 'Greet your fitness training partner at the gym.', cat: 'Informal (Tú)', target: ['¡Hola!', '¿Todo bien?', 'nos vemos'], model: '¡Hola Miguel! ¿Todo bien? Nos vemos en el entrenamiento.' },
+            { id: 17, text: 'State the rule for using "Buenas tardes" in Spanish.', cat: 'Grammar Rule', target: ['12 M', '6 PM', 'Buenas tardes'], model: 'Usamos buenas tardes desde las doce del mediodía hasta las seis de la tarde.' },
+            { id: 18, text: 'State the difference between "tú" and "usted".', cat: 'Grammar Rule', target: ['Tú es informal', 'Usted es formal', 'respeto'], model: 'Tú se usa con amigos y familia; usted se usa por respeto o formalidad.' },
+            { id: 19, text: 'Respond politely when introduced to Mr. García.', cat: 'Formal (Usted)', target: ['Mucho gusto', 'Sr. García', 'encantado'], model: 'Mucho gusto, señor García. Encantado de conocerlo.' },
+            { id: 20, text: 'Say see you tomorrow to your manager at 6:00 PM.', cat: 'Formal (Usted)', target: ['Hasta mañana', 'señor', 'Buenas noches'], model: 'Hasta mañana, señor López. Que pase buenas noches.' },
+            { id: 21, text: 'Greet your children in the morning before school.', cat: 'Informal (Tú)', target: ['Buenos días', 'hijos', '¿cómo están?'], model: '¡Buenos días, hijos! ¿Cómo están hoy?' },
+            { id: 22, text: 'Apologize for using informal register with a senior doctor.', cat: 'Register Correction', target: ['Perdón', 'usted', 'doctor'], model: 'Disculpe, doctor. Debí hablarle de usted. ¿Cómo está?' },
+            { id: 23, text: 'Tell a friend you will see them later today.', cat: 'Informal (Tú)', target: ['Hasta luego', 'nos vemos', 'más tarde'], model: 'Bueno, me voy al gimnasio. Hasta luego, nos vemos más tarde.' },
+            { id: 24, text: 'Greet a store cashier at 10:00 AM.', cat: 'Formal (Usted)', target: ['Buenos días', '¿qué tal?', 'gracias'], model: 'Buenos días. ¿Qué tal? Muchas gracias.' },
+            { id: 25, text: 'Summarize the 3 main greetings of the day in Spanish.', cat: 'Summary', target: ['Buenos días', 'Buenas tardes', 'Buenas noches'], model: 'Los tres saludos principales son: buenos días, buenas tardes y buenas noches.' }
+        ];
+
+        /* ==========================================================================
+           2. STATE & GLOBALS
+           ========================================================================== */
+        let currentTab = 'glossary';
+        let currentCategory = 'all';
+        let activePromptIndex = 0;
+        let quizAnswers = {};
+
+        // Audio & Sprint Recording Globals
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let timerInterval = null;
+        let remainingSeconds = 10.0;
+        let isRecording = false;
+
+        /* ==========================================================================
+           3. UI INITIALIZATION & TAB NAVIGATION
+           ========================================================================== */
+        window.onload = function() {
+            renderGlossary();
+            renderGrammarQuiz();
+            initPromptCatalogue();
+            loadPrompt(0);
+        };
+
+        function switchTab(tabId) {
+            currentTab = tabId;
+            const tabs = ['glossary', 'grammar', 'voiz'];
+            
+            tabs.forEach(t => {
+                const sec = document.getElementById(`sec-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                
+                if (t === tabId) {
+                    sec.classList.remove('hidden');
+                    btn.className = "nav-tab text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-cyan-400 bg-slate-800 shadow-sm";
+                } else {
+                    sec.classList.add('hidden');
+                    btn.className = "nav-tab text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50";
+                }
+            });
+
+            if (tabId !== 'voiz' && isRecording) {
+                stopSprintRecord();
+            }
+        }
+
+        /* ==========================================================================
+           4. SECTION 1: GLOSSARY LOGIC
+           ========================================================================== */
+        function renderGlossary() {
+            const grid = document.getElementById('glossary-grid');
+            const searchVal = document.getElementById('glossary-search').value.toLowerCase();
+            
+            const filtered = GLOSSARY_DATA.filter(item => {
+                const matchesCat = (currentCategory === 'all' || item.category === currentCategory);
+                const matchesSearch = item.word.toLowerCase().includes(searchVal) ||
+                                      item.es.toLowerCase().includes(searchVal) ||
+                                      item.def.toLowerCase().includes(searchVal) ||
+                                      item.ipa.toLowerCase().includes(searchVal);
+                return matchesCat && matchesSearch;
+            });
+
+            document.getElementById('count-all').innerText = GLOSSARY_DATA.length;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-slate-500">
+                        <i class="fa-solid fa-magnifying-glass text-4xl mb-3 block opacity-40"></i>
+                        No terms found matching your criteria.
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(item => `
+                <div class="bg-slate-800/90 border border-slate-700/80 hover:border-cyan-500/50 rounded-2xl p-5 flex flex-col justify-between transition-all duration-200 group">
+                    <div>
+                        <div class="flex items-start justify-between gap-2 mb-2">
+                            <div>
+                                <h3 class="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors">${item.word}</h3>
+                                <span class="text-xs font-medium text-emerald-400">${item.es}</span>
+                            </div>
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 bg-slate-900 border border-slate-700/80 px-2 py-1 rounded-md shrink-0">
+                                ${item.category}
+                            </span>
+                        </div>
+
+                        <!-- Phonetic IPA -->
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="font-mono text-xs text-cyan-300 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/50">${item.ipa}</span>
+                            <button onclick="speakText('${item.word}')" title="Listen Pronunciation" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-cyan-500 hover:text-slate-950 text-slate-200 flex items-center justify-center text-xs transition-all">
+                                <i class="fa-solid fa-volume-high"></i>
+                            </button>
+                        </div>
+
+                        <p class="text-xs text-slate-300 mb-3 leading-relaxed">${item.def}</p>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-700/60 bg-slate-950/40 -mx-5 -mb-5 p-4 rounded-b-2xl">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">In Context:</span>
+                        <p class="text-xs text-slate-300 italic font-serif">"${item.example}"</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterGlossary() {
+            renderGlossary();
+        }
+
+        function setCategoryFilter(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.cat-filter-btn').forEach(btn => {
+                if (btn.dataset.cat === cat) {
+                    btn.className = "cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500 text-slate-950 border border-cyan-400";
+                } else {
+                    btn.className = "cat-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-500";
+                }
+            });
+            renderGlossary();
+        }
+
+        // Web Speech API Text-to-Speech configured to Spanish
+        function speakText(text) {
+            if (!('speechSynthesis' in window)) {
+                alert('Audio synthesis is not supported in this browser.');
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'es-ES'; // Spanish speech synthesis
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        /* ==========================================================================
+           5. SECTION 2: GRAMMAR SIMULATION & QUIZ LOGIC
+           ========================================================================== */
+        function updateTimeSimulation(hour) {
+            const h = parseInt(hour);
+            let timeStr = "";
+            let greeting = "";
+            let colorClass = "";
+
+            if (h === 0) timeStr = "12:00 AM";
+            else if (h < 12) timeStr = `${h.toString().padStart(2, '0')}:00 AM`;
+            else if (h === 12) timeStr = "12:00 PM";
+            else timeStr = `${(h - 12).toString().padStart(2, '0')}:00 PM`;
+
+            if (h >= 6 && h < 12) {
+                greeting = "Buenos días";
+                colorClass = "text-amber-400";
+            } else if (h >= 12 && h < 18) {
+                greeting = "Buenas tardes";
+                colorClass = "text-cyan-400";
+            } else {
+                greeting = "Buenas noches";
+                colorClass = "text-purple-400";
+            }
+
+            document.getElementById('interactive-clock-display').innerText = timeStr;
+            const label = document.getElementById('interactive-greeting-label');
+            label.innerText = greeting;
+            label.className = `block text-[10px] font-bold uppercase ${colorClass}`;
+        }
+
+        function renderGrammarQuiz() {
+            const container = document.getElementById('grammar-quiz-container');
+            container.innerHTML = GRAMMAR_QUIZ_DATA.map((item, idx) => `
+                <div class="bg-slate-900/80 p-5 rounded-xl border border-slate-800 space-y-3" id="quiz-card-${idx}">
+                    <p class="text-sm font-semibold text-slate-200">${idx + 1}. ${item.q}</p>
+                    <div class="space-y-2">
+                        ${item.options.map((opt, optIdx) => `
+                            <button onclick="checkQuizAnswer(${idx}, ${optIdx})" class="quiz-opt-btn w-full text-left p-3 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-750 text-slate-300 border border-slate-700 transition-all flex items-center justify-between" id="quiz-btn-${idx}-${optIdx}">
+                                <span>${opt}</span>
+                                <i class="fa-regular fa-circle text-slate-500 quiz-icon"></i>
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="quiz-feedback-${idx}" class="hidden p-3 rounded-lg text-xs font-medium"></div>
+                </div>
+            `).join('');
+        }
+
+        function checkQuizAnswer(qIdx, optIdx) {
+            const qData = GRAMMAR_QUIZ_DATA[qIdx];
+            const feedbackEl = document.getElementById(`quiz-feedback-${qIdx}`);
+            
+            for (let i = 0; i < qData.options.length; i++) {
+                const btn = document.getElementById(`quiz-btn-${qIdx}-${i}`);
+                btn.disabled = true;
+                btn.classList.add('opacity-70', 'cursor-not-allowed');
+            }
+
+            quizAnswers[qIdx] = (optIdx === qData.correct);
+
+            const selectedBtn = document.getElementById(`quiz-btn-${qIdx}-${optIdx}`);
+            
+            if (optIdx === qData.correct) {
+                selectedBtn.classList.remove('bg-slate-800', 'border-slate-700');
+                selectedBtn.classList.add('bg-emerald-500/20', 'border-emerald-500/60', 'text-emerald-300');
+                selectedBtn.querySelector('.quiz-icon').className = 'fa-solid fa-circle-check text-emerald-400';
+                
+                feedbackEl.className = "p-3 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-500/30";
+                feedbackEl.innerHTML = `<i class="fa-solid fa-check-circle mr-1"></i> <strong>¡Correcto!</strong> ${qData.explanation}`;
+            } else {
+                selectedBtn.classList.remove('bg-slate-800', 'border-slate-700');
+                selectedBtn.classList.add('bg-rose-500/20', 'border-rose-500/60', 'text-rose-300');
+                selectedBtn.querySelector('.quiz-icon').className = 'fa-solid fa-circle-xmark text-rose-400';
+
+                const correctBtn = document.getElementById(`quiz-btn-${qIdx}-${qData.correct}`);
+                correctBtn.classList.add('bg-emerald-500/20', 'border-emerald-500/60', 'text-emerald-300');
+
+                feedbackEl.className = "p-3 rounded-lg text-xs font-medium bg-rose-500/10 text-rose-300 border border-rose-500/30";
+                feedbackEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation mr-1"></i> <strong>Incorrecto.</strong> ${qData.explanation}`;
+            }
+
+            feedbackEl.classList.remove('hidden');
+
+            const score = Object.values(quizAnswers).filter(Boolean).length;
+            document.getElementById('quiz-score').innerText = `${score} / ${GRAMMAR_QUIZ_DATA.length}`;
+        }
+
+        function resetGrammarQuiz() {
+            quizAnswers = {};
+            document.getElementById('quiz-score').innerText = `0 / ${GRAMMAR_QUIZ_DATA.length}`;
+            renderGrammarQuiz();
+        }
+
+        /* ==========================================================================
+           6. SECTION 3: VOIZ SPEAKING PROMPTS & 10s SPRINT ENGINE
+           ========================================================================== */
+        function initPromptCatalogue() {
+            const select = document.getElementById('prompt-select');
+            const grid = document.getElementById('prompts-grid');
+
+            select.innerHTML = PROMPTS_DATA.map((p, idx) => `
+                <option value="${idx}">Prompt #${p.id} (${p.cat})</option>
+            `).join('');
+
+            grid.innerHTML = PROMPTS_DATA.map((p, idx) => `
+                <div onclick="selectPromptFromGrid(${idx})" class="p bg-slate-800/80 hover:bg-slate-800 border border-slate-700/70 hover:border-cyan-500/60 rounded-xl p-4 cursor-pointer transition-all flex flex-col justify-between group">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-extrabold text-cyan-400">#${p.id}</span>
+                            <span class="text-[10px] font-semibold text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">${p.cat}</span>
+                        </div>
+                        <p class="text-xs font-medium text-slate-200 line-clamp-2 mb-3 group-hover:text-white transition-colors">${p.text}</p>
+                    </div>
+                    <div class="flex flex-wrap gap-1">
+                        ${p.target.slice(0, 2).map(t => `<span class="text-[9px] bg-slate-900 text-slate-400 px-1.5 py-0.5 rounded">${t}</span>`).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectPromptFromGrid(idx) {
+            loadPrompt(idx);
+            document.getElementById('voiz-sprint-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function loadPrompt(idx) {
+            activePromptIndex = idx;
+            const prompt = PROMPTS_DATA[idx];
+
+            document.getElementById('prompt-select').value = idx;
+            document.getElementById('prompt-number-badge').innerText = `Prompt #${prompt.id}`;
+            document.getElementById('prompt-grammar-tag').innerText = prompt.cat;
+            document.getElementById('prompt-text').innerText = `"${prompt.text}"`;
+
+            const chips = document.getElementById('prompt-target-chips');
+            chips.innerHTML = prompt.target.map(word => `
+                <span class="px-2.5 py-1 bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 font-medium text-xs rounded-lg">
+                    <i class="fa-solid fa-tag text-[10px] mr-1 text-cyan-400"></i> ${word}
+                </span>
+            `).join('');
+
+            document.getElementById('prompt-model-answer').innerText = prompt.model;
+            document.getElementById('model-answer-content').classList.add('hidden');
+            document.getElementById('model-chevron').className = "fa-solid fa-chevron-down transition-transform duration-200";
+
+            resetSprintTimer();
+        }
+
+        function navigatePrompt(dir) {
+            let next = activePromptIndex + dir;
+            if (next < 0) next = PROMPTS_DATA.length - 1;
+            if (next >= PROMPTS_DATA.length) next = 0;
+            loadPrompt(next);
+        }
+
+        function jumpToPrompt(val) {
+            loadPrompt(parseInt(val));
+        }
+
+        function toggleModelAnswer() {
+            const content = document.getElementById('model-answer-content');
+            const chevron = document.getElementById('model-chevron');
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                chevron.className = "fa-solid fa-chevron-up transition-transform duration-200";
+            } else {
+                content.classList.add('hidden');
+                chevron.className = "fa-solid fa-chevron-down transition-transform duration-200";
+            }
+        }
+
+        /* ==========================================================================
+           7. WEB AUDIO API SOUND GENERATOR & SPRINT TIMER LOGIC
+           ========================================================================== */
+        function playBeep(freq = 440, type = 'sine', duration = 0.15) {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = type;
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start();
+                osc.stop(ctx.currentTime + duration);
+            } catch (e) {
+                console.warn('Audio Context error:', e);
+            }
+        }
+
+        function resetSprintTimer() {
+            if (isRecording) {
+                stopSprintRecord();
+            }
+            clearInterval(timerInterval);
+            remainingSeconds = 10.0;
+            updateTimerDisplay();
+            document.getElementById('timer-status').innerText = 'READY';
+            document.getElementById('timer-status').className = 'text-[10px] uppercase tracking-widest font-bold text-cyan-400';
+            
+            document.getElementById('audio-player-container').classList.add('hidden');
+            const audioEl = document.getElementById('user-audio');
+            audioEl.src = '';
+            
+            const downloadBtn = document.getElementById('download-audio-btn');
+            downloadBtn.removeAttribute('href');
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timer-display').innerText = remainingSeconds.toFixed(1);
+            
+            const circle = document.getElementById('timer-circle');
+            const totalDash = 263.89;
+            const offset = totalDash - (remainingSeconds / 10.0) * totalDash;
+            circle.style.strokeDashoffset = offset;
+
+            if (remainingSeconds <= 3.0 && remainingSeconds > 0) {
+                circle.style.stroke = '#f43f5e';
+            } else {
+                circle.style.stroke = '#06b6d4';
+            }
+        }
+
+        async function toggleSprintRecord() {
+            if (isRecording) {
+                stopSprintRecord();
+            } else {
+                await startSprintRecord();
+            }
+        }
+
+        async function startSprintRecord() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const mimeType = mediaRecorder.mimeType || 'audio/webm';
+                    const audioBlob = new Blob(audioChunks, { type: mimeType });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audioEl = document.getElementById('user-audio');
+                    audioEl.src = audioUrl;
+
+                    const downloadBtn = document.getElementById('download-audio-btn');
+                    const promptId = PROMPTS_DATA[activePromptIndex].id;
+                    downloadBtn.href = audioUrl;
+                    downloadBtn.download = `voiz-spanish-prompt-${promptId}-sprint.webm`;
+
+                    document.getElementById('audio-player-container').classList.remove('hidden');
+
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+
+                document.getElementById('record-btn-text').innerText = 'Stop & Save';
+                document.getElementById('record-btn-icon').className = 'fa-solid fa-square text-rose-400 animate-pulse';
+                document.getElementById('record-btn').className = 'w-full py-3 px-4 rounded-xl font-bold text-sm bg-rose-600 hover:bg-rose-500 text-white shadow-lg transition-all flex items-center justify-center gap-2';
+                document.getElementById('timer-status').innerText = 'RECORDING...';
+                document.getElementById('timer-status').className = 'text-[10px] uppercase tracking-widest font-bold text-rose-400 animate-pulse';
+
+                remainingSeconds = 10.0;
+                playBeep(600, 'sine', 0.1);
+
+                const intervalStep = 100;
+                timerInterval = setInterval(() => {
+                    remainingSeconds -= (intervalStep / 1000);
+
+                    if (Math.abs(remainingSeconds - 3.0) < 0.05 ||
+                        Math.abs(remainingSeconds - 2.0) < 0.05 ||
+                        Math.abs(remainingSeconds - 1.0) < 0.05) {
+                        playBeep(440, 'sine', 0.08);
+                    }
+
+                    if (remainingSeconds <= 0) {
+                        remainingSeconds = 0;
+                        updateTimerDisplay();
+                        playBeep(880, 'triangle', 0.4);
+                        stopSprintRecord();
+                    } else {
+                        updateTimerDisplay();
+                    }
+                }, intervalStep);
+
+            } catch (err) {
+                console.error('Microphone access error:', err);
+                alert('Microphone access is required to use the 10s Sprint Recorder.');
+            }
+        }
+
+        function stopSprintRecord() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            clearInterval(timerInterval);
+            isRecording = false;
+
+            document.getElementById('record-btn-text').innerText = 'Start 10s Sprint';
+            document.getElementById('record-btn-icon').className = 'fa-solid fa-microphone text-base';
+            document.getElementById('record-btn').className = 'w-full py-3 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 shadow-lg shadow-cyan-500/20 transition-all flex items-center justify-center gap-2';
+            
+            if (remainingSeconds <= 0) {
+                document.getElementById('timer-status').innerText = 'FINISHED!';
+                document.getElementById('timer-status').className = 'text-[10px] uppercase tracking-widest font-bold text-emerald-400';
+            } else {
+                document.getElementById('timer-status').innerText = 'STOPPED';
+                document.getElementById('timer-status').className = 'text-[10px] uppercase tracking-widest font-bold text-cyan-400';
+            }
+        }
+    </script>
+</body>
+</html>
