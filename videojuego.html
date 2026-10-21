@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoEnglish Shooter - Speed Challenge</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow: hidden;
+            background-color: #0b0f19;
+        }
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        
+        /* Custom Arcade Effects */
+        .glow-text-cyan { text-shadow: 0 0 10px rgba(6, 182, 212, 0.7), 0 0 20px rgba(6, 182, 212, 0.4); }
+        .glow-text-yellow { text-shadow: 0 0 10px rgba(234, 179, 8, 0.7), 0 0 20px rgba(234, 179, 8, 0.4); }
+        .glow-text-red { text-shadow: 0 0 10px rgba(239, 68, 68, 0.7), 0 0 20px rgba(239, 68, 68, 0.4); }
+        .glow-text-timer { text-shadow: 0 0 12px rgba(244, 63, 94, 0.9); }
+        
+        .hud-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        #gameCanvas {
+            cursor: crosshair;
+        }
+
+        /* Screen Shake Animation */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        .shake {
+            animation: shake 0.25s cubic-bezier(.36,.07,.19,.97) both;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col justify-between text-white relative bg-slate-950">
+
+    <!-- Background Canvas for Grid & Particle FX -->
+    <canvas id="bgCanvas" class="absolute inset-0 z-0 pointer-events-none"></canvas>
+
+    <!-- Top HUD Navigation Bar -->
+    <header class="relative z-10 p-4 w-full max-w-7xl mx-auto flex justify-between items-center select-none pointer-events-none">
+        <div class="hud-card px-5 py-2.5 rounded-2xl flex items-center gap-4 pointer-events-auto">
+            <div>
+                <p class="text-xs text-cyan-400 font-semibold tracking-wider uppercase">Puntaje</p>
+                <p id="scoreDisplay" class="text-3xl font-orbitron font-bold text-yellow-400 glow-text-yellow">0</p>
+            </div>
+            <div class="h-8 w-px bg-slate-700"></div>
+            <div>
+                <p class="text-xs text-slate-400 uppercase">Máximo</p>
+                <p class="text-sm font-orbitron font-semibold text-slate-200">20,000</p>
+            </div>
+        </div>
+
+        <!-- Center Round Info & Combo -->
+        <div class="hud-card px-6 py-2 rounded-2xl text-center pointer-events-auto border-cyan-500/30">
+            <div class="text-xs text-slate-400 uppercase tracking-widest">PROGRESO VEHICULAR</div>
+            <div class="text-lg font-orbitron font-bold text-cyan-300">
+                PALABRA <span id="currentRoundText" class="text-yellow-400">1</span> / 20
+            </div>
+            <div class="w-36 bg-slate-800 h-2 rounded-full mt-1 overflow-hidden mx-auto border border-slate-700">
+                <div id="progressBar" class="bg-gradient-to-r from-cyan-500 to-yellow-400 h-full w-0 transition-all duration-300"></div>
+            </div>
+        </div>
+
+        <!-- 3-Second Timer & Multiplier -->
+        <div class="flex items-center gap-3 pointer-events-auto">
+            <div class="hud-card px-5 py-2 rounded-2xl text-center border-rose-500/40 bg-rose-950/20">
+                <p class="text-xs text-rose-400 uppercase font-bold tracking-wider">TIEMPO</p>
+                <p id="timerDisplay" class="text-2xl font-orbitron font-black text-rose-500 glow-text-timer">10.0s</p>
+            </div>
+            <div class="hud-card px-4 py-2.5 rounded-2xl text-center">
+                <p class="text-xs text-slate-400 uppercase">Combo</p>
+                <p id="comboDisplay" class="text-2xl font-orbitron font-bold text-cyan-400 glow-text-cyan">x1</p>
+            </div>
+            <button id="repeatAudioBtn" title="Escuchar de nuevo" class="hud-card p-3 rounded-2xl hover:bg-cyan-500/20 active:scale-95 transition flex items-center justify-center text-cyan-400 border-cyan-500/40">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Interactive Shooting Area -->
+    <main id="gameContainer" class="relative flex-1 w-full max-w-7xl mx-auto overflow-hidden my-2 rounded-3xl border border-slate-800/80 bg-slate-900/40 shadow-2xl flex flex-col justify-center items-center">
+        
+        <!-- Round Countdown Progress Bar -->
+        <div class="absolute top-0 left-0 right-0 h-1.5 bg-slate-800/80 z-20">
+            <div id="roundTimerBar" class="h-full bg-rose-500 w-full transition-none"></div>
+        </div>
+
+        <!-- Target Voice Word Display Header -->
+        <div class="absolute top-6 z-10 text-center pointer-events-none">
+            <p class="text-xs text-cyan-400 font-semibold tracking-widest uppercase mb-1">¡SÓLO 1 DISPARO Y 10 SEGUNDOS PARA RESPONDER!</p>
+            <div id="wordPrompt" class="text-3xl sm:text-4xl font-orbitron font-black text-white tracking-widest drop-shadow-[0_5px_15px_rgba(6,182,212,0.6)]">
+                LISTEN & SHOOT
+            </div>
+            <p id="phoneticHint" class="text-xs font-mono text-cyan-300/80 mt-1">[ Toca el parlante arriba si deseas repetir la pronunciación ]</p>
+        </div>
+
+        <!-- Canvas for Interactive Moving Targets & FX -->
+        <canvas id="gameCanvas" class="w-full h-full absolute inset-0 z-0"></canvas>
+
+        <!-- Overlay: Start Game -->
+        <div id="startOverlay" class="absolute inset-0 z-30 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center">
+            <div class="max-w-xl w-full hud-card p-8 rounded-3xl border-cyan-500/30 shadow-2xl relative overflow-hidden">
+                <div class="inline-block px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-xs font-semibold mb-4 border border-cyan-500/30">
+                    MODO DESAFÍO VELOZ
+                </div>
+                <h1 class="text-4xl font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-200 to-yellow-400 mb-2">
+                    AUTOENGLISH SHOOTER
+                </h1>
+                <p class="text-slate-300 text-sm mb-6 leading-relaxed">
+                    Escucha el término en inglés. Tienes **10 segundos y solo 1 disparo** por palabra. Si aciertas ganas 100 pts (más combo) e inmediatamente avanza. Si fallas o se acaba el tiempo, ¡se pierde el turno!
+                </p>
+
+                <div class="grid grid-cols-3 gap-3 mb-6 text-left text-xs bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                    <div class="flex flex-col items-center text-center">
+                        <span class="text-rose-400 font-bold text-base mb-1">10 seg</span>
+                        <span class="text-slate-400">Por Palabra</span>
+                    </div>
+                    <div class="flex flex-col items-center text-center border-x border-slate-800 px-2">
+                        <span class="text-yellow-400 font-bold text-base mb-1">1 Disparo</span>
+                        <span class="text-slate-400">Sin Oportunidades Extra</span>
+                    </div>
+                    <div class="flex flex-col items-center text-center">
+                        <span class="text-green-400 font-bold text-base mb-1">20,000</span>
+                        <span class="text-slate-400">Puntaje Máximo</span>
+                    </div>
+                </div>
+
+                <button id="startGameBtn" class="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-orbitron font-extrabold text-lg rounded-2xl shadow-lg shadow-cyan-500/30 transition-all hover:scale-[1.02] active:scale-95">
+                    INICIAR DESAFÍO (10 SEC)
+                </button>
+            </div>
+        </div>
+
+        <!-- Overlay: Results & Summary -->
+        <div id="resultsOverlay" class="hidden absolute inset-0 z-30 bg-slate-950/95 backdrop-blur-lg flex flex-col items-center justify-center p-6 text-center">
+            <div class="max-w-md w-full hud-card p-8 rounded-3xl border-yellow-500/30 shadow-2xl">
+                <div id="resultBadge" class="inline-block px-4 py-1.5 rounded-full text-xs font-bold font-orbitron mb-4 bg-yellow-500/20 text-yellow-400 border border-yellow-500/40">
+                    MISIÓN FINALIZADA
+                </div>
+                <h2 id="resultTitle" class="text-3xl font-black font-orbitron text-white mb-2">¡RESULTADOS!</h2>
+                <p id="resultSubtitle" class="text-slate-400 text-sm mb-6">Resumen de tu prueba de velocidad y vocabulario automotriz.</p>
+
+                <!-- Final Score Display -->
+                <div class="bg-slate-900/90 rounded-2xl p-6 border border-slate-800 mb-6 relative overflow-hidden">
+                    <p class="text-xs text-slate-400 uppercase tracking-widest mb-1">Puntuación Final</p>
+                    <div id="finalScore" class="text-5xl font-black font-orbitron text-yellow-400 glow-text-yellow">
+                        0
+                    </div>
+                    <p id="accuracyStat" class="text-xs text-cyan-400 mt-2 font-mono">Precisión: 0% | Aciertos: 0/20</p>
+                </div>
+
+                <div class="flex gap-3">
+                    <button id="restartGameBtn" class="w-full py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-orbitron font-bold rounded-xl transition shadow-lg shadow-cyan-500/20 active:scale-95">
+                        INTENTAR DE NUEVO
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer status & controls tip -->
+    <footer class="relative z-10 p-3 max-w-7xl mx-auto w-full flex justify-between items-center text-xs text-slate-400">
+        <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+            <span>Speed Mode: 10s timer / 1 shot strictly active</span>
+        </div>
+        <div>
+            Gemini TTS Engine Integrated
+        </div>
+    </footer>
+
+    <script>
+        /* 
+         * AUTOENGLISH SHOOTER - SPEED CHALLENGE ENGINE (10s Timer, 1 Shot)
+         */
+
+        // --- 1. GAME DATA & DICTIONARY (20 Technical Automotive Terms) ---
+        const VEHICLE_TERMS = [
+            { english: "Spark plug", spanish: "Bujía", distractors: ["Inyector de combustible", "Cigüeñal"] },
+            { english: "Brake pad", spanish: "Pastilla de freno", distractors: ["Disco de embrague", "Amortiguador"] },
+            { english: "Windshield", spanish: "Parabrisas", distractors: ["Capó del motor", "Guardabarros"] },
+            { english: "Radiator", spanish: "Radiador", distractors: ["Alternador", "Bomba de agua"] },
+            { english: "Steering wheel", spanish: "Volante / Timón", distractors: ["Palanca de cambios", "Eje de transmisión"] },
+            { english: "Clutch", spanish: "Embrague", distractors: ["Acelerador", "Diferencial"] },
+            { english: "Crankshaft", spanish: "Cigüeñal", distractors: ["Árbol de levas", "Pistón"] },
+            { english: "Timing belt", spanish: "Correa de distribución", distractors: ["Tubo de escape", "Manguera del radiador"] },
+            { english: "Exhaust pipe", spanish: "Tubo de escape", distractors: ["Filtro de aire", "Múltiple de admisión"] },
+            { english: "Shock absorber", spanish: "Amortiguador", distractors: ["Rótula de dirección", "Barra estabilizadora"] },
+            { english: "Gearbox", spanish: "Caja de cambios", distractors: ["Cárter de aceite", "Carburador"] },
+            { english: "Fuel pump", spanish: "Bomba de combustible", distractors: ["Bomba de aceite", "Termostato"] },
+            { english: "Headlight", spanish: "Farola / Faros", distractors: ["Espejo retrovisor", "Luz de freno"] },
+            { english: "Drive shaft", spanish: "Eje de transmisión", distractors: ["Cojinete de rueda", "Junta homocinética"] },
+            { english: "Battery", spanish: "Batería acumuladora", distractors: ["Alternador", "Fusible"] },
+            { english: "Piston", spanish: "Pistón", distractors: ["Biela", "Válvula de escape"] },
+            { english: "Dipstick", spanish: "Varilla del aceite", distractors: ["Tapa del combustible", "Filtro de aceite"] },
+            { english: "Alternator", spanish: "Alternador", distractors: ["Motor de arranque", "Distribuidor"] },
+            { english: "Bumper", spanish: "Parachoques", distractors: ["Chasis / Bastidor", "Guardafuegos"] },
+            { english: "Turbocharger", spanish: "Turbocompresor", distractors: ["Intercooler", "Múltiple de escape"] }
+        ];
+
+        // --- 2. GLOBAL GAME STATE ---
+        const gameState = {
+            currentRoundIndex: 0,
+            score: 0,
+            combo: 1,
+            hits: 0,
+            totalShots: 0,
+            isPlaying: false,
+            shotTaken: false, // Strictly 1 shot allowed per round
+            roundTimer: null,
+            timerRemaining: 10.0,
+            roundStartTime: 0,
+            roundTermsList: [],
+            targets: [],
+            particles: [],
+            floatingTexts: []
+        };
+
+        // --- 3. DOM & CANVAS SETUP ---
+        const gameContainer = document.getElementById('gameContainer');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const bgCanvas = document.getElementById('bgCanvas');
+        const bgCtx = bgCanvas.getContext('2d');
+
+        // HUD Elements
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const comboDisplay = document.getElementById('comboDisplay');
+        const currentRoundText = document.getElementById('currentRoundText');
+        const progressBar = document.getElementById('progressBar');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const roundTimerBar = document.getElementById('roundTimerBar');
+        const wordPrompt = document.getElementById('wordPrompt');
+        const phoneticHint = document.getElementById('phoneticHint');
+        const repeatAudioBtn = document.getElementById('repeatAudioBtn');
+
+        // Overlays
+        const startOverlay = document.getElementById('startOverlay');
+        const startGameBtn = document.getElementById('startGameBtn');
+        const resultsOverlay = document.getElementById('resultsOverlay');
+        const restartGameBtn = document.getElementById('restartGameBtn');
+        const finalScore = document.getElementById('finalScore');
+        const accuracyStat = document.getElementById('accuracyStat');
+
+        function resizeCanvas() {
+            const rect = gameContainer.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+            drawBackgroundGrid();
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        // --- 4. AUDIO & SPEECH SYNCHRONIZER SYSTEM ---
+        class SoundEffects {
+            constructor() {
+                this.ctx = null;
+            }
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+            playShoot() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.1);
+            }
+            playHit() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(520, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1040, this.ctx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.15);
+            }
+            playMiss() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(160, this.ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(70, this.ctx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.15);
+            }
+            playTimeout() {
+                if (!this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(110, this.ctx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.2);
+            }
+        }
+        const sfx = new SoundEffects();
+
+        class SpeechQueueManager {
+            constructor() {
+                this.currentAudio = null;
+            }
+
+            stop() {
+                if (this.currentAudio) {
+                    this.currentAudio.pause();
+                    this.currentAudio.currentTime = 0;
+                    this.currentAudio = null;
+                }
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                }
+            }
+
+            async speak(text) {
+                this.stop(); // Stop any previous sound immediately
+
+                try {
+                    const payload = {
+                        contents: [{
+                            parts: [{ text: `Say clearly in English: ${text}` }]
+                        }],
+                        generationConfig: {
+                            responseModalities: ["AUDIO"],
+                            speechConfig: {
+                                voiceConfig: {
+                                    prebuiltVoiceConfig: { voiceName: "Kore" }
+                                }
+                            }
+                        },
+                        model: "gemini-2.5-flash-preview-tts"
+                    };
+
+                    const apiKey = "";
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+                    const part = result?.candidates?.[0]?.content?.parts?.[0];
+                    const audioData = part?.inlineData?.data;
+                    const mimeType = part?.inlineData?.mimeType;
+
+                    if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                        const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                        const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 24000;
+                        const pcm16Data = base64ToInt16Array(audioData);
+                        const wavBlob = pcmToWavBlob(pcm16Data, sampleRate);
+                        const audioUrl = URL.createObjectURL(wavBlob);
+
+                        this.currentAudio = new Audio(audioUrl);
+                        await this.currentAudio.play();
+                    } else {
+                        this.fallbackWebSpeech(text);
+                    }
+                } catch (err) {
+                    this.fallbackWebSpeech(text);
+                }
+            }
+
+            fallbackWebSpeech(text) {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'en-US';
+                    utterance.rate = 0.9;
+                    window.speechSynthesis.speak(utterance);
+                }
+            }
+        }
+
+        const speechManager = new SpeechQueueManager();
+
+        function base64ToInt16Array(base64) {
+            const binaryString = atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return new Int16Array(bytes.buffer);
+        }
+
+        function pcmToWavBlob(pcm16, sampleRate) {
+            const numChannels = 1;
+            const bytesPerSample = 2;
+            const blockAlign = numChannels * bytesPerSample;
+            const byteRate = sampleRate * blockAlign;
+            const dataSize = pcm16.length * bytesPerSample;
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+
+            const writeString = (offset, str) => {
+                for (let i = 0; i < str.length; i++) {
+                    view.setUint8(offset + i, str.charCodeAt(i));
+                }
+            };
+
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + dataSize, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, dataSize, true);
+
+            for (let i = 0; i < pcm16.length; i++) {
+                view.setInt16(44 + i * 2, pcm16[i], true);
+            }
+
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+
+        // --- 5. TARGET OBJECT CLASS ---
+        class DynamicTarget {
+            constructor(id, text, isCorrect, roundLevel) {
+                this.id = id;
+                this.text = text;
+                this.isCorrect = isCorrect;
+                this.radius = 65;
+                this.destroyed = false;
+                
+                const padding = 110;
+                this.x = padding + Math.random() * (canvas.width - padding * 2);
+                this.y = padding + Math.random() * (canvas.height - padding * 2 - 120);
+
+                const baseSpeed = 1.8 + (roundLevel * 0.15);
+                const angle = Math.random() * Math.PI * 2;
+                this.vx = Math.cos(angle) * baseSpeed;
+                this.vy = Math.sin(angle) * baseSpeed;
+
+                this.pulse = Math.random() * Math.PI;
+            }
+
+            update() {
+                if (this.destroyed) return;
+
+                this.x += this.vx;
+                this.y += this.vy;
+
+                const topMargin = 130;
+                const bottomMargin = 40;
+
+                if (this.x - this.radius < 20 || this.x + this.radius > canvas.width - 20) {
+                    this.vx *= -1;
+                    this.x = Math.max(this.radius + 20, Math.min(canvas.width - this.radius - 20, this.x));
+                }
+                if (this.y - this.radius < topMargin || this.y + this.radius > canvas.height - bottomMargin) {
+                    this.vy *= -1;
+                    this.y = Math.max(this.radius + topMargin, Math.min(canvas.height - this.radius - bottomMargin, this.y));
+                }
+
+                this.pulse += 0.08;
+            }
+
+            draw(ctx) {
+                if (this.destroyed) return;
+
+                ctx.save();
+                ctx.translate(this.x, this.y);
+
+                const pulseRadius = this.radius + Math.sin(this.pulse) * 4;
+                ctx.beginPath();
+                ctx.arc(0, 0, pulseRadius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+                ctx.fill();
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = '#38bdf8';
+                ctx.shadowColor = '#06b6d4';
+                ctx.shadowBlur = 12;
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(0, 0, pulseRadius - 10, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.3)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
+                ctx.lineWidth = 2;
+                const notch = 12;
+                ctx.beginPath();
+                ctx.moveTo(-pulseRadius, 0); ctx.lineTo(-pulseRadius + notch, 0);
+                ctx.moveTo(pulseRadius, 0); ctx.lineTo(pulseRadius - notch, 0);
+                ctx.moveTo(0, -pulseRadius); ctx.lineTo(0, -pulseRadius + notch);
+                ctx.moveTo(0, pulseRadius); ctx.lineTo(0, pulseRadius - notch);
+                ctx.stroke();
+
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 15px "Rajdhani", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                const words = this.text.split(' ');
+                if (words.length > 2) {
+                    ctx.fillText(words.slice(0, 2).join(' '), 0, -8);
+                    ctx.fillText(words.slice(2).join(' '), 0, 10);
+                } else {
+                    ctx.fillText(this.text, 0, 0);
+                }
+
+                ctx.restore();
+            }
+
+            isHit(mx, my) {
+                if (this.destroyed) return false;
+                const dist = Math.hypot(mx - this.x, my - this.y);
+                return dist < this.radius;
+            }
+        }
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 2 + Math.random() * 5;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.life = 1.0;
+                this.decay = 0.03 + Math.random() * 0.03;
+                this.size = 3 + Math.random() * 3;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life -= this.decay;
+            }
+            draw(ctx) {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.life);
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        class FloatingText {
+            constructor(x, y, text, color) {
+                this.x = x;
+                this.y = y;
+                this.text = text;
+                this.color = color;
+                this.life = 1.0;
+                this.vy = -1.8;
+            }
+            update() {
+                this.y += this.vy;
+                this.life -= 0.03;
+            }
+            draw(ctx) {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.life);
+                ctx.font = 'bold 24px "Orbitron", sans-serif';
+                ctx.fillStyle = this.color;
+                ctx.textAlign = 'center';
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+                ctx.fillText(this.text, this.x, this.y);
+                ctx.restore();
+            }
+        }
+
+        // --- 6. GAME ENGINE LOGIC & FLOW ---
+        function drawBackgroundGrid() {
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            bgCtx.strokeStyle = 'rgba(30, 41, 59, 0.4)';
+            bgCtx.lineWidth = 1;
+            const gridSize = 40;
+
+            for (let x = 0; x < bgCanvas.width; x += gridSize) {
+                bgCtx.beginPath();
+                bgCtx.moveTo(x, 0);
+                bgCtx.lineTo(x, bgCanvas.height);
+                bgCtx.stroke();
+            }
+            for (let y = 0; y < bgCanvas.height; y += gridSize) {
+                bgCtx.beginPath();
+                bgCtx.moveTo(0, y);
+                bgCtx.lineTo(bgCanvas.width, y);
+                bgCtx.stroke();
+            }
+        }
+
+        function shuffleArray(arr) {
+            return arr.slice().sort(() => Math.random() - 0.5);
+        }
+
+        function startNewGame() {
+            stopRoundTimer();
+            speechManager.stop();
+            
+            gameState.score = 0;
+            gameState.combo = 1;
+            gameState.hits = 0;
+            gameState.totalShots = 0;
+            gameState.currentRoundIndex = 0;
+            gameState.isPlaying = true;
+            gameState.shotTaken = false;
+
+            gameState.roundTermsList = shuffleArray(VEHICLE_TERMS);
+
+            updateHUD();
+            startRound();
+            
+            startOverlay.classList.add('hidden');
+            resultsOverlay.classList.add('hidden');
+        }
+
+        function startRound() {
+            stopRoundTimer();
+            speechManager.stop();
+
+            if (gameState.currentRoundIndex >= gameState.roundTermsList.length) {
+                endGame();
+                return;
+            }
+
+            gameState.shotTaken = false; // Reset 1-shot limit lock
+            const currentData = gameState.roundTermsList[gameState.currentRoundIndex];
+            
+            wordPrompt.textContent = "???";
+            phoneticHint.textContent = "[ ¡DISPARA RÁPIDO! 10 SEGUNDOS EN RELOJ ]";
+
+            // Prepare target options
+            const options = [
+                { text: currentData.spanish, isCorrect: true },
+                { text: currentData.distractors[0], isCorrect: false },
+                { text: currentData.distractors[1], isCorrect: false }
+            ];
+            const shuffledOptions = shuffleArray(options);
+
+            // Create Dynamic Targets
+            gameState.targets = shuffledOptions.map((opt, i) => 
+                new DynamicTarget(i, opt.text, opt.isCorrect, gameState.currentRoundIndex + 1)
+            );
+
+            // Speak current English term
+            speechManager.speak(currentData.english);
+
+            updateHUD();
+            start10SecondTimer();
+        }
+
+        function start10SecondTimer() {
+            gameState.timerRemaining = 10.0;
+            gameState.roundStartTime = Date.now();
+
+            updateTimerDisplay(10.0);
+
+            clearInterval(gameState.roundTimer);
+            gameState.roundTimer = setInterval(() => {
+                const elapsed = (Date.now() - gameState.roundStartTime) / 1000;
+                gameState.timerRemaining = Math.max(0, 10.0 - elapsed);
+                
+                updateTimerDisplay(gameState.timerRemaining);
+
+                if (gameState.timerRemaining <= 0) {
+                    handleTimeout();
+                }
+            }, 50);
+        }
+
+        function stopRoundTimer() {
+            if (gameState.roundTimer) {
+                clearInterval(gameState.roundTimer);
+                gameState.roundTimer = null;
+            }
+        }
+
+        function updateTimerDisplay(seconds) {
+            timerDisplay.textContent = `${seconds.toFixed(1)}s`;
+            const pct = (seconds / 10.0) * 100;
+            roundTimerBar.style.width = `${pct}%`;
+
+            if (seconds <= 3.0) {
+                roundTimerBar.className = "h-full bg-red-600 w-full transition-none";
+            } else {
+                roundTimerBar.className = "h-full bg-rose-500 w-full transition-none";
+            }
+        }
+
+        function handleTimeout() {
+            if (gameState.shotTaken || !gameState.isPlaying) return;
+            gameState.shotTaken = true; // Lock shot
+            stopRoundTimer();
+            sfx.playTimeout();
+
+            gameState.combo = 1; // Reset combo multiplier
+            
+            gameContainer.classList.add('shake');
+            setTimeout(() => gameContainer.classList.remove('shake'), 250);
+
+            gameState.floatingTexts.push(
+                new FloatingText(canvas.width / 2, canvas.height / 2, `¡TIEMPO AGOTADO!`, '#ef4444')
+            );
+
+            // Immediately advance to next word
+            advanceToNextRoundImmediately();
+        }
+
+        function handleShot(e) {
+            // Strictly enforce 1 shot per round and block clicks when transitioning/not playing
+            if (!gameState.isPlaying || gameState.shotTaken) return;
+
+            gameState.shotTaken = true; // Instantly lock further shots for this round
+            stopRoundTimer();
+
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            gameState.totalShots++;
+            sfx.playShoot();
+
+            let hitTarget = null;
+            for (let i = gameState.targets.length - 1; i >= 0; i--) {
+                const target = gameState.targets[i];
+                if (target.isHit(mouseX, mouseY)) {
+                    hitTarget = target;
+                    break;
+                }
+            }
+
+            const currentData = gameState.roundTermsList[gameState.currentRoundIndex];
+
+            if (hitTarget && hitTarget.isCorrect) {
+                // --- ACCURATE SHOT (INMEDIATELY GIVES 100 PTS AND PASSES TO NEXT WORD) ---
+                sfx.playHit();
+                gameState.hits++;
+                
+                // Calculate Score: 100 base * combo multiplier
+                const gainedScore = 100 * gameState.combo;
+                gameState.score += gainedScore;
+
+                // Increase Combo Multiplier (Up to x10)
+                gameState.combo = Math.min(10, gameState.combo + 1);
+
+                // Visual FX
+                createExplosion(hitTarget.x, hitTarget.y, '#06b6d4');
+                gameState.floatingTexts.push(
+                    new FloatingText(hitTarget.x, hitTarget.y, `+${gainedScore}`, '#facc15')
+                );
+
+            } else {
+                // --- MISSED SHOT OR WRONG TARGET ---
+                sfx.playMiss();
+                gameState.combo = 1; // Reset combo
+                
+                gameContainer.classList.add('shake');
+                setTimeout(() => gameContainer.classList.remove('shake'), 250);
+
+                if (hitTarget) {
+                    createExplosion(hitTarget.x, hitTarget.y, '#ef4444');
+                    gameState.floatingTexts.push(
+                        new FloatingText(hitTarget.x, hitTarget.y, `¡INCORRECTO!`, '#ef4444')
+                    );
+                } else {
+                    gameState.floatingTexts.push(
+                        new FloatingText(mouseX, mouseY, `¡FALLO!`, '#ef4444')
+                    );
+                }
+            }
+
+            updateHUD();
+
+            // Immediate transition to the next word
+            advanceToNextRoundImmediately();
+        }
+
+        function advanceToNextRoundImmediately() {
+            gameState.currentRoundIndex++;
+            setTimeout(() => {
+                startRound();
+            }, 300); // Brief 300ms delay to register visual shot/particle feedback
+        }
+
+        function updateHUD() {
+            scoreDisplay.textContent = gameState.score.toLocaleString();
+            comboDisplay.textContent = `x${gameState.combo}`;
+            currentRoundText.textContent = Math.min(20, gameState.currentRoundIndex + 1);
+            
+            const pct = ((gameState.currentRoundIndex) / 20) * 100;
+            progressBar.style.width = `${pct}%`;
+        }
+
+        function createExplosion(x, y, color) {
+            for (let i = 0; i < 25; i++) {
+                gameState.particles.push(new Particle(x, y, color));
+            }
+        }
+
+        function endGame() {
+            stopRoundTimer();
+            speechManager.stop();
+            gameState.isPlaying = false;
+            
+            const accuracy = gameState.totalShots > 0 
+                ? Math.round((gameState.hits / gameState.totalShots) * 100) 
+                : 0;
+
+            finalScore.textContent = gameState.score.toLocaleString();
+            accuracyStat.textContent = `Precisión: ${accuracy}% | Aciertos: ${gameState.hits}/20`;
+
+            resultsOverlay.classList.remove('hidden');
+        }
+
+        // --- 7. MAIN RENDER LOOP ---
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (gameState.isPlaying) {
+                gameState.targets.forEach(target => {
+                    target.update();
+                    target.draw(ctx);
+                });
+
+                for (let i = gameState.particles.length - 1; i >= 0; i--) {
+                    const p = gameState.particles[i];
+                    p.update();
+                    p.draw(ctx);
+                    if (p.life <= 0) gameState.particles.splice(i, 1);
+                }
+
+                for (let i = gameState.floatingTexts.length - 1; i >= 0; i--) {
+                    const ft = gameState.floatingTexts[i];
+                    ft.update();
+                    ft.draw(ctx);
+                    if (ft.life <= 0) gameState.floatingTexts.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // --- 8. INITIALIZATION & EVENT LISTENERS ---
+        window.onload = () => {
+            resizeCanvas();
+            requestAnimationFrame(gameLoop);
+
+            canvas.addEventListener('click', (e) => {
+                sfx.init();
+                handleShot(e);
+            });
+
+            repeatAudioBtn.addEventListener('click', () => {
+                if (gameState.isPlaying && gameState.roundTermsList[gameState.currentRoundIndex]) {
+                    speechManager.speak(gameState.roundTermsList[gameState.currentRoundIndex].english);
+                }
+            });
+
+            startGameBtn.addEventListener('click', () => {
+                sfx.init();
+                startNewGame();
+            });
+
+            restartGameBtn.addEventListener('click', () => {
+                sfx.init();
+                startNewGame();
+            });
+        };
+    </script>
+</body>
+</html>
