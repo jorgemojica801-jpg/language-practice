@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voiz - Business English Learning Culture App</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                            accent: '#00f0ff',
+                        },
+                        slate: {
+                            850: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <!-- FontAwesome / Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+            color: #f8fafc;
+        }
+
+        /* Glassmorphism Card Style */
+        .voiz-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.15);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        .voiz-card-active {
+            border-color: rgba(56, 189, 248, 0.5);
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.2);
+        }
+
+        .glow-text-blue {
+            text-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+        }
+
+        /* Circular Progress Ring */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.1s linear, stroke 0.3s ease;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0284c7;
+        }
+
+        .tab-btn.active {
+            color: #38bdf8;
+            border-bottom: 2px solid #38bdf8;
+            background: rgba(14, 165, 233, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+    <!-- Top Voiz Navigation Bar -->
+    <header class="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-brand-400 flex items-center justify-center text-slate-950 font-black text-xl shadow-lg shadow-brand-500/30">
+                    <i class="ph-bold ph-microphone-stage"></i>
+                </div>
+                <div>
+                    <span class="font-extrabold text-xl tracking-wider text-white">VOIZ<span class="text-brand-400">.</span></span>
+                    <span class="text-xs bg-brand-500/20 text-brand-400 border border-brand-500/30 px-2 py-0.5 rounded-full ml-2 font-mono">BUSINESS C1</span>
+                </div>
+            </div>
+
+            <!-- Main Tabs -->
+            <nav class="flex space-x-1 sm:space-x-2">
+                <button onclick="switchTab('glossary')" id="tab-glossary" class="tab-btn active px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold rounded-t-lg transition flex items-center gap-2 text-slate-400 hover:text-white">
+                    <i class="ph-bold ph-book-bookmark text-lg"></i>
+                    <span>GLOSSARY</span>
+                </button>
+                <button onclick="switchTab('grammar')" id="tab-grammar" class="tab-btn px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold rounded-t-lg transition flex items-center gap-2 text-slate-400 hover:text-white">
+                    <i class="ph-bold ph-brackets-curly text-lg"></i>
+                    <span>GRAMMAR IN PRACTICE</span>
+                </button>
+                <button onclick="switchTab('voiz')" id="tab-voiz" class="tab-btn px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold rounded-t-lg transition flex items-center gap-2 text-slate-400 hover:text-white">
+                    <i class="ph-bold ph-lightning text-lg text-brand-400"></i>
+                    <span class="text-brand-400 font-bold">25 SPRINT PROMPTS</span>
+                </button>
+            </nav>
+
+            <div class="hidden sm:flex items-center gap-3">
+                <div id="userBadgeDisplay" class="flex items-center gap-2 text-xs font-mono text-slate-300 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
+                    <i class="ph-bold ph-user-circle text-brand-400 text-base"></i>
+                    <span id="userNameDisplay">Guest Student</span>
+                </div>
+                <span class="text-xs font-mono text-slate-400 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg">
+                    Topic: <span class="text-slate-200 font-semibold">Learning Culture</span>
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- USER REGISTRATION MODAL -->
+    <div id="registrationModal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="voiz-card p-6 sm:p-8 rounded-2xl max-w-md w-full space-y-6 border border-brand-500/30 shadow-2xl">
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-400 mx-auto flex items-center justify-center text-slate-950 text-2xl font-black shadow-lg shadow-brand-500/30">
+                    <i class="ph-bold ph-microphone-stage"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Welcome to VOIZ</h2>
+                <p class="text-slate-400 text-xs">Please register your profile details to unlock C1 Business English Sprint modules and audio exports.</p>
+            </div>
+
+            <form onsubmit="handleRegistration(event)" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-xs font-mono text-slate-400 uppercase">Full Name</label>
+                    <input type="text" id="regName" required placeholder="e.g. Alex Morgan" class="w-full bg-slate-900 border border-slate-700 focus:border-brand-400 text-white text-sm rounded-xl px-4 py-2.5 focus:outline-none transition">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-mono text-slate-400 uppercase">Work / Student Email</label>
+                    <input type="email" id="regEmail" required placeholder="e.g. alex.morgan@company.com" class="w-full bg-slate-900 border border-slate-700 focus:border-brand-400 text-white text-sm rounded-xl px-4 py-2.5 focus:outline-none transition">
+                </div>
+
+                <button type="submit" class="w-full py-3 px-4 bg-gradient-to-r from-brand-600 to-brand-400 hover:from-brand-500 hover:to-brand-300 text-slate-950 font-extrabold text-sm rounded-xl shadow-lg shadow-brand-500/25 transition active:scale-95 flex items-center justify-center gap-2">
+                    <span>START LEARNING SESSION</span>
+                    <i class="ph-bold ph-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Dynamic Content Container -->
+    <main class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 flex-1">
+
+        <!-- ========================================================================= -->
+        <!-- SECTION 1: GLOSSARY -->
+        <!-- ========================================================================= -->
+        <section id="sec-glossary" class="space-y-6">
+            <!-- Header Banner -->
+            <div class="voiz-card p-6 sm:p-8 rounded-2xl border-l-4 border-l-brand-400 flex flex-col md:flex-row justify-between md:items-center gap-4">
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+                        <i class="ph-duotone ph-books text-brand-400"></i>
+                        Business English & Skill-Building Glossary
+                    </h1>
+                    <p class="text-slate-400 text-sm mt-1">
+                        Core technical vocabulary and grammatical concepts extracted from <span class="text-brand-400">ESL Brains: "Creating a learning culture"</span>.
+                    </p>
+                </div>
+                <!-- Search & Filters -->
+                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <div class="relative w-full sm:w-64">
+                        <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="glossarySearch" onkeyup="filterGlossary()" placeholder="Search word or IPA..." class="w-full bg-slate-900 border border-slate-700 focus:border-brand-400 text-white text-sm rounded-xl pl-9 pr-4 py-2.5 focus:outline-none transition">
+                    </div>
+                    <select id="glossaryCategory" onchange="filterGlossary()" class="bg-slate-900 border border-slate-700 text-white text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-400">
+                        <option value="ALL">All Categories</option>
+                        <option value="Action Verbs">Action Verbs</option>
+                        <option value="Workplace Concepts">Workplace Concepts</option>
+                        <option value="Mentorship & Learning">Mentorship & Learning</option>
+                        <option value="Grammar & Strategy">Grammar & Strategy</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Glossary Grid -->
+            <div id="glossaryGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Javascript will inject 12 Glossary Cards here -->
+            </div>
+        </section>
+
+
+        <!-- ========================================================================= -->
+        <!-- SECTION 2: GRAMMAR IN PRACTICE -->
+        <!-- ========================================================================= -->
+        <section id="sec-grammar" class="space-y-8 hidden">
+            <!-- Header Banner -->
+            <div class="voiz-card p-6 sm:p-8 rounded-2xl border-l-4 border-l-cyan-400">
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+                    <i class="ph-duotone ph-brackets-curly text-cyan-400"></i>
+                    Grammar in Practice: Structures for Strategic Upskilling
+                </h1>
+                <p class="text-slate-400 text-sm mt-1">
+                    Master the linguistic frameworks used in C1 Business discussions: **Gerunds vs. Infinitives for Career Objectives** and **Modals for Strategic Advice & Proposals**.
+                </p>
+            </div>
+
+            <!-- Visual Rule Breakdown 1: Gerund vs Infinitive -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="voiz-card p-6 rounded-2xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono px-2.5 py-1 bg-brand-500/20 text-brand-400 border border-brand-500/30 rounded-lg">RULE 1</span>
+                        <span class="text-xs text-slate-400">Career Objectives & Methods</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-white">Gerund (-ing) vs. Infinitive (to + verb)</h2>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        In business speech, we use the **Gerund** to talk about ongoing methods, systems, or habitual practices, and the **Infinitive** to express specific purpose or future goals.
+                    </p>
+
+                    <!-- Formula Cards -->
+                    <div class="space-y-3 pt-2">
+                        <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800">
+                            <p class="text-xs font-mono text-brand-400 uppercase font-semibold">METHOD / PROCESS (GERUND)</p>
+                            <p class="text-sm font-semibold text-slate-200 mt-1">"Upskilling involves <span class="text-brand-400 underline decoration-2">dedicating</span> 15 minutes daily to reading publications."</p>
+                            <p class="text-xs text-slate-400 mt-1">Structure: <span class="font-mono text-slate-300">Verb + Verb-ING</span> (involve, consider, advocate)</p>
+                        </div>
+
+                        <div class="bg-slate-900/90 p-4 rounded-xl border border-slate-800">
+                            <p class="text-xs font-mono text-cyan-400 uppercase font-semibold">PURPOSE / AIM (INFINITIVE)</p>
+                            <p class="text-sm font-semibold text-slate-200 mt-1">"To avoid deskilling, professionals strive <span class="text-cyan-400 underline decoration-2">to master</span> new tools."</p>
+                            <p class="text-xs text-slate-400 mt-1">Structure: <span class="font-mono text-slate-300">Verb + TO + Base Verb</span> (strive, decide, prepare)</p>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Diagram -->
+                    <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80 space-y-2">
+                        <p class="text-xs font-mono text-slate-400 uppercase">Timeline Contrast Diagram</p>
+                        <div class="flex items-center gap-2 text-xs">
+                            <div class="w-1/2 bg-brand-950/60 border border-brand-500/40 p-2.5 rounded-lg text-center">
+                                <span class="block font-bold text-brand-400">Gerund (-ing)</span>
+                                <span class="text-slate-400 text-[11px]">Ongoing Habitual Practice</span>
+                            </div>
+                            <i class="ph-bold ph-arrow-right text-slate-500"></i>
+                            <div class="w-1/2 bg-cyan-950/60 border border-cyan-500/40 p-2.5 rounded-lg text-center">
+                                <span class="block font-bold text-cyan-400">Infinitive (to + v)</span>
+                                <span class="text-slate-400 text-[11px]">Specific Future Target/Outcome</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Rule Breakdown 2: Modals for Advice & Debates -->
+                <div class="voiz-card p-6 rounded-2xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono px-2.5 py-1 bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-lg">RULE 2</span>
+                        <span class="text-xs text-slate-400">Strategic Recommendations & Modals</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-white">Modal Nuance for Executive Debates</h2>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        Expressing obligations vs. corporate recommendations requires precise modal strength when advocating for training budgets or company policy.
+                    </p>
+
+                    <!-- Contrast Matrix -->
+                    <div class="space-y-3 pt-2">
+                        <div class="bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
+                            <div>
+                                <span class="text-xs font-bold text-rose-400 uppercase font-mono">Imperative Necessity</span>
+                                <p class="text-sm font-semibold text-slate-200">"Companies <span class="text-rose-400 font-bold">must</span> invest in knowledge work."</p>
+                            </div>
+                            <span class="text-xs bg-rose-500/10 text-rose-400 px-2 py-1 rounded border border-rose-500/30 font-mono">100% Legal/Essential</span>
+                        </div>
+
+                        <div class="bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
+                            <div>
+                                <span class="text-xs font-bold text-amber-400 uppercase font-mono">Strategic Recommendation</span>
+                                <p class="text-sm font-semibold text-slate-200">"Employers <span class="text-amber-400 font-bold">should / ought to</span> subsidize training."</p>
+                            </div>
+                            <span class="text-xs bg-amber-500/10 text-amber-400 px-2 py-1 rounded border border-amber-500/30 font-mono">Best Practice</span>
+                        </div>
+
+                        <div class="bg-slate-900/90 p-3.5 rounded-xl border border-slate-800 flex justify-between items-center">
+                            <div>
+                                <span class="text-xs font-bold text-brand-400 uppercase font-mono">Hypothetical Benefit</span>
+                                <p class="text-sm font-semibold text-slate-200">"Reverse mentoring <span class="text-brand-400 font-bold">would</span> bridge generational gaps."</p>
+                            </div>
+                            <span class="text-xs bg-brand-500/10 text-brand-400 px-2 py-1 rounded border border-brand-500/30 font-mono">Conditional Future</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
+                        <p class="text-xs font-mono text-slate-400 uppercase">Key Collocation Contrast</p>
+                        <p class="text-xs text-slate-300 mt-1">
+                            • <strong class="text-white">Invest IN</strong> + [Gerund / Noun] <span class="text-slate-500">(e.g., invest in reskilling)</span><br>
+                            • <strong class="text-white">Reimburse FOR</strong> + [Noun] <span class="text-slate-500">(e.g., reimburse 50% of costs)</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Practice Verification Module -->
+            <div class="voiz-card p-6 sm:p-8 rounded-2xl space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 border-b border-slate-800 pb-4">
+                    <div>
+                        <h3 class="text-lg font-extrabold text-white flex items-center gap-2">
+                            <i class="ph-bold ph-check-square-offset text-brand-400"></i>
+                            Interactive Grammar Verification Matrix
+                        </h3>
+                        <p class="text-xs text-slate-400">Select the grammatically precise structure for C1 executive communication.</p>
+                    </div>
+                    <div class="text-xs font-mono bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 text-brand-400">
+                        Score: <span id="grammarScore" class="text-white font-bold">0</span> / 5
+                    </div>
+                </div>
+
+                <div id="grammarQuestionsContainer" class="space-y-4">
+                    <!-- Javascript will populate 5 interactive grammar questions -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ========================================================================= -->
+        <!-- SECTION 3: VOIZ (25 SPEAKING PROMPTS & 10-SEC SPRINT) -->
+        <!-- ========================================================================= -->
+        <section id="sec-voiz" class="space-y-8 hidden">
+            <!-- Header Banner -->
+            <div class="voiz-card p-6 sm:p-8 rounded-2xl border-l-4 border-l-brand-400 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/20 text-brand-400 border border-brand-500/30 text-xs font-mono font-semibold mb-2">
+                        <i class="ph-bold ph-lightning"></i> VOIZ SPRINT ENGINE
+                    </div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                        25 Speaking Prompts & 10-Second Sprint
+                    </h1>
+                    <p class="text-slate-400 text-sm mt-1">
+                        Select a prompt, review the target vocabulary, hit **START SPRINT**, and deliver your C1 executive response in 10 concise seconds.
+                    </p>
+                </div>
+
+                <!-- Prompt Selector Dropdown -->
+                <div class="w-full md:w-80 space-y-1">
+                    <label class="text-xs font-mono text-slate-400 uppercase">Jump to Prompt (1 - 25)</label>
+                    <select id="promptSelect" onchange="loadSelectedPrompt(this.value)" class="w-full bg-slate-900 border border-brand-500/40 text-white text-sm rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-400">
+                        <!-- Options filled via JS -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <!-- Left 7 Cols: Prompt & Sprint Workstation -->
+                <div class="lg:col-span-7 space-y-6">
+                    <!-- Current Prompt Card -->
+                    <div class="voiz-card p-6 rounded-2xl space-y-5 border border-slate-800" id="promptMainCard">
+                        <div class="flex items-center justify-between">
+                            <span id="promptBadge" class="text-xs font-mono font-bold px-3 py-1 bg-brand-500/20 text-brand-400 border border-brand-500/30 rounded-full">
+                                PROMPT #1 OF 25
+                            </span>
+                            <span id="promptCategory" class="text-xs font-mono text-slate-400">
+                                Category: Industry Changes
+                            </span>
+                        </div>
+
+                        <!-- Prompt Question Text -->
+                        <h2 id="promptText" class="text-xl sm:text-2xl font-bold text-white leading-snug">
+                            Loading Prompt...
+                        </h2>
+
+                        <!-- Target Vocabulary List -->
+                        <div class="space-y-2 pt-2">
+                            <span class="text-xs font-mono text-slate-400 uppercase block">Required Target Vocabulary:</span>
+                            <div id="targetVocabBadges" class="flex flex-wrap gap-2">
+                                <!-- Target badges populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- 10-Second Sprint Circular Timer & Controller -->
+                        <div class="bg-slate-950/90 rounded-2xl p-6 border border-slate-800 flex flex-col items-center justify-center space-y-4 relative overflow-hidden">
+                            <!-- Circular SVG Progress -->
+                            <div class="relative flex items-center justify-center">
+                                <svg class="w-40 h-40">
+                                    <circle class="text-slate-800" stroke-width="8" stroke="currentColor" fill="transparent" r="68" cx="80" cy="80" />
+                                    <circle id="timerCircle" class="progress-ring__circle text-brand-400" stroke-width="8" stroke-dasharray="427" stroke-dashoffset="0" stroke-linecap="round" stroke="currentColor" fill="transparent" r="68" cx="80" cy="80" />
+                                </svg>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                                    <span id="timerText" class="text-4xl font-extrabold font-mono text-white">10.0</span>
+                                    <span class="text-[10px] font-mono text-slate-400 uppercase tracking-widest mt-0.5">SECONDS</span>
+                                </div>
+                            </div>
+
+                            <!-- Recording Status -->
+                            <div id="recordingStatus" class="text-xs font-mono text-slate-400 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-slate-600"></span>
+                                <span>Ready to record microphone audio</span>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex items-center gap-3 w-full max-w-xs">
+                                <button id="btnStartSprint" onclick="start10SecSprint()" class="flex-1 py-3 px-4 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-slate-950 font-extrabold text-sm rounded-xl shadow-lg shadow-brand-500/25 transition active:scale-95 flex items-center justify-center gap-2">
+                                    <i class="ph-bold ph-play-circle text-lg"></i>
+                                    <span>START 10S SPRINT</span>
+                                </button>
+                                <button id="btnStopSprint" onclick="stopSprintEarly()" disabled class="py-3 px-4 bg-rose-600/20 text-rose-400 border border-rose-500/40 font-bold text-sm rounded-xl transition disabled:opacity-40 disabled:cursor-not-allowed hover:bg-rose-600/30">
+                                    <i class="ph-bold ph-stop-circle text-lg"></i>
+                                </button>
+                            </div>
+
+                            <!-- Recorded Audio Playback -->
+                            <div id="audioPlaybackContainer" class="w-full pt-3 hidden space-y-2">
+                                <p class="text-xs font-mono text-brand-400 flex items-center justify-between">
+                                    <span>YOUR RECORDED RESPONSE:</span>
+                                    <span class="text-[10px] text-slate-500">Recorded Live</span>
+                                </p>
+                                <audio id="recordedAudio" controls class="w-full h-10 rounded-lg bg-slate-900 border border-slate-700"></audio>
+
+                                <button id="btnDownloadAudio" onclick="downloadRecordedAudio()" class="w-full py-2 px-3 bg-slate-900 hover:bg-slate-800 text-brand-400 border border-brand-500/40 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+                                    <i class="ph-bold ph-download-simple text-sm"></i>
+                                    <span>DOWNLOAD AUDIO SPRINT (.WAV / .MP3)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Footer for Prompts -->
+                        <div class="flex justify-between items-center pt-2">
+                            <button onclick="navigatePrompt(-1)" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold text-slate-300 transition flex items-center gap-2">
+                                <i class="ph-bold ph-arrow-left"></i> Previous
+                            </button>
+                            <span id="promptCounterFooter" class="text-xs font-mono text-slate-500">1 / 25</span>
+                            <button onclick="navigatePrompt(1)" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold text-slate-300 transition flex items-center gap-2">
+                                Next <i class="ph-bold ph-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right 5 Cols: C1 Benchmark Reference Answer -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="voiz-card p-6 rounded-2xl space-y-4 border border-brand-500/20">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                            <span class="text-xs font-mono text-cyan-400 font-bold flex items-center gap-1.5">
+                                <i class="ph-bold ph-seal-check text-brand-400"></i> C1 BENCHMARK MODEL RESPONSE
+                            </span>
+                            <button onclick="speakBenchmarkAnswer()" class="text-xs bg-brand-500/20 hover:bg-brand-500/30 text-brand-400 border border-brand-500/30 px-2.5 py-1 rounded-lg transition flex items-center gap-1">
+                                <i class="ph-bold ph-speaker-high"></i> Listen
+                            </button>
+                        </div>
+
+                        <p id="benchmarkText" class="text-sm text-slate-200 leading-relaxed font-sans italic bg-slate-950/60 p-4 rounded-xl border border-slate-850">
+                            Loading Benchmark Model Answer...
+                        </p>
+
+                        <div class="space-y-2 pt-2">
+                            <span class="text-xs font-mono text-slate-400 uppercase block">Grammar Breakdown in Benchmark:</span>
+                            <div id="benchmarkGrammarHighlights" class="text-xs text-slate-300 space-y-1 bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                                <!-- Highlights injected by JS -->
+                            </div>
+                        </div>
+
+                        <div class="p-3 bg-brand-950/30 rounded-xl border border-brand-500/20 text-xs text-slate-400">
+                            <strong class="text-brand-400">Voiz Tip:</strong> In a 10-second sprint, avoid filler words. Lead immediately with a high-level verb like <em>"Upskilling enables..."</em> or <em>"I advocate..."</em>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-4 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div>
+                <span class="font-bold text-slate-400">VOIZ Business English System</span> • Based on ESL Brains "Creating a learning culture"
+            </div>
+            <div class="font-mono text-slate-600">
+                C1 Level Oral Mastery Architecture
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================================================= -->
+    <!-- JAVASCRIPT LOGIC & DATA STRUCTURES -->
+    <!-- ========================================================================= -->
+    <script>
+        // -------------------------------------------------------------------------
+        // DATA STRUCTURES
+        // -------------------------------------------------------------------------
+        const GLOSSARY_DATA = [
+            {
+                term: "Upskill",
+                ipa: "/ˈʌp.skɪl/",
+                category: "Action Verbs",
+                definition: "To teach an employee additional skills or enhance their existing skill set for career evolution.",
+                example: "Employees are encouraged to upskill by learning data analytics to keep up with industry automation.",
+                grammarNote: "Verb + Gerund/Infinitive: upskill by learning / upskill to adapt"
+            },
+            {
+                term: "Reskill",
+                ipa: "/ˌriːˈskɪl/",
+                category: "Action Verbs",
+                definition: "To train an employee for an entirely new job role or different function within the organization.",
+                example: "As routine roles become automated, companies must reskill workers for knowledge-based positions.",
+                grammarNote: "Transitive Verb: reskill employees for new roles"
+            },
+            {
+                term: "Deskill",
+                ipa: "/ˌdiːˈskɪl/",
+                category: "Workplace Concepts",
+                definition: "To reduce the level of skill required to perform a job, often due to automation or over-simplification.",
+                example: "Over-reliance on automated software risks deskilling senior analysts over time.",
+                grammarNote: "Passive voice common: to be deskilled by technology"
+            },
+            {
+                term: "Knowledge Work",
+                ipa: "/ˈnɒl.ɪdʒ ˌwɜːk/",
+                category: "Workplace Concepts",
+                definition: "Occupations where the main capital is knowledge, problem-solving, and strategic thinking.",
+                example: "We are shifting rapidly from routine manual tasks into complex knowledge work.",
+                grammarNote: "Uncountable Noun: engaged in knowledge work"
+            },
+            {
+                term: "Reverse Mentoring",
+                ipa: "/rɪˈvɜːs ˈmen.tɔː.rɪŋ/",
+                category: "Mentorship & Learning",
+                definition: "An arrangement where a younger or more junior employee mentors a senior executive on topics like tech.",
+                example: "Reverse mentoring helped executives understand emerging AI tools and youth market trends.",
+                grammarNote: "Noun Phrase: implement reverse mentoring"
+            },
+            {
+                term: "Skill Mastery",
+                ipa: "/skɪl ˈmɑː.stər.i/",
+                category: "Mentorship & Learning",
+                definition: "Achieving deep expertise and comprehensive proficiency in a specific professional domain.",
+                example: "A modern career is no longer just about hierarchy or promotion, but about deep skill mastery.",
+                grammarNote: "Noun: strive for mastery in a domain"
+            },
+            {
+                term: "Learning Culture",
+                ipa: "/ˈlɜː.nɪŋ ˈkʌl.tʃər/",
+                category: "Workplace Concepts",
+                definition: "An organizational mindset that actively encourages, rewards, and integrates continuous education.",
+                example: "Building a true learning culture requires budget allocation and dedicated time for personal growth.",
+                grammarNote: "Noun Phrase: cultivate a corporate learning culture"
+            },
+            {
+                term: "Hard Skills",
+                ipa: "/hɑːd skɪlz/",
+                category: "Grammar & Strategy",
+                definition: "Teachable, measurable technical abilities or knowledge sets (e.g. coding, accounting).",
+                example: "While hard skills get you interviewed, soft skills determine your executive potential.",
+                grammarNote: "Plural Noun: develop hard skills"
+            },
+            {
+                term: "Soft Skills",
+                ipa: "/sɒft skɪlz/",
+                category: "Grammar & Strategy",
+                definition: "Interpersonal attributes and emotional intelligence necessary to work effectively with others.",
+                example: "Effective cross-functional leadership relies heavily on critical thinking and soft skills.",
+                grammarNote: "Plural Noun: enhance soft skills"
+            },
+            {
+                term: "Learning Hub",
+                ipa: "/ˈlɜː.nɪŋ hʌb/",
+                category: "Mentorship & Learning",
+                definition: "A centralized platform or inter-departmental group dedicated to sharing knowledge and best practices.",
+                example: "Joining an internal innovation hub allows specialists to cross-pollinate ideas.",
+                grammarNote: "Noun: participate in a learning hub"
+            },
+            {
+                term: "Reimburse",
+                ipa: "/ˌriː.ɪmˈbɜːs/",
+                category: "Action Verbs",
+                definition: "To pay back money spent by an employee for business expenses or professional training.",
+                example: "The firm promised to reimburse 50% of tuition costs for certified upskilling courses.",
+                grammarNote: "Verb: reimburse someone for expenses"
+            },
+            {
+                term: "Continuous Improvement",
+                ipa: "/kənˈtɪn.ju.əs ɪmˈpruːv.mənt/",
+                category: "Grammar & Strategy",
+                definition: "An ongoing effort to incrementally enhance products, services, processes, or professional skills.",
+                example: "Senior leaders must commit to continuous improvement rather than relying on past achievements.",
+                grammarNote: "Uncountable Noun: a culture of continuous improvement"
+            }
+        ];
+
+        const GRAMMAR_QUESTIONS = [
+            {
+                question: "Which sentence correctly uses a Gerund to describe a habitual upskilling method?",
+                options: [
+                    "Upskilling involves to dedicate 15 minutes daily to podcasts.",
+                    "Upskilling involves dedicating 15 minutes daily to podcasts.",
+                    "Upskilling involves dedicated 15 minutes daily to podcasts."
+                ],
+                correct: 1,
+                explanation: "The verb 'involve' is followed by a gerund (-ing form), e.g. 'involves dedicating'."
+            },
+            {
+                question: "Which sentence expresses a career goal using the correct Infinitive structure?",
+                options: [
+                    "Professionals strive mastering new technologies to avoid deskilling.",
+                    "Professionals strive for master new technologies to avoid deskilling.",
+                    "Professionals strive to master new technologies to avoid deskilling."
+                ],
+                correct: 2,
+                explanation: "'Strive' requires an infinitive (to + base verb): 'strive to master'."
+            },
+            {
+                question: "Select the most appropriate modal verb to give strong strategic advice to management.",
+                options: [
+                    "Employers should subsidize continuous learning programs.",
+                    "Employers might to subsidize continuous learning programs.",
+                    "Employers would subsidize continuous learning programs yesterday."
+                ],
+                correct: 0,
+                explanation: "'Should' is followed by the bare infinitive ('should subsidize') to give strong strategic recommendations."
+            },
+            {
+                question: "Identify the correct preposition collocation for corporate investment.",
+                options: [
+                    "Companies ought to invest on employee reskilling.",
+                    "Companies ought to invest in employee reskilling.",
+                    "Companies ought to invest at employee reskilling."
+                ],
+                correct: 1,
+                explanation: "The verb 'invest' collocates specifically with 'in': 'invest in reskilling'."
+            },
+            {
+                question: "Which structure correctly frames a hypothetical corporate benefit?",
+                options: [
+                    "Adopting reverse mentoring would bridge generational tech gaps.",
+                    "Adopting reverse mentoring will bridges generational tech gaps.",
+                    "To adopt reverse mentoring would bridging generational tech gaps."
+                ],
+                correct: 0,
+                explanation: "'Would' + base verb ('would bridge') correctly expresses a hypothetical result."
+            }
+        ];
+
+        const PROMPTS_DATA = [
+            {
+                id: 1,
+                category: "Industry Changes",
+                prompt: "How has your industry changed over the last decade regarding required technical skills?",
+                vocab: ["Upskill", "Knowledge Work", "Automation"],
+                benchmark: "Over the last decade, automation has transformed routine tasks into knowledge work, forcing professionals to upskill continuously.",
+                grammarHighlight: "Gerund process & Infinitive purpose: 'forced professionals to upskill...'"
+            },
+            {
+                id: 2,
+                category: "Upskilling Methods",
+                prompt: "Why is spending 15 minutes daily reading industry journals better than annual training?",
+                vocab: ["Continuous Improvement", "Habitual Practice"],
+                benchmark: "Dedicating 15 minutes daily fosters continuous improvement far more effectively than isolated annual workshops.",
+                grammarHighlight: "Gerund subject: 'Dedicating 15 minutes daily fosters...'"
+            },
+            {
+                id: 3,
+                category: "Reverse Mentoring",
+                prompt: "What is the primary benefit of pairing senior leaders with junior employees?",
+                vocab: ["Reverse Mentoring", "Soft Skills"],
+                benchmark: "Implementing reverse mentoring allows senior executives to gain modern tech insights while building soft skills.",
+                grammarHighlight: "Infinitive purpose: 'to gain modern tech insights...'"
+            },
+            {
+                id: 4,
+                category: "Corporate Budgeting",
+                prompt: "How should employers structure reimbursement for external certification programs?",
+                vocab: ["Reimburse", "Learning Culture"],
+                benchmark: "Employers should reimburse 50% of course costs to cultivate a committed corporate learning culture.",
+                grammarHighlight: "Modal recommendation: 'Employers should reimburse...'"
+            },
+            {
+                id: 5,
+                category: "Avoiding Obsolescence",
+                prompt: "What risks do senior professionals face if they refuse to learn new digital tools?",
+                vocab: ["Deskill", "Skill Mastery"],
+                benchmark: "Refusing to adopt modern tools risks deskilling senior professionals, making skill mastery impossible.",
+                grammarHighlight: "Gerund subject: 'Refusing to adopt modern tools risks deskilling...'"
+            },
+            {
+                id: 6,
+                category: "Reskilling Strategy",
+                prompt: "When should an enterprise choose reskilling over external hiring?",
+                vocab: ["Reskill", "Hard Skills"],
+                benchmark: "Companies should reskill loyal staff when emerging roles demand specialized internal domain knowledge alongside new hard skills.",
+                grammarHighlight: "Modal obligation/strategy: 'Companies should reskill...'"
+            },
+            {
+                id: 7,
+                category: "Learning Hubs",
+                prompt: "How does creating a company learning hub boost cross-departmental innovation?",
+                vocab: ["Learning Hub", "Knowledge Work"],
+                benchmark: "Establishing a central learning hub enables teams engaged in knowledge work to share cross-departmental expertise seamlessly.",
+                grammarHighlight: "Gerund as subject & Infinitive of purpose: 'Establishing a hub enables...'"
+            },
+            {
+                id: 8,
+                category: "Career Progression",
+                prompt: "Do you agree that modern careers are about mastery rather than promotion?",
+                vocab: ["Skill Mastery", "Continuous Improvement"],
+                benchmark: "I strongly agree that modern career success relies on skill mastery and continuous improvement rather than executive titles.",
+                grammarHighlight: "Preposition + Gerund: 'relies on skill mastery...'"
+            },
+            {
+                id: 9,
+                category: "Hard vs Soft Skills",
+                prompt: "Which skills are more essential for executive promotion in automated environments?",
+                vocab: ["Soft Skills", "Hard Skills"],
+                benchmark: "While hard skills are vital initially, mastering soft skills becomes decisive when leading cross-functional teams.",
+                grammarHighlight: "Gerund phrase: 'mastering soft skills becomes decisive...'"
+            },
+            {
+                id: 10,
+                category: "Government Policy",
+                prompt: "Should governments fund training programs for citizens affected by automation?",
+                vocab: ["Reskill", "Continuous Improvement"],
+                benchmark: "Governments ought to fund targeted training to reskill citizens whose livelihoods are threatened by technological shifts.",
+                grammarHighlight: "Modal strategy: 'Governments ought to fund...'"
+            },
+            {
+                id: 11,
+                category: "Executive Commitment",
+                prompt: "Why must continuous growth start directly at the C-suite level?",
+                vocab: ["Learning Culture", "Knowledge Work"],
+                benchmark: "CEOs must lead by example to establish a genuine learning culture across knowledge work environments.",
+                grammarHighlight: "Imperative modal: 'CEOs must lead by example...'"
+            },
+            {
+                id: 12,
+                category: "Mentorship Value",
+                prompt: "What makes being a formal mentor beneficial for senior managers?",
+                vocab: ["Soft Skills", "Reverse Mentoring"],
+                benchmark: "Serving as a mentor sharpens leadership soft skills and opens avenues for reverse mentoring from junior peers.",
+                grammarHighlight: "Gerund subject: 'Serving as a mentor sharpens...'"
+            },
+            {
+                id: 13,
+                category: "Employee Motivation",
+                prompt: "How can workers persuade reluctant management to invest in tuition reimbursement?",
+                vocab: ["Reimburse", "Upskill"],
+                benchmark: "Employees should present clear ROI metrics to persuade leaders to reimburse costs for strategic upskilling.",
+                grammarHighlight: "Modal recommendation: 'Employees should present...'"
+            },
+            {
+                id: 14,
+                category: "Routine to Knowledge",
+                prompt: "How has your department transitioned away from repetitive manual tasks?",
+                vocab: ["Knowledge Work", "Automation"],
+                benchmark: "By automating routine operations, our team has successfully shifted toward complex strategic knowledge work.",
+                grammarHighlight: "Preposition + Gerund: 'By automating routine operations...'"
+            },
+            {
+                id: 15,
+                category: "Specialized Hubs",
+                prompt: "Would joining specialized online industry groups improve employee performance?",
+                vocab: ["Learning Hub", "Hard Skills"],
+                benchmark: "Participating in specialized professional hubs would significantly accelerate the acquisition of cutting-edge hard skills.",
+                grammarHighlight: "Hypothetical conditional modal: 'would significantly accelerate...'"
+            },
+            {
+                id: 16,
+                category: "Micro-learning",
+                prompt: "Is dedicating 10 minutes a day to podcasts superior to attending week-long seminars?",
+                vocab: ["Continuous Improvement", "Upskill"],
+                benchmark: "Consuming micro-content daily ensures continuous improvement without overwhelming weekly productivity.",
+                grammarHighlight: "Gerund subject: 'Consuming micro-content daily ensures...'"
+            },
+            {
+                id: 17,
+                category: "Overcoming Stress",
+                prompt: "Does constant upskilling place unfair performance pressure on employees?",
+                vocab: ["Deskill", "Upskill"],
+                benchmark: "Without adequate company time, demanding that employees upskill constantly creates unnecessary workplace anxiety.",
+                grammarHighlight: "Gerund subject: 'demanding that employees upskill...'"
+            },
+            {
+                id: 18,
+                category: "Corporate Incentive",
+                prompt: "What incentive structure best encourages teams to pursue technical certifications?",
+                vocab: ["Reimburse", "Skill Mastery"],
+                benchmark: "Companies that reimburse exam fees and reward skill mastery achieve far higher retention rates.",
+                grammarHighlight: "Relative clause + infinitive/noun: 'Companies that reimburse fees...'"
+            },
+            {
+                id: 19,
+                category: "Generational Knowledge",
+                prompt: "How does reverse mentoring break down hierarchical barriers in traditional corporations?",
+                vocab: ["Reverse Mentoring", "Learning Culture"],
+                benchmark: "Reverse mentoring breaks down silos by empowering junior employees to teach executive leaders digital strategy.",
+                grammarHighlight: "Infinitive purpose: 'empowering junior employees to teach...'"
+            },
+            {
+                id: 20,
+                category: "Automation Risk",
+                prompt: "What is the consequence for businesses that fail to reskill their workforce?",
+                vocab: ["Reskill", "Deskill"],
+                benchmark: "Failing to reskill workforce talent leads to widespread deskilling and loss of competitive advantage.",
+                grammarHighlight: "Gerund subject: 'Failing to reskill talent leads to...'"
+            },
+            {
+                id: 21,
+                category: "Personal Leadership",
+                prompt: "How do you personally structure your weekly schedule to incorporate skill building?",
+                vocab: ["Continuous Improvement", "Knowledge Work"],
+                benchmark: "I dedicate two hours every Friday to reading whitepapers, treating continuous improvement as core knowledge work.",
+                grammarHighlight: "Participle phrase: 'treating continuous improvement as...'"
+            },
+            {
+                id: 22,
+                category: "Conferences vs Mentoring",
+                prompt: "Which is more effective for personal growth: giving talks at conferences or being mentored?",
+                vocab: ["Soft Skills", "Skill Mastery"],
+                benchmark: "While conference speaking demonstrates mastery, receiving direct mentorship accelerates individual soft skills.",
+                grammarHighlight: "Gerund contrast: 'speaking demonstrates... receiving mentorship accelerates...'"
+            },
+            {
+                id: 23,
+                category: "Budget Allocation",
+                prompt: "Should training budgets be divided equally or tailored individually to each staff member?",
+                vocab: ["Reimburse", "Hard Skills"],
+                benchmark: "Management should offer personalized training budgets to target specific hard skills required for each role.",
+                grammarHighlight: "Infinitive purpose: 'to target specific hard skills...'"
+            },
+            {
+                id: 24,
+                category: "Digital Transformation",
+                prompt: "How do leaders prevent senior staff from being deskilled during software migrations?",
+                vocab: ["Deskill", "Upskill"],
+                benchmark: "Leaders must provide hands-on workshops during software rollouts to prevent staff from being deskilled.",
+                grammarHighlight: "Passive Gerund: 'prevent staff from being deskilled...'"
+            },
+            {
+                id: 25,
+                category: "Final Strategy Pitch",
+                prompt: "In 10 seconds, pitch why your company needs to invest in a continuous learning culture today.",
+                vocab: ["Learning Culture", "Knowledge Work", "Reskill"],
+                benchmark: "Investing in a continuous learning culture empowers teams to reskill rapidly and dominate modern knowledge work.",
+                grammarHighlight: "Full executive synthesis using modal/gerund structures."
+            }
+        ];
+
+        // -------------------------------------------------------------------------
+        // STATE MANAGEMENT
+        // -------------------------------------------------------------------------
+        let currentPromptIndex = 0;
+        let timerInterval = null;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+        let lastRecordedAudioBlob = null;
+        let registeredUser = { name: "Guest Student", email: "" };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderGlossary();
+            renderGrammarQuestions();
+            populatePromptSelector();
+            loadSelectedPrompt(0);
+        });
+
+        // -------------------------------------------------------------------------
+        // REGISTRATION SYSTEM
+        // -------------------------------------------------------------------------
+        function handleRegistration(e) {
+            e.preventDefault();
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+
+            if (name && email) {
+                registeredUser = { name, email };
+                document.getElementById('userNameDisplay').innerText = name;
+                document.getElementById('registrationModal').classList.add('hidden');
+            }
+        }
+
+        // -------------------------------------------------------------------------
+        // TAB SWITCHING SYSTEM
+        // -------------------------------------------------------------------------
+        function switchTab(tabId) {
+            document.querySelectorAll('section[id^="sec-"]').forEach(sec => sec.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(`sec-${tabId}`).classList.remove('hidden');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        }
+
+        // -------------------------------------------------------------------------
+        // SECTION 1: GLOSSARY LOGIC
+        // -------------------------------------------------------------------------
+        function renderGlossary(items = GLOSSARY_DATA) {
+            const container = document.getElementById('glossaryGrid');
+            container.innerHTML = '';
+
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "voiz-card p-5 rounded-2xl flex flex-col justify-between space-y-4 hover:border-brand-500/40 transition group";
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-brand-500/10 text-brand-400 border border-brand-500/20">${item.category}</span>
+                            <button onclick="speakText('${item.term}')" class="w-8 h-8 rounded-lg bg-slate-900 border border-slate-700 hover:border-brand-400 text-brand-400 flex items-center justify-center transition" title="Listen Pronunciation">
+                                <i class="ph-bold ph-speaker-high text-base"></i>
+                            </button>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white group-hover:text-brand-400 transition">${item.term}</h3>
+                            <span class="text-xs font-mono text-cyan-400">${item.ipa}</span>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">${item.definition}</p>
+                    </div>
+
+                    <div class="space-y-2 pt-2 border-t border-slate-800/80">
+                        <div class="text-[11px] font-mono text-slate-400">
+                            <strong class="text-slate-300">Context:</strong> "${item.example}"
+                        </div>
+                        <div class="text-[10px] font-mono text-brand-400/80 bg-slate-950 px-2 py-1 rounded">
+                            ${item.grammarNote}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterGlossary() {
+            const query = document.getElementById('glossarySearch').value.toLowerCase();
+            const cat = document.getElementById('glossaryCategory').value;
+
+            const filtered = GLOSSARY_DATA.filter(item => {
+                const matchesSearch = item.term.toLowerCase().includes(query) || 
+                                      item.ipa.toLowerCase().includes(query) ||
+                                      item.definition.toLowerCase().includes(query);
+                const matchesCat = (cat === 'ALL') || (item.category === cat);
+                return matchesSearch && matchesCat;
+            });
+
+            renderGlossary(filtered);
+        }
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // -------------------------------------------------------------------------
+        // SECTION 2: GRAMMAR PRACTICE MATRIX LOGIC
+        // -------------------------------------------------------------------------
+        function renderGrammarQuestions() {
+            const container = document.getElementById('grammarQuestionsContainer');
+            container.innerHTML = '';
+
+            GRAMMAR_QUESTIONS.forEach((q, qIndex) => {
+                const qBox = document.createElement('div');
+                qBox.className = "bg-slate-900/90 p-5 rounded-xl border border-slate-800 space-y-3";
+                
+                let optionsHTML = q.options.map((opt, optIndex) => `
+                    <button onclick="checkGrammarAnswer(${qIndex}, ${optIndex})" id="g-opt-${qIndex}-${optIndex}" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition text-left">
+                        ${opt}
+                    </button>
+                `).join('');
+
+                qBox.innerHTML = `
+                    <p class="text-sm font-semibold text-white">${qIndex + 1}. ${q.question}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5" id="g-opts-group-${qIndex}">
+                        ${optionsHTML}
+                    </div>
+                    <p id="g-feedback-${qIndex}" class="text-xs font-mono hidden pt-1"></p>
+                `;
+                container.appendChild(qBox);
+            });
+        }
+
+        let userGrammarScore = 0;
+        let answeredQuestions = new Set();
+
+        function checkGrammarAnswer(qIndex, optIndex) {
+            const q = GRAMMAR_QUESTIONS[qIndex];
+            const feedbackEl = document.getElementById(`g-feedback-${qIndex}`);
+            const optsGroup = document.getElementById(`g-opts-group-${qIndex}`);
+
+            // Disable buttons for this question
+            const buttons = optsGroup.querySelectorAll('button');
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                btn.classList.add('opacity-60', 'cursor-not-allowed');
+                if (idx === q.correct) {
+                    btn.classList.remove('bg-slate-800', 'opacity-60');
+                    btn.classList.add('bg-emerald-600/30', 'text-emerald-300', 'border-emerald-500');
+                } else if (idx === optIndex) {
+                    btn.classList.remove('bg-slate-800');
+                    btn.classList.add('bg-rose-600/30', 'text-rose-300', 'border-rose-500');
+                }
+            });
+
+            feedbackEl.classList.remove('hidden');
+            if (optIndex === q.correct) {
+                feedbackEl.className = "text-xs font-mono text-emerald-400 font-semibold";
+                feedbackEl.innerText = `✓ Correct! ${q.explanation}`;
+                if (!answeredQuestions.has(qIndex)) {
+                    userGrammarScore++;
+                    answeredQuestions.add(qIndex);
+                }
+            } else {
+                feedbackEl.className = "text-xs font-mono text-rose-400 font-semibold";
+                feedbackEl.innerText = `✗ Incorrect. ${q.explanation}`;
+            }
+
+            document.getElementById('grammarScore').innerText = userGrammarScore;
+        }
+
+        // -------------------------------------------------------------------------
+        // SECTION 3: VOIZ 25 SPEAKING PROMPTS & 10s SPRINT ENGINE
+        // -------------------------------------------------------------------------
+        function populatePromptSelector() {
+            const select = document.getElementById('promptSelect');
+            select.innerHTML = '';
+            PROMPTS_DATA.forEach((p, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.innerText = `Prompt ${p.id}: ${p.category}`;
+                select.appendChild(opt);
+            });
+        }
+
+        function loadSelectedPrompt(index) {
+            currentPromptIndex = parseInt(index);
+            const data = PROMPTS_DATA[currentPromptIndex];
+
+            // Update UI
+            document.getElementById('promptSelect').value = currentPromptIndex;
+            document.getElementById('promptBadge').innerText = `PROMPT #${data.id} OF 25`;
+            document.getElementById('promptCategory').innerText = `Category: ${data.category}`;
+            document.getElementById('promptText').innerText = `"${data.prompt}"`;
+            document.getElementById('promptCounterFooter').innerText = `${data.id} / 25`;
+
+            // Badges
+            const vocabContainer = document.getElementById('targetVocabBadges');
+            vocabContainer.innerHTML = '';
+            data.vocab.forEach(v => {
+                const badge = document.createElement('span');
+                badge.className = "px-2.5 py-1 rounded-lg bg-brand-500/20 text-brand-400 border border-brand-500/30 text-xs font-mono font-semibold";
+                badge.innerText = v;
+                vocabContainer.appendChild(badge);
+            });
+
+            // Benchmark
+            document.getElementById('benchmarkText').innerText = `"${data.benchmark}"`;
+            document.getElementById('benchmarkGrammarHighlights').innerHTML = `
+                <div><strong class="text-brand-400">Structure Focus:</strong> ${data.grammarHighlight}</div>
+            `;
+
+            // Reset Timer & Media State
+            resetSprintUI();
+        }
+
+        function navigatePrompt(direction) {
+            let nextIndex = currentPromptIndex + direction;
+            if (nextIndex < 0) nextIndex = PROMPTS_DATA.length - 1;
+            if (nextIndex >= PROMPTS_DATA.length) nextIndex = 0;
+            loadSelectedPrompt(nextIndex);
+        }
+
+        function speakBenchmarkAnswer() {
+            const data = PROMPTS_DATA[currentPromptIndex];
+            speakText(data.benchmark);
+        }
+
+        // -------------------------------------------------------------------------
+        // SPRINT TIMER & WEBAUDIO SOUND SYNTHESIS
+        // -------------------------------------------------------------------------
+        function playBeep(freq = 600, duration = 0.1) {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        function resetSprintUI() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+
+            const circle = document.getElementById('timerCircle');
+            circle.style.strokeDashoffset = "0";
+            circle.style.stroke = "#38bdf8";
+
+            document.getElementById('timerText').innerText = "10.0";
+            document.getElementById('recordingStatus').innerHTML = `
+                <span class="w-2 h-2 rounded-full bg-slate-600"></span>
+                <span>Ready to record microphone audio</span>
+            `;
+
+            document.getElementById('btnStartSprint').disabled = false;
+            document.getElementById('btnStopSprint').disabled = true;
+
+            document.getElementById('audioPlaybackContainer').classList.add('hidden');
+        }
+
+        function start10SecSprint() {
+            resetSprintUI();
+            playBeep(880, 0.15); // Start Beep
+
+            // Start Audio Recorder
+            startMicrophoneRecording();
+
+            document.getElementById('btnStartSprint').disabled = true;
+            document.getElementById('btnStopSprint').disabled = false;
+            document.getElementById('recordingStatus').innerHTML = `
+                <span class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                <span class="text-rose-400 font-bold">RECORDING SPRINT...</span>
+            `;
+
+            const totalTime = 10.0;
+            let timeRemaining = totalTime;
+            const circle = document.getElementById('timerCircle');
+            const circumference = 427; // 2 * PI * 68
+
+            const startTime = Date.now();
+
+            timerInterval = setInterval(() => {
+                const elapsed = (Date.now() - startTime) / 1000;
+                timeRemaining = Math.max(0, totalTime - elapsed);
+
+                document.getElementById('timerText').innerText = timeRemaining.toFixed(1);
+
+                // Progress Circle Offset
+                const progress = elapsed / totalTime;
+                circle.style.strokeDashoffset = (circumference * progress).toString();
+
+                // Beep on last 3 seconds
+                if (Math.ceil(timeRemaining) <= 3 && Math.ceil(timeRemaining) > 0) {
+                    circle.style.stroke = "#f43f5e"; // Turn Red
+                }
+
+                if (timeRemaining <= 0) {
+                    finishSprint();
+                }
+            }, 50);
+        }
+
+        function stopSprintEarly() {
+            finishSprint();
+        }
+
+        function finishSprint() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+
+            playBeep(440, 0.4); // End Beep
+
+            document.getElementById('timerText').innerText = "0.0";
+            document.getElementById('recordingStatus').innerHTML = `
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span class="text-emerald-400 font-bold">SPRINT COMPLETE!</span>
+            `;
+
+            document.getElementById('btnStartSprint').disabled = false;
+            document.getElementById('btnStopSprint').disabled = true;
+
+            stopMicrophoneRecording();
+        }
+
+        // -------------------------------------------------------------------------
+        // MICROPHONE MEDIARECORDER LOGIC
+        // -------------------------------------------------------------------------
+        // MICROPHONE MEDIARECORDER & AUDIO EXPORT LOGIC
+        // -------------------------------------------------------------------------
+        function startMicrophoneRecording() {
+            audioChunks = [];
+            lastRecordedAudioBlob = null;
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        mediaRecorder = new MediaRecorder(stream);
+                        mediaRecorder.ondataavailable = event => {
+                            audioChunks.push(event.data);
+                        };
+                        mediaRecorder.onstop = () => {
+                            lastRecordedAudioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                            const audioUrl = URL.createObjectURL(lastRecordedAudioBlob);
+                            const audioPlayer = document.getElementById('recordedAudio');
+                            audioPlayer.src = audioUrl;
+                            document.getElementById('audioPlaybackContainer').classList.remove('hidden');
+                        };
+                        mediaRecorder.start();
+                        isRecording = true;
+                    })
+                    .catch(err => {
+                        console.warn("Microphone access denied or unsupported:", err);
+                        document.getElementById('recordingStatus').innerHTML = `
+                            <span class="text-amber-400">Microphone permission omitted. Sprint running in timer-only mode.</span>
+                        `;
+                    });
+            }
+        }
+
+        function stopMicrophoneRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                isRecording = false;
+            }
+        }
+
+        function downloadRecordedAudio() {
+            if (!lastRecordedAudioBlob) return;
+
+            const safeUserName = registeredUser.name.replace(/[^a-zA-Z0-9]/g, "_");
+            const promptId = PROMPTS_DATA[currentPromptIndex].id;
+            const filename = `Voiz_Sprint_Prompt${promptId}_${safeUserName}.wav`;
+
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(lastRecordedAudioBlob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
