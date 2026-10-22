@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOIZ | Technical English - Automotive & Industrial Problem Solving</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            glow: '#60a5fa'
+                        },
+                        voiz: {
+                            bg: '#0f172a',
+                            card: '#1e293b',
+                            border: '#334155',
+                            accent: '#10b981',
+                            danger: '#ef4444',
+                            warning: '#f59e0b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .glow-effect {
+            box-shadow: 0 0 20px -5px rgba(59, 130, 246, 0.3);
+        }
+        .pulse-red {
+            animation: pulse-red-anim 1s infinite;
+        }
+        @keyframes pulse-red-anim {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        }
+    </style>
+</head>
+<body class="bg-voiz-bg min-h-screen text-slate-100 flex flex-col selection:bg-brand-500 selection:text-white">
+
+    <!-- TOP HEADER / BRANDING -->
+    <header class="border-b border-voiz-border bg-slate-900/80 backdrop-blur sticky top-0 z-50 px-4 lg:px-8 py-3.5 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+            <div class="bg-gradient-to-tr from-brand-600 to-emerald-400 p-2 rounded-xl text-slate-950 font-black tracking-wider text-xl flex items-center gap-1 shadow-lg shadow-brand-500/20">
+                <i data-lucide="mic" class="w-6 h-6 stroke-[2.5]"></i>
+                <span>VOIZ</span>
+            </div>
+            <div>
+                <h1 class="text-sm font-bold text-slate-200 tracking-wide uppercase">Technical English for Automotive & Maintenance</h1>
+                <p class="text-xs text-slate-400">SEN-A2.2 | Problem-Solving & Action Plans</p>
+            </div>
+        </div>
+
+        <!-- NAVIGATION TABS -->
+        <nav class="flex bg-slate-800/80 p-1 rounded-xl border border-voiz-border">
+            <button onclick="switchTab('glossary')" id="tab-glossary" class="nav-btn px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 flex items-center gap-2 bg-brand-600 text-white shadow-md">
+                <i data-lucide="book-open" class="w-4 h-4"></i>
+                <span class="hidden sm:inline">1. GLOSSARY</span>
+            </button>
+            <button onclick="switchTab('grammar')" id="tab-grammar" class="nav-btn px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all duration-200 flex items-center gap-2">
+                <i data-lucide="cpu" class="w-4 h-4"></i>
+                <span class="hidden sm:inline">2. GRAMMAR IN PRACTICE</span>
+            </button>
+            <button onclick="switchTab('voiz')" id="tab-voiz" class="nav-btn px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all duration-200 flex items-center gap-2">
+                <i data-lucide="activity" class="w-4 h-4"></i>
+                <span class="hidden sm:inline">3. VOIZ SPRINT (25 PROMPTS)</span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 lg:p-8">
+
+        <!-- SECTION 1: GLOSSARY -->
+        <section id="section-glossary" class="space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-voiz-card p-6 rounded-2xl border border-voiz-border">
+                <div>
+                    <div class="flex items-center gap-2 text-brand-500 text-xs font-bold tracking-wider uppercase mb-1">
+                        <i data-lucide="layers" class="w-4 h-4"></i> Technical & Grammatical Lexicon
+                    </div>
+                    <h2 class="text-2xl font-bold text-white">Automotive & Maintenance Glossary</h2>
+                    <p class="text-slate-400 text-sm mt-1">12 essential terms extracted from the RAP 3 SENA Curriculum with IPA pronunciation and contextual examples.</p>
+                </div>
+
+                <!-- SEARCH & FILTERS -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <div class="relative">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="glossary-search" placeholder="Search terms or IPA..." oninput="filterGlossary()" class="bg-slate-900 text-slate-200 text-sm rounded-xl pl-9 pr-4 py-2 border border-voiz-border focus:outline-none focus:border-brand-500 w-full sm:w-64 transition-all">
+                    </div>
+                    <select id="glossary-category" onchange="filterGlossary()" class="bg-slate-900 text-slate-200 text-sm rounded-xl px-3 py-2 border border-voiz-border focus:outline-none focus:border-brand-500 transition-all">
+                        <option value="ALL">All Categories</option>
+                        <option value="Technical Vocabulary">Technical Vocabulary</option>
+                        <option value="Grammatical Concept">Grammatical Concepts</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- GLOSSARY CARDS GRID -->
+            <div id="glossary-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Dynamically Populated -->
+            </div>
+        </section>
+
+        <!-- SECTION 2: GRAMMAR IN PRACTICE -->
+        <section id="section-grammar" class="space-y-8 hidden">
+            <!-- Grammatical Summary Banner -->
+            <div class="bg-gradient-to-r from-slate-900 via-voiz-card to-slate-900 p-6 rounded-2xl border border-voiz-border">
+                <div class="flex items-center gap-2 text-emerald-400 text-xs font-bold tracking-wider uppercase mb-1">
+                    <i data-lucide="code" class="w-4 h-4"></i> Syntactic Blueprint
+                </div>
+                <h2 class="text-2xl font-bold text-white">Automotive Grammar in Practice</h2>
+                <p class="text-slate-400 text-sm mt-1">Master structural rules for troubleshooting, technical comparisons, safety directives, and scheduling repairs.</p>
+            </div>
+
+            <!-- GRAMMAR MODULES GRID -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                <!-- 1. Zero Conditional -->
+                <div class="bg-voiz-card p-6 rounded-2xl border border-voiz-border flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                                <span class="bg-brand-500/10 text-brand-400 text-xs px-2.5 py-1 rounded-lg border border-brand-500/20">Rule 1</span>
+                                Zero Conditional (Cause & Effect)
+                            </h3>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-4">Expresses mechanical facts, universal safety laws, and immediate physical consequences.</p>
+                        
+                        <!-- Formula Box -->
+                        <div class="bg-slate-900 p-4 rounded-xl border border-voiz-border font-mono text-xs text-brand-400 mb-4 text-center">
+                            IF / WHEN + [Present Simple Clause] , [Present Simple Clause]
+                        </div>
+
+                        <!-- Contrast Example -->
+                        <div class="space-y-2 text-xs">
+                            <div class="p-3 bg-slate-900/50 rounded-lg border border-emerald-500/20 flex justify-between items-center">
+                                <div>
+                                    <span class="text-emerald-400 font-semibold block">Correct Mechanical Rule:</span>
+                                    <span class="text-slate-300">If coolant drops below the limit, the engine overheats.</span>
+                                </div>
+                                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+                            </div>
+                            <div class="p-3 bg-slate-900/50 rounded-lg border border-red-500/20 flex justify-between items-center">
+                                <div>
+                                    <span class="text-red-400 font-semibold block">Incorrect Form:</span>
+                                    <span class="text-slate-400 line-through">If coolant will drop, engine will overheat.</span>
+                                </div>
+                                <i data-lucide="x-circle" class="w-4 h-4 text-red-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Modals for Technical Advice & Warnings -->
+                <div class="bg-voiz-card p-6 rounded-2xl border border-voiz-border flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                                <span class="bg-brand-500/10 text-brand-400 text-xs px-2.5 py-1 rounded-lg border border-brand-500/20">Rule 2</span>
+                                Technical Recommendation & Safety
+                            </h3>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-4">Differentiates advice, urgent warnings, absolute obligations, and potential alternatives.</p>
+                        
+                        <div class="space-y-2 text-xs">
+                            <div class="p-2.5 bg-slate-900 rounded-lg flex items-center justify-between">
+                                <span class="font-mono text-amber-400 w-24">Had better</span>
+                                <span class="text-slate-300 flex-1">Strong warning of negative consequences</span>
+                                <span class="text-slate-500 italic">"You had better disconnect the power."</span>
+                            </div>
+                            <div class="p-2.5 bg-slate-900 rounded-lg flex items-center justify-between">
+                                <span class="font-mono text-blue-400 w-24">Should</span>
+                                <span class="text-slate-300 flex-1">Standard recommendation/advice</span>
+                                <span class="text-slate-500 italic">"We should replace the air filter."</span>
+                            </div>
+                            <div class="p-2.5 bg-slate-900 rounded-lg flex items-center justify-between">
+                                <span class="font-mono text-red-400 w-24">Must</span>
+                                <span class="text-slate-300 flex-1">Mandatory safety obligation</span>
+                                <span class="text-slate-500 italic">"Technicians must wear safety goggles."</span>
+                            </div>
+                            <div class="p-2.5 bg-slate-900 rounded-lg flex items-center justify-between">
+                                <span class="font-mono text-emerald-400 w-24">Could</span>
+                                <span class="text-slate-300 flex-1">Feasible optional alternative</span>
+                                <span class="text-slate-500 italic">"We could order spare parts online."</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Present Continuous for Scheduled Arrangements -->
+                <div class="bg-voiz-card p-6 rounded-2xl border border-voiz-border flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                                <span class="bg-brand-500/10 text-brand-400 text-xs px-2.5 py-1 rounded-lg border border-brand-500/20">Rule 3</span>
+                                Scheduled Arrangements + Time Prepositions
+                            </h3>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-3">Uses Present Continuous for fixed maintenance agendas paired with exact prepositions (<span class="text-amber-400">at</span> time, <span class="text-amber-400">on</span> day, <span class="text-amber-400">in</span> month/year).</p>
+
+                        <!-- Timeline Visualizer -->
+                        <div class="bg-slate-900 p-4 rounded-xl border border-voiz-border mb-4">
+                            <div class="relative flex items-center justify-between text-[11px] font-mono">
+                                <div class="absolute h-0.5 bg-slate-700 top-1/2 left-4 right-4 -z-0"></div>
+                                <div class="relative z-10 bg-slate-800 px-2 py-1 rounded border border-voiz-border text-slate-400">Now (Decision)</div>
+                                <div class="relative z-10 bg-brand-600 px-2 py-1 rounded text-white font-bold shadow">
+                                    "We are installing the lathe ON Monday AT 8:00 AM"
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                            <div class="p-2 bg-slate-900 rounded-lg">
+                                <span class="text-amber-400 font-bold block">AT</span>
+                                <span class="text-slate-400 text-[10px]">Specific Times</span>
+                                <span class="text-slate-200 block mt-1">at 7:30 AM / at noon</span>
+                            </div>
+                            <div class="p-2 bg-slate-900 rounded-lg">
+                                <span class="text-amber-400 font-bold block">ON</span>
+                                <span class="text-slate-400 text-[10px]">Days & Dates</span>
+                                <span class="text-slate-200 block mt-1">on Tuesday / on Oct 22</span>
+                            </div>
+                            <div class="p-2 bg-slate-900 rounded-lg">
+                                <span class="text-amber-400 font-bold block">IN</span>
+                                <span class="text-slate-400 text-[10px]">Months, Years, Shifts</span>
+                                <span class="text-slate-200 block mt-1">in October / in 2026</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Comparatives vs Superlatives -->
+                <div class="bg-voiz-card p-6 rounded-2xl border border-voiz-border flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                                <span class="bg-brand-500/10 text-brand-400 text-xs px-2.5 py-1 rounded-lg border border-brand-500/20">Rule 4</span>
+                                Equipment & Solution Comparison
+                            </h3>
+                        </div>
+                        <p class="text-xs text-slate-400 mb-4">Grading performance, durability, and operational costs across tools and workshop machinery.</p>
+
+                        <div class="space-y-3 text-xs">
+                            <div class="p-3 bg-slate-900 rounded-xl">
+                                <div class="flex justify-between text-slate-300 font-semibold mb-1">
+                                    <span>Comparative (2 Options)</span>
+                                    <span class="text-brand-400">[Adj+er than / More adj than]</span>
+                                </div>
+                                <p class="text-slate-400">"Synthetic oil is <span class="text-brand-300 underline">more efficient than</span> conventional oil."</p>
+                            </div>
+                            <div class="p-3 bg-slate-900 rounded-xl">
+                                <div class="flex justify-between text-slate-300 font-semibold mb-1">
+                                    <span>Superlative (1 vs All)</span>
+                                    <span class="text-emerald-400">[The adj+est / The most adj]</span>
+                                </div>
+                                <p class="text-slate-400">"This OBD-II scanner is <span class="text-emerald-300 underline">the most reliable</span> diagnostic tool in the workshop."</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- INTERACTIVE GRAMMAR PRACTICE BENCH -->
+            <div class="bg-voiz-card p-6 rounded-2xl border border-brand-500/30 glow-effect">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i data-lucide="check-square" class="w-5 h-5 text-brand-500"></i>
+                            Interactive Grammar Verification Bench
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1">Test your technical English syntax precision. Select the correct grammatical option for each workshop scenario.</p>
+                    </div>
+                    <span id="quiz-score" class="text-xs font-mono font-bold px-3 py-1.5 bg-brand-500/10 text-brand-400 rounded-full border border-brand-500/20">
+                        Score: 0 / 4
+                    </span>
+                </div>
+
+                <div id="grammar-quiz-container" class="space-y-6">
+                    <!-- Dynamic Interactive Quiz Questions -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: VOIZ 25 SPEAKING PROMPTS -->
+        <section id="section-voiz" class="space-y-6 hidden">
+            <!-- HEADER -->
+            <div class="bg-slate-900 p-6 rounded-2xl border border-voiz-border flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-2 text-brand-400 text-xs font-bold tracking-wider uppercase mb-1">
+                        <i data-lucide="zap" class="w-4 h-4"></i> High-Intensity Oral Drills
+                    </div>
+                    <h2 class="text-2xl font-bold text-white">VOIZ 10-Second Speaking Engine</h2>
+                    <p class="text-slate-400 text-sm mt-1">25 Scenarios tailored for Automotive Maintenance, Troubleshooting, and Technical Recommendations.</p>
+                </div>
+                <div class="flex items-center gap-3 bg-voiz-card px-4 py-2 rounded-xl border border-voiz-border">
+                    <i data-lucide="mic-off" id="mic-status-icon" class="w-5 h-5 text-slate-500"></i>
+                    <span id="mic-status-text" class="text-xs font-mono text-slate-400">Ready for Recording</span>
+                </div>
+            </div>
+
+            <!-- MAIN PROMPT & SPRINT LAYOUT -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+                <!-- LEFT: PROMPT CATALOG (LIST) -->
+                <div class="lg:col-span-4 bg-voiz-card rounded-2xl border border-voiz-border p-4 h-[650px] flex flex-col">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-2 flex justify-between items-center">
+                        <span>Select Prompt (1-25)</span>
+                        <span id="prompt-counter" class="text-brand-400 font-mono">1/25</span>
+                    </h3>
+                    
+                    <div id="prompt-list" class="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-1">
+                        <!-- Dynamically Populated 25 Prompts -->
+                    </div>
+                </div>
+
+                <!-- RIGHT: ACTIVE SPRINT WORKSPACE -->
+                <div class="lg:col-span-8 bg-voiz-card rounded-2xl border border-voiz-border p-6 flex flex-col justify-between relative overflow-hidden">
+                    
+                    <!-- ACTIVE PROMPT DISPLAY -->
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span id="active-prompt-category" class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 bg-brand-500/10 text-brand-400 rounded-lg border border-brand-500/20">
+                                TECHNICAL TROUBLESHOOTING
+                            </span>
+                            <span id="active-prompt-id" class="text-xs font-mono text-slate-500">PROMPT #01</span>
+                        </div>
+
+                        <h3 id="active-prompt-title" class="text-xl font-bold text-white mb-3">
+                            Engine Overheating Emergency Protocol
+                        </h3>
+
+                        <p id="active-prompt-desc" class="text-slate-300 text-sm bg-slate-900/60 p-4 rounded-xl border border-voiz-border leading-relaxed mb-4">
+                            A vehicle arrives at the shop with the temperature gauge pinned in the red zone. Instruct the junior mechanic immediately using Zero Conditional and standard warnings.
+                        </p>
+
+                        <!-- TARGET VOCABULARY TAGS -->
+                        <div class="mb-4">
+                            <h4 class="text-xs font-semibold text-slate-400 uppercase mb-2">Target Vocabulary & Syntax:</h4>
+                            <div id="active-target-words" class="flex flex-wrap gap-2">
+                                <!-- Tags dynamically generated -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 10-SECOND SPRINT ENGINE SECTION -->
+                    <div class="bg-slate-900/90 p-6 rounded-2xl border border-voiz-border my-4 flex flex-col sm:flex-row items-center justify-between gap-6">
+                        
+                        <!-- Circular Progress Timer -->
+                        <div class="relative w-32 w-32 flex items-center justify-center">
+                            <svg class="w-32 h-32 transform -rotate-90">
+                                <circle cx="64" cy="64" r="54" stroke="currentColor" stroke-width="8" class="text-slate-800" fill="transparent" />
+                                <circle id="timer-circle" cx="64" cy="64" r="54" stroke="currentColor" stroke-width="8" class="text-brand-500" fill="transparent" stroke-dasharray="339.29" stroke-dashoffset="0" stroke-linecap="round" />
+                            </svg>
+                            <div class="absolute flex flex-col items-center">
+                                <span id="timer-text" class="text-3xl font-mono font-bold text-white">10</span>
+                                <span class="text-[10px] text-slate-400 font-mono uppercase">Seconds</span>
+                            </div>
+                        </div>
+
+                        <!-- CONTROL BUTTONS -->
+                        <div class="flex-1 flex flex-col gap-3 w-full">
+                            <button id="btn-start-sprint" onclick="startSprint()" class="w-full py-3.5 bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-brand-400 text-white font-bold rounded-xl shadow-lg shadow-brand-500/25 flex items-center justify-center gap-2 transition-all active:scale-[0.99]">
+                                <i data-lucide="play" class="w-5 h-5 fill-current"></i>
+                                <span>START 10-SECOND SPRINT</span>
+                            </button>
+
+                            <div class="flex gap-2">
+                                <button id="btn-play-recording" onclick="playAudioRecording()" disabled class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-slate-800 text-slate-200 text-xs font-semibold rounded-xl border border-voiz-border flex items-center justify-center gap-2 transition-all">
+                                    <i data-lucide="volume-2" class="w-4 h-4 text-emerald-400"></i>
+                                    <span>PLAY MY RESPONSE</span>
+                                </button>
+                                <button onclick="toggleModelAnswer()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl border border-voiz-border flex items-center justify-center gap-2 transition-all">
+                                    <i data-lucide="eye" class="w-4 h-4 text-brand-400"></i>
+                                    <span>MODEL ANSWER</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MODEL ANSWER (HIDDEN BY DEFAULT) -->
+                    <div id="model-answer-container" class="hidden bg-emerald-950/30 border border-emerald-500/30 p-4 rounded-xl">
+                        <div class="flex items-center gap-2 text-emerald-400 font-bold text-xs uppercase mb-1">
+                            <i data-lucide="check" class="w-4 h-4"></i> Expert Benchmark Response:
+                        </div>
+                        <p id="model-answer-text" class="text-slate-200 text-xs font-mono leading-relaxed">
+                            "If the coolant level drops below the minimum line, the engine overheats immediately. You had better turn off the ignition before opening the cap!"
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-voiz-border bg-slate-950 py-4 px-6 text-center text-xs text-slate-500">
+        <p>VOIZ Interactive EdTech System &copy; 2026 | Technical English for Automotive & Mechanical Engineering | SENA RAP 3</p>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // ==========================================
+        // 1. DATA: GLOSSARY (12 TERMS FROM PDF)
+        // ==========================================
+        const glossaryData = [
+            {
+                term: "Troubleshooting",
+                ipa: "/ˈtrʌbəlˌʃuːtɪŋ/",
+                category: "Technical Vocabulary",
+                definition: "A systematic approach to locating and isolating the root cause of a fault or failure in mechanical systems or engines.",
+                example: "The mechanic performed troubleshooting on the fuel injection system to find the pressure leak."
+            },
+            {
+                term: "Zero Conditional",
+                ipa: "/ˈzɪərəʊ kənˈdɪʃənəl/",
+                category: "Grammatical Concept",
+                definition: "A grammatical structure (If/When + Present Simple, Present Simple) used to state universal mechanical truths, safety rules, and direct cause-and-effect.",
+                example: "If the cooling fan fails, the engine temperature rises rapidly."
+            },
+            {
+                term: "Had Better",
+                ipa: "/hæd ˈbetər/",
+                category: "Grammatical Concept",
+                definition: "A modal expression used to give strong technical advice or warnings, implying severe consequences if ignored.",
+                example: "You had better depressurize the brake fluid system before removing the master cylinder."
+            },
+            {
+                term: "Multimeter",
+                ipa: "/ˈmʌltɪˌmiːtər/",
+                category: "Technical Vocabulary",
+                definition: "An electronic measuring instrument that combines several measurement functions (voltage, current, resistance) in one unit.",
+                example: "Use the digital multimeter to check if the car battery generates 12.6 volts."
+            },
+            {
+                term: "Circuit Breaker",
+                ipa: "/ˈsɜːrkɪt ˈbreɪkər/",
+                category: "Technical Vocabulary",
+                definition: "An automatically operated electrical switch designed to protect an automotive circuit from damage caused by excess current.",
+                example: "If an electrical overload occurs in the workshop, the circuit breaker trips automatically."
+            },
+            {
+                term: "Lathe",
+                ipa: "/leɪð/",
+                category: "Technical Vocabulary",
+                definition: "A heavy power-driven machine for shaping metal parts, brake rotors, or shafts by rotating them against a cutting tool.",
+                example: "The technician mounted the warped brake disc onto the brake lathe for resurfacing."
+            },
+            {
+                term: "Action Plan",
+                ipa: "/ˈækʃən plæn/",
+                category: "Technical Vocabulary",
+                definition: "A detailed sequence of technical procedures and scheduled maintenance steps to resolve an operational breakdown.",
+                example: "We prepared an action plan to repair all workshop hydraulic lifts by Friday."
+            },
+            {
+                term: "Arrangement (Present Continuous)",
+                ipa: "/əˈreɪndʒmənt/",
+                category: "Grammatical Concept",
+                definition: "Using the Present Continuous tense paired with time prepositions (in, on, at) to confirm pre-scheduled future work or repair dates.",
+                example: "We are installing the new exhaust extractor on Monday at 9:00 AM."
+            },
+            {
+                term: "Superlative",
+                ipa: "/suːˈpɜːrlətɪv/",
+                category: "Grammatical Concept",
+                definition: "An adjective form used to describe an item that possesses the highest degree of a quality (e.g., the safest, the most durable) among three or more items.",
+                example: "This synthetic lubricant is the most durable solution for heavy-duty diesel engines."
+            },
+            {
+                term: "Lubricant",
+                ipa: "/ˈluːbrɪkənt/",
+                category: "Technical Vocabulary",
+                definition: "A substance (such as oil or grease) applied to engine components to reduce friction and wear between moving parts.",
+                example: "Always check that the engine gear grease and lubricant levels comply with OEM standards."
+            },
+            {
+                term: "Comparative",
+                ipa: "/kəmˈpærətɪv/",
+                category: "Grammatical Concept",
+                definition: "An adjective structure used to contrast qualities or efficiency between two tools, machines, or repair procedures.",
+                example: "Pneumatic wrenches are significantly faster than manual socket ratchets."
+            },
+            {
+                term: "Prepositions of Time",
+                ipa: "/ˌprepəˈzɪʃənz əv taɪm/",
+                category: "Grammatical Concept",
+                definition: "Specific temporal particles ('at' for exact times, 'on' for days/dates, 'in' for months/years) used to schedule technical tasks.",
+                example: "The maintenance shift begins at 06:00 AM on Tuesday."
+            }
+        ];
+
+        // ==========================================
+        // 2. DATA: GRAMMAR QUIZ
+        // ==========================================
+        const grammarQuizData = [
+            {
+                question: "1. Complete the Zero Conditional mechanical fact: 'If the alternator _____, the battery _____ completely.'",
+                options: [
+                    "fails / discharges",
+                    "will fail / will discharge",
+                    "failed / discharges",
+                    "fails / will discharge"
+                ],
+                correct: 0,
+                explanation: "Zero Conditional uses Present Simple in both clauses (If + Present Simple, Present Simple)."
+            },
+            {
+                question: "2. Select the correct urgent warning with 'Had Better': 'You _____ test the high-voltage hybrid cables before touching them.'",
+                options: [
+                    "had better not to",
+                    "had better",
+                    "would better",
+                    "have better to"
+                ],
+                correct: 1,
+                explanation: "'Had better' is followed directly by the bare infinitive (verb without 'to')."
+            },
+            {
+                question: "3. Choose the correct Preposition of Time for a scheduled shop appointment: 'We are servicing the transmission system _____ Thursday _____ 2:30 PM.'",
+                options: [
+                    "in / at",
+                    "at / on",
+                    "on / at",
+                    "on / in"
+                ],
+                correct: 2,
+                explanation: "Use 'on' for days of the week (on Thursday) and 'at' for specific times (at 2:30 PM)."
+            },
+            {
+                question: "4. Select the appropriate Superlative form: 'Among all 3 diagnostic scanners, Model X is _____ scanner available.'",
+                options: [
+                    "more efficient",
+                    "the most efficient",
+                    "most efficient than",
+                    "the efficiency"
+                ],
+                correct: 1,
+                explanation: "Superlative for long adjectives requires 'the most' when comparing 3 or more entities."
+            }
+        ];
+
+        // ==========================================
+        // 3. DATA: 25 SPEAKING PROMPTS
+        // ==========================================
+        const speakingPrompts = [
+            {
+                id: 1,
+                category: "Emergency & Safety",
+                title: "Engine Overheating Emergency Protocol",
+                desc: "A car arrives with steam rising from the hood. Warn the apprentice immediately using Zero Conditional and Had Better.",
+                targets: ["If coolant drops...", "overheats", "Had better turn off"],
+                model: "If the coolant level drops below the minimum, the engine overheats immediately. You had better turn off the ignition right now!"
+            },
+            {
+                id: 2,
+                category: "Equipment Comparison",
+                title: "Pneumatic vs Manual Wrenches",
+                desc: "Compare two impact wrenches for the tire changing station using comparative adjectives.",
+                targets: ["Pneumatic wrench", "faster than", "more efficient"],
+                model: "The pneumatic wrench is much faster than the manual socket ratchet and it is more efficient for heavy-duty bolts."
+            },
+            {
+                id: 3,
+                category: "Maintenance Schedule",
+                title: "Fleet Transmission Service Agenda",
+                desc: "State a scheduled maintenance plan using Present Continuous with precise time prepositions (on/at).",
+                targets: ["We are servicing...", "ON Monday", "AT 8:00 AM"],
+                model: "We are servicing the entire truck transmission fleet on Monday at 8:00 AM in the primary workshop bay."
+            },
+            {
+                id: 4,
+                category: "Electrical Diagnostic",
+                title: "Battery Voltage Test Warning",
+                desc: "Explain what happens when a battery short-circuits using Zero Conditional and 'Must'.",
+                targets: ["If you short-circuit...", "spark occurs", "Must wear safety gear"],
+                model: "If you short-circuit the battery terminals, a dangerous spark occurs. You must wear protective safety goggles!"
+            },
+            {
+                id: 5,
+                category: "Tool Assessment",
+                title: "Selecting the Best Diagnostic Scanner",
+                desc: "Recommend the top OBD-II scanner among three options using the superlative degree.",
+                targets: ["The most reliable", "diagnostic tool", "the fastest"],
+                model: "I consider that the Bosch scanner is the most reliable and the fastest diagnostic tool in our entire inventory."
+            },
+            {
+                id: 6,
+                category: "Troubleshooting",
+                title: "Brake Rotor Squeal Inspection",
+                desc: "Advise a technician on what to do if the brake disc is warped using 'Should'.",
+                targets: ["If brake disc warps...", "squeal", "Should resurface"],
+                model: "If the brake disc warps, the pads squeal during braking. We should resurface the rotor on the lathe immediately."
+            },
+            {
+                id: 7,
+                category: "Urgent Safety Warning",
+                title: "High-Voltage Hybrid Battery Safety",
+                desc: "Warn a beginner mechanic about high-voltage battery cables using 'Had better'.",
+                targets: ["Had better disconnect", "orange cable", "electric shock"],
+                model: "You had better disconnect the main service plug before touching orange high-voltage cables, or you get an electric shock!"
+            },
+            {
+                id: 8,
+                category: "Action Plan",
+                title: "Hydraulic Lift Overhaul Agenda",
+                desc: "Announce the arrival of the repair team next month using Present Continuous and 'In'.",
+                targets: ["We are overhauling...", "IN November", "hydraulic lift"],
+                model: "We are overhauling all workshop hydraulic lifts in November to comply with annual safety standards."
+            },
+            {
+                id: 9,
+                category: "Parts Comparison",
+                title: "Synthetic vs Conventional Engine Oil",
+                desc: "Compare two types of engine oil for turbocharged engines using comparatives.",
+                targets: ["Synthetic oil", "durable than", "better protection"],
+                model: "Synthetic oil is more durable than conventional oil and provides better viscosity protection under extreme heat."
+            },
+            {
+                id: 10,
+                category: "Electrical Diagnostic",
+                title: "Multimeter Resistance Measurement",
+                desc: "Instruct how to verify wire continuity using Zero Conditional and 'Could'.",
+                targets: ["If resistance is infinite...", "broken circuit", "Could replace"],
+                model: "If the multimeter reads infinite resistance, the circuit is open. We could replace the wiring harness or repair the pin."
+            },
+            {
+                id: 11,
+                category: "Troubleshooting",
+                title: "Exhaust Smoke Diagnosis",
+                desc: "Diagnose blue exhaust smoke using Zero Conditional (cause and effect).",
+                targets: ["If oil burns...", "blue smoke", "piston rings"],
+                model: "If oil leaks past worn piston rings into the combustion chamber, the exhaust produces thick blue smoke."
+            },
+            {
+                id: 12,
+                category: "Equipment Assessment",
+                title: "Selecting Workshop Air Compressor",
+                desc: "Evaluate 4 air compressors and declare the top choice using Superlatives.",
+                targets: ["The most powerful", "air compressor", "quietest"],
+                model: "The Ingersoll-Rand compressor is the most powerful and the quietest unit for operating pneumatic impact guns."
+            },
+            {
+                id: 13,
+                category: "Maintenance Schedule",
+                title: "Timing Belt Replacement Booking",
+                desc: "Confirm a scheduled timing belt replacement for a customer using Present Continuous & Prepositions.",
+                targets: ["We are replacing...", "ON Friday", "AT 10:00 AM"],
+                model: "We are replacing your car's timing belt and water pump on Friday at 10:00 AM."
+            },
+            {
+                id: 14,
+                category: "Urgent Safety Warning",
+                title: "Fuel Line Depressurization",
+                desc: "Warn an assistant about high-pressure fuel rails using 'Had better'.",
+                targets: ["Had better depressurize", "fuel rail", "spray fuel"],
+                model: "You had better depressurize the fuel rail before removing injectors, or fuel sprays under high pressure!"
+            },
+            {
+                id: 15,
+                category: "Polite Debate",
+                title: "Recommending Aftermarket vs OEM Parts",
+                desc: "Politely express your technical opinion using 'I think that...' and 'Could'.",
+                targets: ["I think that...", "OEM spare parts", "Could order"],
+                model: "I think that OEM spare parts offer higher reliability, but we could order high-grade aftermarket parts to reduce costs."
+            },
+            {
+                id: 16,
+                category: "Troubleshooting",
+                title: "Alternator Failure & Battery Warning",
+                desc: "State what happens when the alternator belt snaps using Zero Conditional.",
+                targets: ["If alternator belt snaps...", "stops charging", "battery dies"],
+                model: "If the alternator belt snaps, the generator stops charging and the battery dies within twenty minutes."
+            },
+            {
+                id: 17,
+                category: "Equipment Comparison",
+                title: "Hydraulic vs Scissor Floor Jacks",
+                desc: "Compare hydraulic floor jacks with manual scissor jacks using comparatives.",
+                targets: ["Hydraulic jack", "safer than", "heavier"],
+                model: "The hydraulic floor jack is safer and much easier to operate than a manual scissor jack, although it is heavier."
+            },
+            {
+                id: 18,
+                category: "Maintenance Schedule",
+                title: "Annual Calibration of Torque Wrenches",
+                desc: "Schedule annual torque wrench calibration using Present Continuous and 'In'.",
+                targets: ["We are calibrating...", "IN January", "torque wrenches"],
+                model: "We are calibrating all precision digital torque wrenches in January to maintain certified ISO accuracy standards."
+            },
+            {
+                id: 19,
+                category: "Urgent Safety Warning",
+                title: "Jack Stands Under Lifted Vehicle",
+                desc: "Warn a teammate who is crawling under a car supported only by a hydraulic jack using 'Must' & 'Had better'.",
+                targets: ["Must place jack stands", "Had better not step under"],
+                model: "You must place steel jack stands under the chassis! You had better not crawl under a car held only by a hydraulic jack."
+            },
+            {
+                id: 20,
+                category: "Troubleshooting",
+                title: "Radiator Hose Leak Detection",
+                desc: "Explain coolant pressure drops using Zero Conditional and 'Should'.",
+                targets: ["If radiator hose cracks...", "coolant leaks", "Should replace"],
+                model: "If the radiator hose cracks, pressurized coolant leaks out. We should replace the rubber hose and clamp immediately."
+            },
+            {
+                id: 21,
+                category: "Equipment Assessment",
+                title: "The Workshop Heavy-Duty Lathe",
+                desc: "Highlight the features of the shop's main lathe using the Superlative degree.",
+                targets: ["The most precise", "lathe", "durable"],
+                model: "This heavy-duty brake lathe is the most precise and durable machine in our entire automotive workshop."
+            },
+            {
+                id: 22,
+                category: "Polite Debate",
+                title: "Engine Rebuild vs Engine Replacement",
+                desc: "Express your view on rebuilding an engine versus swapping it using 'I consider that...' and 'Should'.",
+                targets: ["I consider that...", "engine swap", "should choose"],
+                model: "I consider that an engine swap is faster, but we should recommend a complete rebuild to save the client money."
+            },
+            {
+                id: 23,
+                category: "Maintenance Schedule",
+                title: "Tire Alignment Appointment",
+                desc: "State the scheduled 3D wheel alignment appointment using Present Continuous and 'At'.",
+                targets: ["We are aligning...", "ON Wednesday", "AT 3:00 PM"],
+                model: "We are aligning the front suspension wheels on Wednesday at 3:00 PM using the 3D laser system."
+            },
+            {
+                id: 24,
+                category: "Troubleshooting",
+                title: "Spark Plug Carbon Fouling",
+                desc: "Describe engine misfires caused by fouled spark plugs using Zero Conditional.",
+                targets: ["If spark plug fouls...", "misfires", "loss of power"],
+                model: "If a spark plug accumulates carbon deposits, the cylinder misfires and the engine suffers significant power loss."
+            },
+            {
+                id: 25,
+                category: "Action Plan",
+                title: "Emergency Workshop Contingency Summary",
+                desc: "Formulate a final oral contingency summary pairing Zero Conditional, Had Better, and Present Continuous.",
+                targets: ["If power fails...", "Had better switch...", "We are fixing..."],
+                model: "If main power fails, the circuit breaker trips. You had better switch on emergency generators. We are repairing lines on Tuesday at 7:00 AM."
+            }
+        ];
+
+        // ==========================================
+        // 4. APP STATE & INITIALIZATION
+        // ==========================================
+        let currentTab = 'glossary';
+        let currentPromptIndex = 0;
+        let sprintTimer = null;
+        let secondsLeft = 10;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let recordedAudioUrl = null;
+        let audioPlayer = new Audio();
+
+        window.onload = function() {
+            lucide.createIcons();
+            renderGlossary();
+            renderGrammarQuiz();
+            renderSpeakingPromptsList();
+            loadPrompt(0);
+        };
+
+        // ==========================================
+        // 5. NAVIGATION LOGIC
+        // ==========================================
+        function switchTab(tabId) {
+            currentTab = tabId;
+            ['glossary', 'grammar', 'voiz'].forEach(t => {
+                const sec = document.getElementById(`section-${t}`);
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tabId) {
+                    sec.classList.remove('hidden');
+                    btn.classList.add('bg-brand-600', 'text-white', 'shadow-md');
+                    btn.classList.remove('text-slate-400');
+                } else {
+                    sec.classList.add('hidden');
+                    btn.classList.remove('bg-brand-600', 'text-white', 'shadow-md');
+                    btn.classList.add('text-slate-400');
+                }
+            });
+        }
+
+        // ==========================================
+        // 6. SECTION 1: GLOSSARY LOGIC
+        // ==========================================
+        function renderGlossary() {
+            const grid = document.getElementById('glossary-grid');
+            grid.innerHTML = '';
+
+            const searchVal = document.getElementById('glossary-search')?.value.toLowerCase() || '';
+            const catVal = document.getElementById('glossary-category')?.value || 'ALL';
+
+            const filtered = glossaryData.filter(item => {
+                const matchesSearch = item.term.toLowerCase().includes(searchVal) || 
+                                      item.definition.toLowerCase().includes(searchVal) ||
+                                      item.ipa.toLowerCase().includes(searchVal);
+                const matchesCat = (catVal === 'ALL') || (item.category === catVal);
+                return matchesSearch && matchesCat;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-500 text-sm">No terms found matching your query.</div>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-voiz-card p-5 rounded-2xl border border-voiz-border hover:border-brand-500/40 transition-all flex flex-col justify-between space-y-3";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-900 text-brand-400 border border-voiz-border">
+                                ${item.category}
+                            </span>
+                            <button onclick="speakText('${item.term}')" title="Listen Audio (SpeechSynthesis)" class="p-2 bg-slate-800 hover:bg-brand-600 text-slate-300 hover:text-white rounded-xl transition-all">
+                                <i data-lucide="volume-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                        <h3 class="text-lg font-bold text-white">${item.term}</h3>
+                        <span class="text-xs font-mono text-emerald-400 block mb-2">${item.ipa}</span>
+                        <p class="text-slate-300 text-xs leading-relaxed mb-3">${item.definition}</p>
+                    </div>
+                    <div class="bg-slate-900/70 p-3 rounded-xl border border-voiz-border/50 text-xs italic text-slate-400">
+                        <span class="text-slate-500 font-semibold not-italic block text-[10px] uppercase">Workshop Context:</span>
+                        "${item.example}"
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        function filterGlossary() {
+            renderGlossary();
+        }
+
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Stop active audio
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Speech Synthesis is not supported in this browser.");
+            }
+        }
+
+        // ==========================================
+        // 7. SECTION 2: GRAMMAR QUIZ LOGIC
+        // ==========================================
+        function renderGrammarQuiz() {
+            const container = document.getElementById('grammar-quiz-container');
+            container.innerHTML = '';
+
+            grammarQuizData.forEach((q, qIndex) => {
+                const qBox = document.createElement('div');
+                qBox.className = "bg-slate-900/80 p-5 rounded-xl border border-voiz-border space-y-3";
+                
+                let optionsHTML = '';
+                q.options.forEach((opt, optIndex) => {
+                    optionsHTML += `
+                        <button onclick="checkGrammarAnswer(${qIndex}, ${optIndex})" id="quiz-opt-${qIndex}-${optIndex}" class="w-full text-left p-3 rounded-xl bg-voiz-card hover:bg-slate-800 border border-voiz-border text-xs text-slate-300 transition-all flex items-center justify-between">
+                            <span>${opt}</span>
+                            <i data-lucide="circle" class="w-4 h-4 text-slate-600 quiz-icon"></i>
+                        </button>
+                    `;
+                });
+
+                qBox.innerHTML = `
+                    <h4 class="text-sm font-semibold text-white">${q.question}</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                        ${optionsHTML}
+                    </div>
+                    <div id="quiz-explain-${qIndex}" class="hidden p-3 rounded-lg text-xs leading-relaxed"></div>
+                `;
+                container.appendChild(qBox);
+            });
+            lucide.createIcons();
+        }
+
+        let quizUserScores = [null, null, null, null];
+
+        function checkGrammarAnswer(qIndex, optIndex) {
+            const q = grammarQuizData[qIndex];
+            const explainBox = document.getElementById(`quiz-explain-${qIndex}`);
+            
+            // Highlight buttons
+            q.options.forEach((_, idx) => {
+                const btn = document.getElementById(`quiz-opt-${qIndex}-${idx}`);
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-slate-800');
+                if (idx === q.correct) {
+                    btn.classList.add('bg-emerald-950/40', 'border-emerald-500', 'text-emerald-300');
+                } else if (idx === optIndex && optIndex !== q.correct) {
+                    btn.classList.add('bg-red-950/40', 'border-red-500', 'text-red-300');
+                }
+            });
+
+            // Show explanation
+            explainBox.classList.remove('hidden');
+            if (optIndex === q.correct) {
+                quizUserScores[qIndex] = 1;
+                explainBox.className = "p-3 rounded-lg text-xs leading-relaxed bg-emerald-950/30 text-emerald-300 border border-emerald-500/30";
+                explainBox.innerHTML = `<strong>Correct!</strong> ${q.explanation}`;
+            } else {
+                quizUserScores[qIndex] = 0;
+                explainBox.className = "p-3 rounded-lg text-xs leading-relaxed bg-red-950/30 text-red-300 border border-red-500/30";
+                explainBox.innerHTML = `<strong>Incorrect.</strong> ${q.explanation}`;
+            }
+
+            // Update Total Score
+            const totalScore = quizUserScores.reduce((a, b) => (b === 1 ? a + 1 : a), 0);
+            document.getElementById('quiz-score').innerText = `Score: ${totalScore} / 4`;
+        }
+
+        // ==========================================
+        // 8. SECTION 3: VOIZ SPEAKING SPRINT (25 PROMPTS)
+        // ==========================================
+        function renderSpeakingPromptsList() {
+            const listContainer = document.getElementById('prompt-list');
+            listContainer.innerHTML = '';
+
+            speakingPrompts.forEach((p, index) => {
+                const btn = document.createElement('button');
+                btn.onclick = () => loadPrompt(index);
+                btn.id = `prompt-item-${index}`;
+                btn.className = `w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between ${
+                    index === 0 
+                    ? 'bg-brand-600/20 border-brand-500 text-white' 
+                    : 'bg-slate-900/60 border-voiz-border text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+                }`;
+                btn.innerHTML = `
+                    <div class="truncate pr-2">
+                        <span class="text-[10px] font-mono font-bold block ${index === 0 ? 'text-brand-400' : 'text-slate-500'}">
+                            PROMPT #${String(p.id).padStart(2, '0')}
+                        </span>
+                        <span class="text-xs font-medium truncate block">${p.title}</span>
+                    </div>
+                    <i data-lucide="chevron-right" class="w-4 h-4 flex-shrink-0"></i>
+                `;
+                listContainer.appendChild(btn);
+            });
+            lucide.createIcons();
+        }
+
+        function loadPrompt(index) {
+            currentPromptIndex = index;
+            const p = speakingPrompts[index];
+
+            // Reset UI active highlight in sidebar list
+            speakingPrompts.forEach((_, idx) => {
+                const item = document.getElementById(`prompt-item-${idx}`);
+                if (item) {
+                    if (idx === index) {
+                        item.className = "w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between bg-brand-600/20 border-brand-500 text-white";
+                    } else {
+                        item.className = "w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between bg-slate-900/60 border-voiz-border text-slate-400 hover:text-slate-200 hover:bg-slate-800";
+                    }
+                }
+            });
+
+            document.getElementById('prompt-counter').innerText = `${index + 1}/25`;
+            document.getElementById('active-prompt-category').innerText = p.category;
+            document.getElementById('active-prompt-id').innerText = `PROMPT #${String(p.id).padStart(2, '0')}`;
+            document.getElementById('active-prompt-title').innerText = p.title;
+            document.getElementById('active-prompt-desc').innerText = p.desc;
+            document.getElementById('model-answer-text').innerText = `"${p.model}"`;
+            document.getElementById('model-answer-container').classList.add('hidden');
+
+            // Render Target Words
+            const targetsContainer = document.getElementById('active-target-words');
+            targetsContainer.innerHTML = '';
+            p.targets.forEach(tag => {
+                const span = document.createElement('span');
+                span.className = "px-2.5 py-1 bg-slate-900 text-emerald-400 text-xs font-mono rounded-lg border border-emerald-500/20";
+                span.innerText = tag;
+                targetsContainer.appendChild(span);
+            });
+
+            // Reset sprint state
+            resetSprintTimer();
+        }
+
+        function toggleModelAnswer() {
+            const container = document.getElementById('model-answer-container');
+            container.classList.toggle('hidden');
+        }
+
+        // ==========================================
+        // 9. AUDIO SPRINT TIMER & MEDIARECORDER
+        // ==========================================
+        function resetSprintTimer() {
+            clearInterval(sprintTimer);
+            secondsLeft = 10;
+            updateTimerDisplay();
+            
+            const btn = document.getElementById('btn-start-sprint');
+            btn.disabled = false;
+            btn.classList.remove('opacity-50', 'pulse-red');
+            btn.querySelector('span').innerText = 'START 10-SECOND SPRINT';
+
+            const micIcon = document.getElementById('mic-status-icon');
+            const micText = document.getElementById('mic-status-text');
+            micIcon.className = "w-5 h-5 text-slate-500";
+            micText.innerText = "Ready for Recording";
+            micText.className = "text-xs font-mono text-slate-400";
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('timer-text').innerText = secondsLeft;
+            const circle = document.getElementById('timer-circle');
+            const circumference = 339.29;
+            const offset = circumference - (secondsLeft / 10) * circumference;
+            circle.style.strokeDashoffset = offset;
+        }
+
+        // Web Audio API Synthesizer Beeps for Sprint Timer
+        function playBeep(frequency = 800, type = 'sine', duration = 0.1) {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.value = frequency;
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.log("Web Audio beep unavailable:", e);
+            }
+        }
+
+        async function startSprint() {
+            resetSprintTimer();
+
+            const btn = document.getElementById('btn-start-sprint');
+            btn.disabled = true;
+            btn.classList.add('pulse-red');
+            btn.querySelector('span').innerText = 'RECORDING IN PROGRESS...';
+
+            const micIcon = document.getElementById('mic-status-icon');
+            const micText = document.getElementById('mic-status-text');
+            micIcon.className = "w-5 h-5 text-red-500 animate-pulse";
+            micText.innerText = "LIVE RECORDING";
+            micText.className = "text-xs font-mono text-red-400 font-bold";
+
+            // Initialize Microphone Recording
+            audioChunks = [];
+            let stream = null;
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    recordedAudioUrl = URL.createObjectURL(audioBlob);
+                    document.getElementById('btn-play-recording').disabled = false;
+                    
+                    // Stop tracks to release mic
+                    stream.getTracks().forEach(track => track.stop());
+                };
+                mediaRecorder.start();
+            } catch (err) {
+                console.warn("Microphone access denied or unverified context:", err);
+                micText.innerText = "Mic Unavailable (Timer Only)";
+            }
+
+            // Start 10-Second Countdown
+            playBeep(600, 'sine', 0.15); // Start beep
+            sprintTimer = setInterval(() => {
+                secondsLeft--;
+                updateTimerDisplay();
+
+                if (secondsLeft > 0 && secondsLeft <= 3) {
+                    playBeep(800, 'sine', 0.08); // Warning Countdown Beep
+                }
+
+                if (secondsLeft <= 0) {
+                    clearInterval(sprintTimer);
+                    playBeep(1200, 'square', 0.4); // Final Stop Beep
+
+                    if (mediaRecorder && mediaRecorder.state === "recording") {
+                        mediaRecorder.stop();
+                    }
+
+                    btn.classList.remove('pulse-red');
+                    btn.disabled = false;
+                    btn.querySelector('span').innerText = 'RESTART SPRINT';
+
+                    micIcon.className = "w-5 h-5 text-emerald-400";
+                    micText.innerText = "Sprint Completed!";
+                    micText.className = "text-xs font-mono text-emerald-400 font-bold";
+                }
+            }, 1000);
+        }
+
+        function playAudioRecording() {
+            if (recordedAudioUrl) {
+                audioPlayer.src = recordedAudioUrl;
+                audioPlayer.play();
+            } else {
+                alert("No audio response recorded yet.");
+            }
+        }
+    </script>
+</body>
+</html>
