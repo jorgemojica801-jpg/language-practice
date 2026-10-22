@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Control de Asistencia - Clases SEMI</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                            950: '#172554',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Scrollbar for crisp visual layout */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="h-full font-sans antialiased text-slate-800 bg-slate-50 flex flex-col">
+
+    <!-- TOP HEADER -->
+    <header class="bg-gradient-to-r from-brand-900 via-brand-800 to-brand-700 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="p-2.5 bg-white/10 backdrop-blur-md rounded-xl border border-white/20">
+                        <i class="fa-solid fa-graduation-cap text-2xl text-blue-200"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">
+                            Dashboard de Control de Asistencias
+                        </h1>
+                        <p class="text-xs sm:text-sm text-blue-200 font-medium">
+                            Programa SEMI | Periodo Julio - Agosto 2026
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3 self-end md:self-auto">
+                    <div class="text-right hidden sm:block">
+                        <span class="block text-xs text-blue-200 font-medium">Docente / Instructor</span>
+                        <span class="text-sm font-semibold text-white">Jorge Luis Mojica Cortés</span>
+                    </div>
+                    <div class="h-9 w-9 rounded-full bg-blue-400/30 border border-white/30 flex items-center justify-center text-white font-bold text-sm">
+                        JM
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+        <!-- CONTROLS & FILTER BAR -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-4 transition-all">
+            <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+                <!-- Search Box -->
+                <div class="relative flex-1 max-w-md">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="text" id="searchInput" oninput="applyFilters()" 
+                        placeholder="Buscar por estudiante o grupo..." 
+                        class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all">
+                </div>
+
+                <!-- Group Selector -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <label for="groupFilter" class="text-xs font-semibold text-slate-500 uppercase tracking-wider hidden sm:inline">Filtrar Nivel:</label>
+                    <select id="groupFilter" onchange="applyFilters()" 
+                        class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium">
+                        <option value="ALL">Todos los Niveles / Grupos</option>
+                        <option value="English Class A2">English Class A2 (Mar / Jue 3-4 pm)</option>
+                        <option value="English class B1">English class B1 (Mar / Jue 8-9 am)</option>
+                        <option value="English Class B2">English Class B2 (Mar / Jue 9-10 am)</option>
+                        <option value="English Class B2 Monday & Tuesday">English Class B2 (Lun / Mar 4-5 pm)</option>
+                    </select>
+
+                    <button onclick="resetFilters()" 
+                        class="p-2 text-slate-500 hover:text-brand-600 hover:bg-slate-100 rounded-xl transition-colors text-sm flex items-center gap-1 font-medium"
+                        title="Reiniciar filtros">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span class="hidden sm:inline">Limpiar</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- STATS / KPI CARDS -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Total Estudiantes -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm relative overflow-hidden group hover:border-brand-300 transition-all">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Total Estudiantes</p>
+                        <h3 id="kpiTotalStudents" class="text-3xl font-extrabold text-slate-900 mt-1">0</h3>
+                    </div>
+                    <div class="p-3 bg-brand-50 rounded-2xl text-brand-600 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-users text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-center text-xs text-slate-500">
+                    <span class="font-medium text-brand-700">100% Registrados</span>
+                </div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-brand-500"></div>
+            </div>
+
+            <!-- Promedio Asistencia -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm relative overflow-hidden group hover:border-emerald-300 transition-all">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Asistencia Promedio</p>
+                        <h3 id="kpiAvgAttendance" class="text-3xl font-extrabold text-slate-900 mt-1">0%</h3>
+                    </div>
+                    <div class="p-3 bg-emerald-50 rounded-2xl text-emerald-600 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-chart-line text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-center text-xs text-emerald-600 font-medium">
+                    <i class="fa-solid fa-circle-check mr-1"></i> Global del Periodo
+                </div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-emerald-500"></div>
+            </div>
+
+            <!-- Total Clases Programadas -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm relative overflow-hidden group hover:border-sky-300 transition-all">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Clases Programadas</p>
+                        <h3 id="kpiTotalClasses" class="text-3xl font-extrabold text-slate-900 mt-1">20</h3>
+                    </div>
+                    <div class="p-3 bg-sky-50 rounded-2xl text-sky-600 group-hover:scale-110 transition-transform">
+                        <i class="fa-regular fa-calendar-check text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-center text-xs text-slate-500">
+                    <span>14 Julio - 12 Agosto 2026</span>
+                </div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-sky-500"></div>
+            </div>
+
+            <!-- Asistencias Totales -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm relative overflow-hidden group hover:border-blue-300 transition-all">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Asistencias Totales</p>
+                        <h3 id="kpiTotalAttendances" class="text-3xl font-extrabold text-slate-900 mt-1">0</h3>
+                    </div>
+                    <div class="p-3 bg-indigo-50 rounded-2xl text-indigo-600 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-user-check text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-3 flex items-center text-xs text-slate-500">
+                    <span>Sesiones impartidas efectivas</span>
+                </div>
+                <div class="absolute bottom-0 left-0 right-0 h-1 bg-indigo-500"></div>
+            </div>
+        </section>
+
+        <!-- CHARTS SECTION -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Attendance Rate per Student Chart -->
+            <div class="lg:col-span-2 bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-900">Porcentaje de Asistencia por Estudiante</h2>
+                        <p class="text-xs text-slate-500">Número de clases asistidas sobre total programado</p>
+                    </div>
+                    <span class="text-xs font-semibold px-2.5 py-1 bg-brand-50 text-brand-700 rounded-lg">Estudiantes</span>
+                </div>
+                <div class="relative w-full h-72">
+                    <canvas id="studentAttendanceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Distribution Chart -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-base font-bold text-slate-900">Distribución por Nivel</h2>
+                        <p class="text-xs text-slate-500">Promedio de asistencia según el grupo</p>
+                    </div>
+                    <span class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg">Grupos</span>
+                </div>
+                <div class="relative w-full h-72 flex items-center justify-center">
+                    <canvas id="groupAttendanceChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- DETAILED TABLE SECTION -->
+        <section class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <div class="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
+                <div>
+                    <h2 class="text-base font-bold text-slate-900">Listado Consolidado de Asistencia</h2>
+                    <p class="text-xs text-slate-500">Detalle individual de horas, clases programadas y porcentaje alcanzado</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="exportToCSV()" class="px-3.5 py-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold rounded-xl transition-all shadow-sm flex items-center gap-2">
+                        <i class="fa-solid fa-file-csv text-emerald-600"></i> Exportar Datos
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-slate-100/70 border-b border-slate-200 text-slate-600 text-xs uppercase font-semibold tracking-wider">
+                            <th class="py-3.5 px-4">Estudiante</th>
+                            <th class="py-3.5 px-4">Nivel / Grupo</th>
+                            <th class="py-3.5 px-4">Horario</th>
+                            <th class="py-3.5 px-4 text-center">Clases Asistidas</th>
+                            <th class="py-3.5 px-4 text-center">% Asistencia</th>
+                            <th class="py-3.5 px-4 text-center">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody" class="divide-y divide-slate-100 text-slate-700">
+                        <!-- Dynamic content populated via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-auto bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        <p>© 2026 Sistema de Control de Asistencias SEMI. Diseñado para gestión académica eficiente.</p>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC & DATA -->
+    <script>
+        // Data parsed directly from Excel source "Control de asistencias - Programación 20 Clases"
+        const rawStudentData = [
+            {
+                name: "Yuri Alejandra Bermúdez Ríos",
+                schedule: "Martes y Jueves (3:00 p.m. - 4:00 p.m.)",
+                group: "English Class A2",
+                attended: 7,
+                total: 20
+            },
+            {
+                name: "Camilo Ospina Aguirre",
+                schedule: "Martes y Jueves (8:00 a.m. - 9:00 a.m.)",
+                group: "English class B1",
+                attended: 7,
+                total: 20
+            },
+            {
+                name: "Juan Esteban Posada Garcia",
+                schedule: "Martes y Jueves (8:00 a.m. - 9:00 a.m.)",
+                group: "English class B1",
+                attended: 7,
+                total: 20
+            },
+            {
+                name: "Angela Viviana Rodriguez Forero",
+                schedule: "Martes y Jueves (9:00 a.m. - 10:00 a.m.)",
+                group: "English Class B2",
+                attended: 7,
+                total: 20
+            },
+            {
+                name: "Natalia Zuluaga Martínez",
+                schedule: "Martes y Jueves (9:00 a.m. - 10:00 a.m.)",
+                group: "English Class B2",
+                attended: 7,
+                total: 20
+            },
+            {
+                name: "Hancel Eder Mendez Avila",
+                schedule: "Lunes y Martes (4:00 p.m. - 5:00 p.m.)",
+                group: "English Class B2 Monday & Tuesday",
+                attended: 9,
+                total: 20
+            },
+            {
+                name: "Juan Fernando Andrade Gomez",
+                schedule: "Lunes y Martes (4:00 p.m. - 5:00 p.m.)",
+                group: "English Class B2 Monday & Tuesday",
+                attended: 9,
+                total: 20
+            },
+            {
+                name: "Julio Rivera Hernandez",
+                schedule: "Lunes y Martes (4:00 p.m. - 5:00 p.m.)",
+                group: "English Class B2 Monday & Tuesday",
+                attended: 9,
+                total: 20
+            }
+        ];
+
+        let filteredData = [...rawStudentData];
+        let barChartInstance = null;
+        let pieChartInstance = null;
+
+        // Initialize dashboard on window load
+        window.onload = function() {
+            renderDashboard();
+        };
+
+        function renderDashboard() {
+            updateKPIs();
+            renderTable();
+            renderCharts();
+        }
+
+        // Apply filters from Search and Select elements
+        function applyFilters() {
+            const searchValue = document.getElementById('searchInput').value.toLowerCase().trim();
+            const groupValue = document.getElementById('groupFilter').value;
+
+            filteredData = rawStudentData.filter(student => {
+                const matchesSearch = student.name.toLowerCase().includes(searchValue) ||
+                                      student.group.toLowerCase().includes(searchValue);
+                const matchesGroup = groupValue === 'ALL' || student.group === groupValue;
+
+                return matchesSearch && matchesGroup;
+            });
+
+            renderDashboard();
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('groupFilter').value = 'ALL';
+            filteredData = [...rawStudentData];
+            renderDashboard();
+        }
+
+        // Calculate KPI values
+        function updateKPIs() {
+            const totalStudents = filteredData.length;
+            document.getElementById('kpiTotalStudents').textContent = totalStudents;
+
+            if (totalStudents === 0) {
+                document.getElementById('kpiAvgAttendance').textContent = '0%';
+                document.getElementById('kpiTotalAttendances').textContent = '0';
+                return;
+            }
+
+            const totalAttendances = filteredData.reduce((sum, s) => sum + s.attended, 0);
+            const totalPossible = totalStudents * 20;
+            const avgPercentage = ((totalAttendances / totalPossible) * 100).toFixed(1);
+
+            document.getElementById('kpiTotalAttendances').textContent = totalAttendances;
+            document.getElementById('kpiAvgAttendance').textContent = `${avgPercentage}%`;
+        }
+
+        // Render detailed Student Table
+        function renderTable() {
+            const tbody = document.getElementById('studentTableBody');
+            tbody.innerHTML = '';
+
+            if (filteredData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center py-8 text-slate-400">
+                            <i class="fa-solid fa-folder-open text-3xl mb-2 block"></i>
+                            No se encontraron registros que coincidan con la búsqueda.
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            filteredData.forEach(student => {
+                const percentage = Math.round((student.attended / student.total) * 100);
+                
+                // Status badge styling
+                let statusBadge = '';
+                if (percentage >= 40) {
+                    statusBadge = `<span class="px-2.5 py-1 text-xs font-semibold bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200/60 inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[8px] text-emerald-500"></i> Regular</span>`;
+                } else if (percentage >= 25) {
+                    statusBadge = `<span class="px-2.5 py-1 text-xs font-semibold bg-amber-50 text-amber-700 rounded-full border border-amber-200/60 inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[8px] text-amber-500"></i> En Observación</span>`;
+                } else {
+                    statusBadge = `<span class="px-2.5 py-1 text-xs font-semibold bg-rose-50 text-rose-700 rounded-full border border-rose-200/60 inline-flex items-center gap-1"><i class="fa-solid fa-circle text-[8px] text-rose-500"></i> Crítico</span>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50/80 transition-colors';
+                tr.innerHTML = `
+                    <td class="py-3.5 px-4 font-semibold text-slate-900">
+                        <div class="flex items-center space-x-3">
+                            <div class="h-8 w-8 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold text-xs">
+                                ${student.name.split(' ').map(n => n[0]).slice(0, 2).join('')}
+                            </div>
+                            <span>${student.name}</span>
+                        </div>
+                    </td>
+                    <td class="py-3.5 px-4">
+                        <span class="inline-block px-2.5 py-0.5 rounded-md bg-blue-50 text-brand-700 text-xs font-medium border border-blue-100">
+                            ${student.group}
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-4 text-xs text-slate-500">${student.schedule}</td>
+                    <td class="py-3.5 px-4 text-center font-medium">${student.attended} / ${student.total}</td>
+                    <td class="py-3.5 px-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <div class="w-16 bg-slate-100 rounded-full h-2 overflow-hidden">
+                                <div class="bg-brand-600 h-2 rounded-full" style="width: ${percentage}%"></div>
+                            </div>
+                            <span class="font-bold text-xs text-slate-800">${percentage}%</span>
+                        </div>
+                    </td>
+                    <td class="py-3.5 px-4 text-center">${statusBadge}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Render Chart.js Visualizations
+        function renderCharts() {
+            // 1. Bar Chart: Attendance per Student
+            const ctxBar = document.getElementById('studentAttendanceChart').getContext('2d');
+            
+            if (barChartInstance) {
+                barChartInstance.destroy();
+            }
+
+            const studentNames = filteredData.map(s => s.name.split(' ')[0] + ' ' + (s.name.split(' ')[2] || ''));
+            const attendancePercentages = filteredData.map(s => Math.round((s.attended / s.total) * 100));
+
+            barChartInstance = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: studentNames,
+                    datasets: [{
+                        label: '% Asistencia',
+                        data: attendancePercentages,
+                        backgroundColor: '#3b82f6',
+                        hoverBackgroundColor: '#1d4ed8',
+                        borderRadius: 8,
+                        barThickness: 24,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` Asistencia: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: value => value + '%'
+                            },
+                            grid: { color: '#f1f5f9' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // 2. Pie/Doughnut Chart: Attendance Average by Group
+            const ctxPie = document.getElementById('groupAttendanceChart').getContext('2d');
+
+            if (pieChartInstance) {
+                pieChartInstance.destroy();
+            }
+
+            // Calculate average attendance by group based on filtered data
+            const groupStats = {};
+            filteredData.forEach(s => {
+                if (!groupStats[s.group]) {
+                    groupStats[s.group] = { totalAttended: 0, count: 0 };
+                }
+                groupStats[s.group].totalAttended += (s.attended / s.total) * 100;
+                groupStats[s.group].count += 1;
+            });
+
+            const groupLabels = Object.keys(groupStats);
+            const groupAverages = groupLabels.map(g => Math.round(groupStats[g].totalAttended / groupStats[g].count));
+
+            pieChartInstance = new Chart(ctxPie, {
+                type: 'doughnut',
+                data: {
+                    labels: groupLabels,
+                    datasets: [{
+                        data: groupAverages,
+                        backgroundColor: ['#1e40af', '#3b82f6', '#60a5fa', '#93c5fd'],
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { size: 11 },
+                                boxWidth: 12
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` ${context.label}: ${context.raw}% prom.`;
+                                }
+                            }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+
+        // Export table data to CSV format
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Estudiante,Nivel/Grupo,Horario,Clases Asistidas,Total Clases,Porcentaje\n";
+
+            filteredData.forEach(s => {
+                const percentage = Math.round((s.attended / s.total) * 100);
+                csvContent += `"${s.name}","${s.group}","${s.schedule}",${s.attended},${s.total},${percentage}%\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "reporte_asistencia_semi.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
