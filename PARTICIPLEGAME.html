@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Verb Shooter Arcade</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+        .arcade-font {
+            font-family: 'Fredoka One', cursive;
+        }
+        canvas {
+            touch-action: none;
+        }
+        .glow-text {
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.8), 0 0 20px rgba(236, 72, 153, 0.6);
+        }
+        .neon-box {
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.5), inset 0 0 15px rgba(168, 85, 247, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 overflow-hidden select-none">
+
+    <!-- Game Container -->
+    <div class="relative w-full max-w-4xl bg-slate-800 border-4 border-fuchsia-500 rounded-3xl overflow-hidden shadow-2xl neon-box flex flex-col items-center">
+        
+        <!-- Header Overlay -->
+        <div class="w-full bg-slate-900/90 border-b-2 border-fuchsia-500/40 px-4 py-3 flex justify-between items-center z-10">
+            <!-- Score & Streak -->
+            <div class="flex items-center space-x-4">
+                <div class="bg-purple-950/80 px-3 py-1.5 rounded-xl border border-fuchsia-400">
+                    <span class="text-xs text-fuchsia-300 block font-semibold uppercase">Puntos</span>
+                    <span id="score-val" class="text-2xl arcade-font text-yellow-300">0</span>
+                </div>
+                <div class="bg-purple-950/80 px-3 py-1.5 rounded-xl border border-cyan-400">
+                    <span class="text-xs text-cyan-300 block font-semibold uppercase">Racha</span>
+                    <span id="streak-val" class="text-2xl arcade-font text-cyan-300">x0</span>
+                </div>
+            </div>
+
+            <!-- Current Target Verb Display -->
+            <div class="text-center px-2">
+                <span class="text-xs text-slate-400 uppercase tracking-widest font-bold block">Traduce el verbo:</span>
+                <span id="target-word" class="text-2xl sm:text-4xl arcade-font text-fuchsia-400 tracking-wide glow-text">READY?</span>
+            </div>
+
+            <!-- Round Counter & Sound Toggle -->
+            <div class="flex items-center space-x-3">
+                <div class="bg-purple-950/80 px-3 py-1.5 rounded-xl border border-emerald-400 text-right">
+                    <span class="text-xs text-emerald-300 block font-semibold uppercase">Verbo</span>
+                    <span id="verb-progress" class="text-xl arcade-font text-emerald-300">1 / 17</span>
+                </div>
+                <button id="sound-btn" class="bg-slate-800 hover:bg-slate-700 p-2.5 rounded-xl border border-slate-600 text-lg transition">
+                    🔊
+                </button>
+            </div>
+        </div>
+
+        <!-- Timer Progress Bar -->
+        <div class="w-full bg-slate-950 h-3 relative overflow-hidden border-b border-slate-700">
+            <div id="timer-bar" class="h-full bg-gradient-to-r from-emerald-400 via-yellow-400 to-red-500 w-full transition-all linear duration-100"></div>
+        </div>
+
+        <!-- Game Canvas Area -->
+        <div class="relative w-full flex-1 aspect-[16/9] min-h-[360px] sm:min-h-[440px] bg-slate-950">
+            <canvas id="gameCanvas" class="w-full h-full cursor-crosshair block"></canvas>
+
+            <!-- Message Overlay Banner (Combo / Miss / Time Up) -->
+            <div id="status-banner" class="absolute inset-x-0 top-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-200">
+                <span id="status-text" class="arcade-font text-4xl sm:text-6xl text-white drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)] px-6 py-2 rounded-2xl border-4"></span>
+            </div>
+
+            <!-- Start Game Screen -->
+            <div id="start-screen" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 z-20 text-center">
+                <h1 class="text-4xl sm:text-6xl arcade-font text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 via-pink-400 to-cyan-400 mb-4 animate-pulse">
+                    VERB SHOOTER 🎯
+                </h1>
+                <p class="text-slate-300 text-base sm:text-lg max-w-md mb-6 leading-relaxed">
+                    ¡Dispara a la traducción correcta en español!
+                    <br><span class="text-yellow-400 font-bold">¡Tienes SOLO 1 DISPARO y 7 SEGUNDOS por verbo!</span>
+                </p>
+                <button id="start-btn" class="arcade-font text-2xl bg-gradient-to-r from-fuchsia-500 to-cyan-500 hover:from-fuchsia-600 hover:to-cyan-600 text-white px-8 py-4 rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-all border-2 border-white/40">
+                    ¡EMPEZAR A JUGAR! 🚀
+                </button>
+            </div>
+
+            <!-- Game Over / Victory Screen -->
+            <div id="end-screen" class="absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-center p-6 z-20 hidden text-center">
+                <h2 id="end-title" class="text-4xl sm:text-5xl arcade-font text-yellow-300 mb-2">¡DESAFÍO COMPLETADO!</h2>
+                <p id="end-subtitle" class="text-slate-300 text-lg mb-6">¡Excelente trabajo praticando los verbos!</p>
+                
+                <div class="bg-slate-900/90 border-2 border-fuchsia-500/50 p-6 rounded-2xl mb-8 w-full max-w-xs shadow-xl">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-slate-400 font-semibold">Puntaje Total:</span>
+                        <span id="final-score" class="text-3xl arcade-font text-yellow-400">0</span>
+                    </div>
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-slate-400 font-semibold">Aciertos:</span>
+                        <span id="final-hits" class="text-2xl arcade-font text-emerald-400">0 / 17</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400 font-semibold">Precisión:</span>
+                        <span id="final-accuracy" class="text-2xl arcade-font text-cyan-400">0%</span>
+                    </div>
+                </div>
+
+                <button id="restart-btn" class="arcade-font text-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-3.5 rounded-2xl shadow-lg hover:scale-105 active:scale-95 transition-all border-2 border-white/40">
+                    JUGAR DE NUEVO 🔄
+                </button>
+            </div>
+        </div>
+
+        <!-- Touch Controls Helper / Instructions Footer -->
+        <div class="w-full bg-slate-900/90 border-t border-slate-800 px-4 py-2 text-center text-xs text-slate-400 flex justify-between items-center">
+            <span>💡 <b>Tip:</b> Toca o haz clic directo en las dianas flotantes para disparar.</span>
+            <span class="hidden sm:inline">1 Disparo = 1 Oportunidad</span>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- DATASET OF VERBS FROM IMAGE ---
+        const VERB_DATABASE = [
+            { english: "Drained", correct: "Drenado / Agotado", distractors: ["Llenado", "Congelado", "Alineado"] },
+            { english: "Ground", correct: "Molido / En tierra", distractors: ["Elevado", "Soplado", "Fundido"] },
+            { english: "Written", correct: "Escrito", distractors: ["Leído", "Dibujado", "Limpio"] },
+            { english: "Blown", correct: "Soplado / Volado", distractors: ["Cortado", "Doblado", "Ajustado"] },
+            { english: "Replaced", correct: "Reemplazado", distractors: ["Roto", "Inspeccionado", "Usado"] },
+            { english: "Inspected", correct: "Inspeccionado", distractors: ["Ignorado", "Drenado", "Desgastado"] },
+            { english: "Worn", correct: "Usado / Desgastado", distractors: ["Nuevo", "Escrito", "Apretado"] },
+            { english: "Tightened", correct: "Apretado", distractors: ["Aflojado", "Cortado", "Fugado"] },
+            { english: "Found", correct: "Encontrado", distractors: ["Perdido", "Buscado", "Ajustado"] },
+            { english: "Leaked", correct: "Filtrado / Fugado", distractors: ["Sellado", "Seco", "Molido"] },
+            { english: "Cleaned", correct: "Limpiado", distractors: ["Ensuciado", "Soplado", "Doblado"] },
+            { english: "Set", correct: "Ajustado / Fijado", distractors: ["Movido", "Roto", "Drenado"] },
+            { english: "Run", correct: "Corrido / Operado", distractors: ["Detenido", "Apretado", "Usado"] },
+            { english: "Bent", correct: "Doblado", distractors: ["Recto", "Inspeccionado", "Molido"] },
+            { english: "Cut", correct: "Cortado", distractors: ["Pegado", "Unido", "Alineado"] },
+            { english: "Adjusted", correct: "Ajustado", distractors: ["Desalineado", "Mezclado", "Filtrado"] },
+            { english: "Aligned", correct: "Alineado", distractors: ["Torcido", "Desarmado", "Soplado"] }
+        ];
+
+        // --- GAME CONFIGURATION & STATE ---
+        const ROUND_TIME_LIMIT = 7.0; // Seconds per verb
+        let soundEnabled = true;
+        let gameActive = false;
+        let currentRound = 0;
+        let score = 0;
+        let streak = 0;
+        let correctHits = 0;
+        let timeRemaining = ROUND_TIME_LIMIT;
+        let lastFrameTime = 0;
+        let currentVerbList = [];
+        let targets = [];
+        let particles = [];
+        let shotTaken = false;
+
+        // Visual Colors for Floating Orbs / Targets
+        const ORB_COLORS = [
+            { bg: '#ec4899', border: '#f472b6', text: '#ffffff', glow: 'rgba(236,72,153,0.5)' }, // Pink
+            { bg: '#06b6d4', border: '#38bdf8', text: '#ffffff', glow: 'rgba(6,182,212,0.5)' },  // Cyan
+            { bg: '#8b5cf6', border: '#a78bfa', text: '#ffffff', glow: 'rgba(139,92,246,0.5)' }, // Purple
+            { bg: '#10b981', border: '#34d399', text: '#ffffff', glow: 'rgba(16,185,129,0.5)' }  // Emerald
+        ];
+
+        // --- DOM ELEMENTS ---
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreValEl = document.getElementById('score-val');
+        const streakValEl = document.getElementById('streak-val');
+        const verbProgressEl = document.getElementById('verb-progress');
+        const targetWordEl = document.getElementById('target-word');
+        const timerBarEl = document.getElementById('timer-bar');
+        const statusBannerEl = document.getElementById('status-banner');
+        const statusTextEl = document.getElementById('status-text');
+        const startScreenEl = document.getElementById('start-screen');
+        const endScreenEl = document.getElementById('end-screen');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const soundBtn = document.getElementById('sound-btn');
+
+        // Audio Context (Synthesized Retro Sound FX)
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSound(type) {
+            if (!soundEnabled || !audioCtx) return;
+            try {
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'shot') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(100, now + 0.15);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+                    osc.start(now);
+                    osc.stop(now + 0.15);
+                } else if (type === 'hit') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.setValueAtTime(800, now + 0.08);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'miss') {
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(180, now);
+                    osc.frequency.linearRampToValueAtTime(90, now + 0.25);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        // --- RESIZE CANVAS TO MATCH DOM CONTAINER ---
+        function resizeCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        // --- GAME INITIALIZATION ---
+        function startGame() {
+            initAudio();
+            resizeCanvas();
+            
+            // Shuffle verb deck
+            currentVerbList = [...VERB_DATABASE].sort(() => Math.random() - 0.5);
+            currentRound = 0;
+            score = 0;
+            streak = 0;
+            correctHits = 0;
+            
+            scoreValEl.textContent = '0';
+            streakValEl.textContent = 'x0';
+            
+            startScreenEl.classList.add('hidden');
+            endScreenEl.classList.add('hidden');
+            gameActive = true;
+            
+            nextRound();
+            lastFrameTime = performance.now();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // --- START NEW ROUND ---
+        function nextRound() {
+            if (currentRound >= currentVerbList.length) {
+                endGame();
+                return;
+            }
+
+            const verbObj = currentVerbList[currentRound];
+            shotTaken = false;
+            timeRemaining = ROUND_TIME_LIMIT;
+            
+            // Update UI Header
+            targetWordEl.textContent = verbObj.english.toUpperCase();
+            verbProgressEl.textContent = `${currentRound + 1} / ${currentVerbList.length}`;
+            
+            // Create 3 Options (1 Correct, 2 Distractors)
+            const options = [
+                { text: verbObj.correct, isCorrect: true },
+                { text: verbObj.distractors[0], isCorrect: false },
+                { text: verbObj.distractors[1], isCorrect: false }
+            ].sort(() => Math.random() - 0.5);
+
+            // Generate Target Objects in Canvas
+            targets = [];
+            const w = canvas.width;
+            const h = canvas.height;
+            const targetRadius = Math.min(w, h) * 0.12; // Dynamic size based on screen size
+
+            // Divide screen horizontally into 3 zones so targets don't spawn right on top of each other
+            const zones = [
+                { minX: w * 0.18, maxX: w * 0.32 },
+                { minX: w * 0.45, maxX: w * 0.55 },
+                { minX: w * 0.68, maxX: w * 0.82 }
+            ];
+
+            options.forEach((opt, idx) => {
+                const zone = zones[idx];
+                const colorScheme = ORB_COLORS[idx % ORB_COLORS.length];
+                
+                // Dynamic speed bonus as round progresses (balanced progression)
+                const speedMultiplier = 1 + (currentRound * 0.025);
+                
+                targets.push({
+                    x: Math.random() * (zone.maxX - zone.minX) + zone.minX,
+                    y: Math.random() * (h * 0.4) + h * 0.3,
+                    radius: Math.max(targetRadius, 45),
+                    text: opt.text,
+                    isCorrect: opt.isCorrect,
+                    color: colorScheme,
+                    // Balanced intermediate speed range (3.2 to 4.5)
+                    vx: (Math.random() < 0.5 ? 1 : -1) * (Math.random() * 1.3 + 3.2) * speedMultiplier,
+                    vy: (Math.random() < 0.5 ? 1 : -1) * (Math.random() * 1.3 + 3.2) * speedMultiplier,
+                    pulse: Math.random() * Math.PI,
+                    changeDirTimer: Math.random() * 2.5 + 1.0 // Smoother direction nudges
+                });
+            });
+        }
+
+        // --- HANDLE USER SHOT (CLICK OR TAP) ---
+        function handleShot(e) {
+            if (!gameActive || shotTaken) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const clickX = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+            const clickY = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+
+            playSound('shot');
+            shotTaken = true; // Lock further shooting for this round!
+
+            let hitTarget = null;
+
+            // Check if shot hit any floating orb
+            for (let target of targets) {
+                const dist = Math.hypot(target.x - clickX, target.y - clickY);
+                if (dist <= target.radius) {
+                    hitTarget = target;
+                    break;
+                }
+            }
+
+            // Create laser pointer beam visual effect
+            createLaserEffect(clickX, clickY);
+
+            if (hitTarget) {
+                if (hitTarget.isCorrect) {
+                    // --- SUCCESSFUL HIT ---
+                    playSound('hit');
+                    streak++;
+                    correctHits++;
+                    const roundPoints = 100 + (streak * 20) + Math.round(timeRemaining * 10);
+                    score += roundPoints;
+
+                    scoreValEl.textContent = score;
+                    streakValEl.textContent = `x${streak}`;
+
+                    createExplosion(hitTarget.x, hitTarget.y, hitTarget.color.bg, 35);
+                    showStatusBanner('¡CORRECTO!', '#10b981', '#047857');
+                } else {
+                    // --- WRONG TARGET HIT ---
+                    playSound('miss');
+                    streak = 0;
+                    streakValEl.textContent = 'x0';
+                    createExplosion(hitTarget.x, hitTarget.y, '#ef4444', 20);
+                    showStatusBanner('¡INCORRECTO!', '#ef4444', '#b91c1c');
+                }
+            } else {
+                // --- MISSED ALL TARGETS ---
+                playSound('miss');
+                streak = 0;
+                streakValEl.textContent = 'x0';
+                createExplosion(clickX, clickY, '#f59e0b', 12);
+                showStatusBanner('¡FALLASTE!', '#f59e0b', '#b45309');
+            }
+
+            // Advance to next verb after a brief moment for explosion animation
+            setTimeout(() => {
+                currentRound++;
+                nextRound();
+            }, 800);
+        }
+
+        // --- VISUAL BANNERS & PARTICLE EFFECTS ---
+        function showStatusBanner(msg, textColor, borderColor) {
+            statusTextEl.textContent = msg;
+            statusTextEl.style.color = textColor;
+            statusTextEl.style.borderColor = borderColor;
+            statusTextEl.style.backgroundColor = 'rgba(15, 23, 42, 0.85)';
+            
+            statusBannerEl.classList.remove('opacity-0');
+            statusBannerEl.classList.add('opacity-100');
+
+            setTimeout(() => {
+                statusBannerEl.classList.remove('opacity-100');
+                statusBannerEl.classList.add('opacity-0');
+            }, 750);
+        }
+
+        function createLaserEffect(targetX, targetY) {
+            particles.push({
+                type: 'laser',
+                x1: canvas.width / 2,
+                y1: canvas.height,
+                x2: targetX,
+                y2: targetY,
+                life: 1.0,
+                color: '#38bdf8'
+            });
+        }
+
+        function createExplosion(x, y, color, count) {
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 6 + 2;
+                particles.push({
+                    type: 'spark',
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    radius: Math.random() * 5 + 2,
+                    color: color,
+                    life: 1.0,
+                    decay: Math.random() * 0.03 + 0.02
+                });
+            }
+        }
+
+        // --- MAIN GAME LOOP (UPDATES & RENDERING) ---
+        function gameLoop(timestamp) {
+            if (!gameActive) return;
+
+            const dt = (timestamp - lastFrameTime) / 1000;
+            lastFrameTime = timestamp;
+
+            // Handle Round Time Countdown
+            if (!shotTaken) {
+                timeRemaining -= dt;
+                if (timeRemaining <= 0) {
+                    timeRemaining = 0;
+                    shotTaken = true; // Timeout counts as missed attempt
+                    playSound('miss');
+                    streak = 0;
+                    streakValEl.textContent = 'x0';
+                    showStatusBanner('¡TIEMPO AGOTADO!', '#ef4444', '#b91c1c');
+
+                    setTimeout(() => {
+                        currentRound++;
+                        nextRound();
+                    }, 800);
+                }
+            }
+
+            // Update Progress Bar Width
+            const timePct = Math.max(0, (timeRemaining / ROUND_TIME_LIMIT) * 100);
+            timerBarEl.style.width = `${timePct}%`;
+
+            // Clear Screen
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Subtle Grid Background
+            drawBackgroundGrid();
+
+            // Update & Draw Target Orbs
+            updateAndDrawTargets(dt);
+
+            // Update & Draw Particles / Lasers
+            updateAndDrawParticles(dt);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function drawBackgroundGrid() {
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+            const step = 40;
+            for (let x = 0; x < canvas.width; x += step) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += step) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+
+        function updateAndDrawTargets(dt) {
+            targets.forEach(target => {
+                if (!shotTaken) {
+                    // Update Position with Fast Bouncing Physics
+                    target.x += target.vx;
+                    target.y += target.vy;
+                    target.pulse += dt * 5; // Faster visual pulse
+
+                    // Unpredictable movement jitter / subtle trajectory shifts (Smoothed)
+                    target.changeDirTimer -= dt;
+                    if (target.changeDirTimer <= 0) {
+                        target.vx += (Math.random() - 0.5) * 1.2;
+                        target.vy += (Math.random() - 0.5) * 1.2;
+                        // Clamp speed limits so they stay challenging but manageable
+                        const maxSpeed = 5.8;
+                        target.vx = Math.max(-maxSpeed, Math.min(maxSpeed, target.vx));
+                        target.vy = Math.max(-maxSpeed, Math.min(maxSpeed, target.vy));
+                        target.changeDirTimer = Math.random() * 1.8 + 1.0;
+                    }
+
+                    // Wall Collisions with sharp bounce
+                    if (target.x - target.radius < 10) {
+                        target.x = target.radius + 10;
+                        target.vx = Math.abs(target.vx);
+                    } else if (target.x + target.radius > canvas.width - 10) {
+                        target.x = canvas.width - target.radius - 10;
+                        target.vx = -Math.abs(target.vx);
+                    }
+
+                    if (target.y - target.radius < 20) {
+                        target.y = target.radius + 20;
+                        target.vy = Math.abs(target.vy);
+                    } else if (target.y + target.radius > canvas.height - 20) {
+                        target.y = canvas.height - target.radius - 20;
+                        target.vy = -Math.abs(target.vy);
+                    }
+                }
+
+                // Orb Glow Effect
+                ctx.save();
+                ctx.shadowColor = target.color.glow;
+                ctx.shadowBlur = 20;
+
+                // Pulsing size adjustment
+                const currentRadius = target.radius + Math.sin(target.pulse) * 3;
+
+                // Draw Main Circle
+                ctx.beginPath();
+                ctx.arc(target.x, target.y, currentRadius, 0, Math.PI * 2);
+                ctx.fillStyle = target.color.bg;
+                ctx.fill();
+
+                // Inner Border Gradient
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = target.color.border;
+                ctx.stroke();
+                ctx.restore();
+
+                // Target Crosshair Accent Rings
+                ctx.beginPath();
+                ctx.arc(target.x, target.y, currentRadius * 0.85, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Option Text Wrapping & Rendering
+                ctx.fillStyle = target.color.text;
+                ctx.font = 'bold 15px Outfit, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                // Simple text wrapping if string is long
+                const words = target.text.split(' ');
+                if (words.length > 2 && target.text.length > 12) {
+                    const mid = Math.ceil(words.length / 2);
+                    const line1 = words.slice(0, mid).join(' ');
+                    const line2 = words.slice(mid).join(' ');
+                    ctx.fillText(line1, target.x, target.y - 8);
+                    ctx.fillText(line2, target.x, target.y + 10);
+                } else {
+                    ctx.fillText(target.text, target.x, target.y);
+                }
+            });
+        }
+
+        function updateAndDrawParticles(dt) {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+
+                if (p.type === 'laser') {
+                    p.life -= dt * 4;
+                    if (p.life <= 0) {
+                        particles.splice(i, 1);
+                        continue;
+                    }
+                    ctx.save();
+                    ctx.strokeStyle = p.color;
+                    ctx.lineWidth = 6 * p.life;
+                    ctx.shadowColor = '#38bdf8';
+                    ctx.shadowBlur = 15;
+                    ctx.beginPath();
+                    ctx.moveTo(p.x1, p.y1);
+                    ctx.lineTo(p.x2, p.y2);
+                    ctx.stroke();
+                    ctx.restore();
+                } 
+                else if (p.type === 'spark') {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.life -= p.decay;
+
+                    if (p.life <= 0) {
+                        particles.splice(i, 1);
+                        continue;
+                    }
+
+                    ctx.save();
+                    ctx.globalAlpha = p.life;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+        }
+
+        // --- END GAME SUMMARY ---
+        function endGame() {
+            gameActive = false;
+            const accuracy = Math.round((correctHits / VERB_DATABASE.length) * 100);
+
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-hits').textContent = `${correctHits} / ${VERB_DATABASE.length}`;
+            document.getElementById('final-accuracy').textContent = `${accuracy}%`;
+
+            const endTitleEl = document.getElementById('end-title');
+            if (accuracy >= 80) {
+                endTitleEl.textContent = '¡EXCELENTE PUNTERÍA! 🏆';
+                endTitleEl.className = 'text-3xl sm:text-5xl arcade-font text-yellow-300 mb-2';
+            } else if (accuracy >= 50) {
+                endTitleEl.textContent = '¡BUEN INTENTO! 👍';
+                endTitleEl.className = 'text-3xl sm:text-5xl arcade-font text-cyan-300 mb-2';
+            } else {
+                endTitleEl.textContent = '¡SIGUE PRACTICANDO! 💪';
+                endTitleEl.className = 'text-3xl sm:text-5xl arcade-font text-fuchsia-300 mb-2';
+            }
+
+            endScreenEl.classList.remove('hidden');
+        }
+
+        // --- EVENT LISTENERS ---
+        canvas.addEventListener('pointerdown', handleShot);
+
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', startGame);
+
+        soundBtn.addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            soundBtn.textContent = soundEnabled ? '🔊' : '🔇';
+        });
+
+        // Ensure canvas scaling stays crisp
+        resizeCanvas();
+    </script>
+</body>
+</html>
