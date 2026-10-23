@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Past Simple Automotive Shooter</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: #0d0f12;
+            color: #f3f4f6;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Glassmorphism Effect */
+        .glass-card {
+            background: rgba(18, 24, 38, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* Neon Glow Utility Classes */
+        .glow-red {
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+        }
+
+        .glow-cyan {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.6);
+        }
+
+        .glow-amber {
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+        }
+
+        /* Custom Crosshair Cursor */
+        .game-canvas-container {
+            cursor: crosshair;
+        }
+
+        /* Animations */
+        @keyframes pulse-fast {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        .animate-pulse-fast {
+            animation: pulse-fast 1s infinite;
+        }
+
+        /* Custom Scrollbar for list if needed */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111827;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col justify-between items-center bg-slate-950 text-white relative">
+
+    <!-- Top Navigation / HUD Bar -->
+    <header class="w-full px-4 py-3 bg-slate-900/80 border-b border-slate-800 flex justify-between items-center z-20">
+        <div class="flex items-center gap-3">
+            <i class="fa-solid fa-gauge-high text-cyan-400 text-2xl"></i>
+            <h1 class="text-xl md:text-2xl font-bold font-orbitron tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+                AUTO-GRAMMAR <span class="text-xs text-amber-400 border border-amber-500/40 px-2 py-0.5 rounded ml-2">PAST SIMPLE</span>
+            </h1>
+        </div>
+
+        <div class="flex items-center gap-6 font-orbitron">
+            <div class="text-center">
+                <span class="text-xs text-slate-400 block">PREGUNTA</span>
+                <span id="question-tracker" class="text-lg font-bold text-cyan-400">0 / 25</span>
+            </div>
+            <div class="text-center">
+                <span class="text-xs text-slate-400 block">PUNTAJE</span>
+                <span id="score-display" class="text-lg font-bold text-emerald-400">0</span>
+            </div>
+            <div class="text-center">
+                <span class="text-xs text-slate-400 block">RACHA</span>
+                <span id="streak-display" class="text-lg font-bold text-amber-400">x0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Game Screen Area -->
+    <main class="relative flex-1 w-full max-w-6xl p-2 md:p-4 flex flex-col justify-center items-center overflow-hidden">
+        
+        <!-- Canvas Game Container -->
+        <div id="game-container" class="relative w-full h-[520px] max-h-[70vh] rounded-2xl overflow-hidden glass-card border border-slate-700/60 shadow-2xl flex flex-col justify-between game-canvas-container">
+            
+            <!-- HUD Info Top Inside Canvas -->
+            <div class="p-4 bg-slate-900/90 border-b border-slate-800 flex flex-col md:flex-row justify-between items-center gap-2 z-10">
+                <!-- Sentence Display -->
+                <div id="sentence-box" class="text-center md:text-left text-lg md:text-2xl font-semibold tracking-wide text-amber-300">
+                    Cargando desafío automotriz...
+                </div>
+                
+                <!-- Status Indicators (Bullets & Timer) -->
+                <div class="flex items-center gap-4">
+                    <!-- Ammo / Shots left indicator -->
+                    <div class="flex items-center gap-1 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-slate-800">
+                        <span class="text-xs font-bold text-slate-400 mr-1 font-orbitron">DISPAROS:</span>
+                        <div id="ammo-icons" class="flex gap-1.5 text-red-500 text-lg">
+                            <i class="fa-solid fa-crosshairs"></i>
+                            <i class="fa-solid fa-crosshairs"></i>
+                        </div>
+                    </div>
+
+                    <!-- Countdown Bar & Timer -->
+                    <div class="flex items-center gap-2 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-slate-800">
+                        <i class="fa-solid fa-clock text-cyan-400"></i>
+                        <span id="timer-text" class="font-orbitron font-bold text-cyan-400 w-8 text-right">7.0s</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timer Visual Progress Bar -->
+            <div class="w-full bg-slate-800 h-2 relative">
+                <div id="timer-bar" class="h-full bg-cyan-400 transition-all duration-100 ease-linear w-full"></div>
+            </div>
+
+            <!-- Interactive Canvas Area -->
+            <canvas id="gameCanvas" class="w-full h-full block bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950"></canvas>
+
+            <!-- Screen Overlay Messages (Feedback text) -->
+            <div id="feedback-overlay" class="absolute inset-0 pointer-events-none flex items-center justify-center opacity-0 transition-opacity duration-300 z-20">
+                <div id="feedback-card" class="px-8 py-4 rounded-xl text-3xl md:text-4xl font-orbitron font-extrabold tracking-wider transform transition-transform duration-200 scale-90 text-center shadow-2xl">
+                    ¡CORRECTO!
+                </div>
+            </div>
+
+            <!-- START / OVERLAY MODAL -->
+            <div id="modal-overlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 z-30">
+                
+                <!-- Intro Screen -->
+                <div id="intro-card" class="text-center max-w-xl space-y-6">
+                    <div class="inline-block p-4 bg-cyan-500/10 rounded-full border border-cyan-500/30 mb-2">
+                        <i class="fa-solid fa-car-burst text-5xl text-cyan-400 animate-pulse-fast"></i>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-extrabold font-orbitron text-white">
+                        PAST SIMPLE <span class="text-cyan-400">AUTO SHOOTER</span>
+                    </h2>
+                    <p class="text-slate-300 text-base md:text-lg leading-relaxed">
+                        Pon a prueba tu gramática en el taller mecánico y la pista de carreras. Completa 25 oraciones disparando al verbo correcto en tiempo <strong class="text-amber-400">Pasado Simple</strong>.
+                    </p>
+
+                    <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800 text-left text-sm space-y-2 text-slate-300">
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-stopwatch text-amber-400 w-5"></i> <span>Tienes <strong>7 segundos</strong> por cada oración.</span></div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-bullseye text-red-400 w-5"></i> <span>Máximo <strong>2 disparos</strong> por pregunta.</span></div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-fire text-orange-400 w-5"></i> <span>¡Aumenta tu <strong>racha</strong> para multiplicar tus puntos!</span></div>
+                    </div>
+
+                    <button id="start-btn" class="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-orbitron font-black text-xl rounded-xl shadow-lg transition transform hover:-translate-y-0.5 active:translate-y-0 glow-cyan">
+                        ¡INICIAR DESAFÍO!
+                    </button>
+                </div>
+
+                <!-- Game Over / Results Screen -->
+                <div id="results-card" class="text-center max-w-xl space-y-6 hidden">
+                    <div class="inline-block p-4 bg-amber-500/10 rounded-full border border-amber-500/30">
+                        <i id="trophy-icon" class="fa-solid fa-trophy text-5xl text-amber-400"></i>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-extrabold font-orbitron text-white">
+                        RESULTADOS DE LA CARRERA
+                    </h2>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400 block font-orbitron">PUNTUACIÓN FINAL</span>
+                            <span id="final-score" class="text-3xl font-black text-emerald-400 font-orbitron">0</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400 block font-orbitron">MEJOR RACHA</span>
+                            <span id="final-streak" class="text-3xl font-black text-amber-400 font-orbitron">0</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400 block font-orbitron">ACIERTOS</span>
+                            <span id="final-hits" class="text-3xl font-black text-cyan-400 font-orbitron">0 / 25</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400 block font-orbitron">PRECISIÓN</span>
+                            <span id="final-accuracy" class="text-3xl font-black text-purple-400 font-orbitron">0%</span>
+                        </div>
+                    </div>
+
+                    <button id="restart-btn" class="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-orbitron font-black text-xl rounded-xl shadow-lg transition transform hover:-translate-y-0.5 active:translate-y-0">
+                        <i class="fa-solid fa-rotate-right mr-2"></i> JUGAR DE NUEVO
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Info -->
+    <footer class="w-full py-3 bg-slate-900/60 border-t border-slate-800/80 text-center text-xs text-slate-400">
+        Práctica de Inglés: Pasado Simple (Afirmativo, Negativo e Interrogativo) • Ámbito Automotriz
+    </footer>
+
+    <!-- Game Logic JavaScript -->
+    <script>
+        // --- BANK OF 25 AUTOMOTIVE SENTENCES ---
+        // Distributed randomly: Positive (+), Negative (-), Interrogative (?)
+        const rawQuestions = [
+            // Positive
+            { sentence: "The mechanic ___ the engine yesterday.", answer: "repaired", options: ["repaired", "repairs", "repair"] },
+            { sentence: "She ___ a brand new sports car last week.", answer: "bought", options: ["bought", "buyed", "buys"] },
+            { sentence: "The race driver ___ the fast lap record.", answer: "broke", options: ["broke", "breaked", "breaks"] },
+            { sentence: "We ___ the flat tire on the highway.", answer: "changed", options: ["changed", "change", "changing"] },
+            { sentence: "He ___ the brake fluid during the inspection.", answer: "checked", options: ["checked", "check", "checked"] },
+            { sentence: "The car ___ down in the middle of the street.", answer: "broke", options: ["broke", "breaked", "broken"] },
+            { sentence: "They ___ the old classic Mustang last month.", answer: "restored", options: ["restored", "restore", "restores"] },
+            { sentence: "I ___ the gas tank before the long trip.", answer: "filled", options: ["filled", "fill", "full"] },
+            { sentence: "The electric vehicle ___ battery rapidly on the hill.", answer: "lost", options: ["lost", "losed", "lose"] },
+
+            // Negative
+            { sentence: "The driver didn't ___ at the red light.", answer: "stop", options: ["stop", "stopped", "stopping"] },
+            { sentence: "The technician didn't ___ the oil filter properly.", answer: "tighten", options: ["tighten", "tightened", "tightening"] },
+            { sentence: "We didn't ___ any noise coming from the transmission.", answer: "hear", options: ["hear", "heard", "hearing"] },
+            { sentence: "He didn't ___ his seatbelt before driving.", answer: "fasten", options: ["fasten", "fastened", "fastens"] },
+            { sentence: "They didn't ___ the battery overnight.", answer: "charge", options: ["charge", "charged", "charging"] },
+            { sentence: "She didn't ___ the speed limit on the highway.", answer: "exceed", options: ["exceed", "exceeded", "exceeds"] },
+
+            // Questions
+            { sentence: "Did you ___ the spark plugs in the garage?", answer: "replace", options: ["replace", "replaced", "replaces"] },
+            { sentence: "Did the mechanic ___ the brake pads?", answer: "inspect", options: ["inspect", "inspected", "inspects"] },
+            { sentence: "Where did they ___ the luxury sports car?", answer: "park", options: ["park", "parked", "parking"] },
+            { sentence: "Did the truck ___ a lot of cargo yesterday?", answer: "carry", options: ["carry", "carried", "carries"] },
+            { sentence: "Why did he ___ the clutch pedal so hard?", answer: "press", options: ["press", "pressed", "pressing"] },
+            { sentence: "Did the battery ___ out during winter?", answer: "die", options: ["die", "died", "dying"] },
+
+            // Additional mixed sentences to reach 25
+            { sentence: "The turbocharger ___ incredible power to the engine.", answer: "gave", options: ["gave", "gived", "give"] },
+            { sentence: "Did she ___ how to drive a manual car?", answer: "know", options: ["know", "knew", "known"] },
+            { sentence: "The auto body shop didn't ___ the entire car.", answer: "paint", options: ["paint", "painted", "paints"] },
+            { sentence: "We ___ to the automotive exhibition on Sunday.", answer: "went", options: ["went", "go", "gone"] }
+        ];
+
+        // --- GAME VARIABLES ---
+        let questions = [];
+        let currentQIndex = 0;
+        let score = 0;
+        let streak = 0;
+        let maxStreak = 0;
+        let correctHits = 0;
+        let totalShotsFired = 0;
+        let shotsLeft = 2;
+        let isQuestionActive = false;
+
+        // Timer
+        const MAX_TIME = 7.0; // 7 seconds limit
+        let timeLeft = MAX_TIME;
+        let timerInterval = null;
+
+        // Canvas & Physics
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        let animationFrameId = null;
+        let targets = [];
+
+        // DOM Elements
+        const sentenceBox = document.getElementById("sentence-box");
+        const scoreDisplay = document.getElementById("score-display");
+        const streakDisplay = document.getElementById("streak-display");
+        const qTracker = document.getElementById("question-tracker");
+        const timerText = document.getElementById("timer-text");
+        const timerBar = document.getElementById("timer-bar");
+        const ammoIcons = document.getElementById("ammo-icons");
+
+        const modalOverlay = document.getElementById("modal-overlay");
+        const introCard = document.getElementById("intro-card");
+        const resultsCard = document.getElementById("results-card");
+        const startBtn = document.getElementById("start-btn");
+        const restartBtn = document.getElementById("restart-btn");
+
+        const feedbackOverlay = document.getElementById("feedback-overlay");
+        const feedbackCard = document.getElementById("feedback-card");
+
+        // Sound Synthesis (Web Audio API for pure self-contained audio effects)
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (!audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'laser') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(100, now + 0.15);
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                    osc.start(now);
+                    osc.stop(now + 0.15);
+                } else if (type === 'hit') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(300, now);
+                    osc.frequency.exponentialRampToValueAtTime(800, now + 0.2);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                    osc.start(now);
+                    osc.stop(now + 0.25);
+                } else if (type === 'miss') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.linearRampToValueAtTime(60, now + 0.2);
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                    osc.start(now);
+                    osc.stop(now + 0.2);
+                }
+            } catch (e) {
+                console.log("Audio play error", e);
+            }
+        }
+
+        // Resizing Canvas Responsively
+        function resizeCanvas() {
+            const container = document.getElementById("game-container");
+            canvas.width = container.clientWidth;
+            // Subtract HUD header and progress bar height from canvas height calculation
+            canvas.height = container.clientHeight - 70;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        // --- TARGET OBJECT CLASS ---
+        class FloatingTarget {
+            constructor(text, isCorrect, x, y, radius, vx, vy) {
+                this.text = text;
+                this.isCorrect = isCorrect;
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.vx = vx;
+                this.vy = vy;
+                this.colorHue = Math.floor(Math.random() * 360);
+                this.angle = Math.random() * Math.PI * 2;
+                this.spinSpeed = (Math.random() - 0.5) * 0.04;
+                this.pulse = 0;
+            }
+
+            update() {
+                // Bounce on edges
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x - this.radius < 0) {
+                    this.x = this.radius;
+                    this.vx *= -1;
+                }
+                if (this.x + this.radius > canvas.width) {
+                    this.x = canvas.width - this.radius;
+                    this.vx *= -1;
+                }
+                if (this.y - this.radius < 0) {
+                    this.y = this.radius;
+                    this.vy *= -1;
+                }
+                if (this.y + this.radius > canvas.height) {
+                    this.y = canvas.height - this.radius;
+                    this.vy *= -1;
+                }
+
+                this.angle += this.spinSpeed;
+                this.pulse += 0.05;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+
+                // Target Base Glow
+                const rGlow = this.radius + Math.sin(this.pulse) * 3;
+                const gradient = ctx.createRadialGradient(0, 0, 5, 0, 0, rGlow);
+                gradient.addColorStop(0, 'rgba(6, 182, 212, 0.4)');
+                gradient.addColorStop(0.7, 'rgba(15, 23, 42, 0.8)');
+                gradient.addColorStop(1, 'rgba(2, 132, 199, 0.2)');
+
+                ctx.beginPath();
+                ctx.arc(0, 0, rGlow, 0, Math.PI * 2);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+
+                // Outer Gear/Tire Outline Effect (Automotive Style)
+                ctx.rotate(this.angle);
+                ctx.strokeStyle = '#38bdf8';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+                ctx.stroke();
+
+                // Draw wheel notches / target teeth
+                const teeth = 8;
+                for (let i = 0; i < teeth; i++) {
+                    const a = (i * Math.PI * 2) / teeth;
+                    const x1 = Math.cos(a) * (this.radius - 4);
+                    const y1 = Math.sin(a) * (this.radius - 4);
+                    const x2 = Math.cos(a) * (this.radius + 6);
+                    const y2 = Math.sin(a) * (this.radius + 6);
+
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.strokeStyle = '#0284c7';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+
+                ctx.rotate(-this.angle); // Reset rotation for text
+
+                // Target Inner Circle
+                ctx.beginPath();
+                ctx.arc(0, 0, this.radius - 8, 0, Math.PI * 2);
+                ctx.fillStyle = '#0f172a';
+                ctx.fill();
+                ctx.strokeStyle = '#0284c7';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+
+                // Verb Text Inside Target
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 18px "Orbitron", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = '#0284c7';
+                ctx.shadowBlur = 8;
+                ctx.fillText(this.text, 0, 0);
+
+                ctx.restore();
+            }
+
+            isClicked(px, py) {
+                const dist = Math.hypot(this.x - px, this.y - py);
+                return dist <= this.radius + 5; // Slight margin for hits
+            }
+        }
+
+        // Particle System for Explosions
+        let particles = [];
+        function createExplosion(x, y, color) {
+            for (let i = 0; i < 25; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 8,
+                    vy: (Math.random() - 0.5) * 8,
+                    radius: Math.random() * 4 + 2,
+                    color: color,
+                    alpha: 1,
+                    life: 1
+                });
+            }
+        }
+
+        function updateAndDrawParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= 0.03;
+
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, p.alpha);
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                if (p.alpha <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        // --- GAME ENGINE FUNCTIONS ---
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function startGame() {
+            initAudio();
+            // Shuffle questions list
+            questions = shuffleArray(rawQuestions);
+            currentQIndex = 0;
+            score = 0;
+            streak = 0;
+            maxStreak = 0;
+            correctHits = 0;
+            totalShotsFired = 0;
+
+            updateHUD();
+
+            modalOverlay.classList.add("hidden");
+            introCard.classList.add("hidden");
+            resultsCard.classList.add("hidden");
+
+            resizeCanvas();
+            loadQuestion();
+
+            if (!animationFrameId) {
+                gameLoop();
+            }
+        }
+
+        function loadQuestion() {
+            if (currentQIndex >= questions.length) {
+                endGame();
+                return;
+            }
+
+            const q = questions[currentQIndex];
+            sentenceBox.textContent = q.sentence;
+            qTracker.textContent = `${currentQIndex + 1} / ${questions.length}`;
+
+            shotsLeft = 2;
+            updateAmmoUI();
+
+            // Spawn 3 Floating Targets with moderately fast speed
+            targets = [];
+            const shuffledOptions = shuffleArray(q.options);
+
+            const radius = 48;
+            const minSpeed = 2.2;
+            const maxSpeed = 3.8;
+
+            for (let i = 0; i < shuffledOptions.length; i++) {
+                const optionText = shuffledOptions[i];
+                const isCorrect = (optionText === q.answer);
+
+                // Initial non-overlapping positions
+                let x = Math.random() * (canvas.width - radius * 4) + radius * 2;
+                let y = Math.random() * (canvas.height - radius * 4) + radius * 2;
+
+                // Speed & Direction
+                const speed = minSpeed + Math.random() * (maxSpeed - minSpeed);
+                const angle = Math.random() * Math.PI * 2;
+                const vx = Math.cos(angle) * speed;
+                const vy = Math.sin(angle) * speed;
+
+                targets.push(new FloatingTarget(optionText, isCorrect, x, y, radius, vx, vy));
+            }
+
+            // Reset Timer to 7 seconds
+            timeLeft = MAX_TIME;
+            isQuestionActive = true;
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (!isQuestionActive) return;
+
+                timeLeft -= 0.1;
+                if (timeLeft <= 0) {
+                    timeLeft = 0;
+                    handleTimeOut();
+                }
+                updateTimerUI();
+            }, 100);
+        }
+
+        function updateTimerUI() {
+            timerText.textContent = `${timeLeft.toFixed(1)}s`;
+            const pct = (timeLeft / MAX_TIME) * 100;
+            timerBar.style.width = `${pct}%`;
+
+            if (pct < 30) {
+                timerBar.className = "h-full bg-red-500 transition-all duration-100 ease-linear w-full";
+            } else if (pct < 60) {
+                timerBar.className = "h-full bg-amber-400 transition-all duration-100 ease-linear w-full";
+            } else {
+                timerBar.className = "h-full bg-cyan-400 transition-all duration-100 ease-linear w-full";
+            }
+        }
+
+        function updateAmmoUI() {
+            ammoIcons.innerHTML = '';
+            for (let i = 0; i < 2; i++) {
+                const icon = document.createElement('i');
+                if (i < shotsLeft) {
+                    icon.className = 'fa-solid fa-crosshairs text-red-500';
+                } else {
+                    icon.className = 'fa-solid fa-circle-xmark text-slate-600';
+                }
+                ammoIcons.appendChild(icon);
+            }
+        }
+
+        function updateHUD() {
+            scoreDisplay.textContent = score;
+            streakDisplay.textContent = `x${streak}`;
+        }
+
+        function showFeedback(text, isPositive) {
+            feedbackCard.textContent = text;
+            if (isPositive) {
+                feedbackCard.className = "px-8 py-4 rounded-xl text-3xl md:text-4xl font-orbitron font-extrabold tracking-wider transform transition-transform duration-200 scale-100 text-center shadow-2xl bg-emerald-500/90 text-slate-950 border-2 border-emerald-300 glow-cyan";
+            } else {
+                feedbackCard.className = "px-8 py-4 rounded-xl text-3xl md:text-4xl font-orbitron font-extrabold tracking-wider transform transition-transform duration-200 scale-100 text-center shadow-2xl bg-red-600/90 text-white border-2 border-red-300 glow-red";
+            }
+
+            feedbackOverlay.style.opacity = '1';
+
+            setTimeout(() => {
+                feedbackOverlay.style.opacity = '0';
+            }, 800);
+        }
+
+        // --- SHOOTING & INTERACTION LOGIC ---
+
+        function handleShot(e) {
+            if (!isQuestionActive) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const clickX = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left;
+            const clickY = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top;
+
+            shotsLeft--;
+            totalShotsFired++;
+            updateAmmoUI();
+
+            playSound('laser');
+
+            // Laser Beam Visual Effect
+            ctx.save();
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(canvas.width / 2, canvas.height); // From bottom center
+            ctx.lineTo(clickX, clickY);
+            ctx.stroke();
+            ctx.restore();
+
+            let hitTargetIndex = -1;
+            for (let i = 0; i < targets.length; i++) {
+                if (targets[i].isClicked(clickX, clickY)) {
+                    hitTargetIndex = i;
+                    break;
+                }
+            }
+
+            if (hitTargetIndex !== -1) {
+                const target = targets[hitTargetIndex];
+
+                if (target.isCorrect) {
+                    // CORRECT HIT
+                    playSound('hit');
+                    createExplosion(target.x, target.y, '#10b981');
+                    
+                    streak++;
+                    if (streak > maxStreak) maxStreak = streak;
+                    
+                    // Score formula: base points + time bonus + streak multiplier
+                    const timeBonus = Math.round(timeLeft * 20);
+                    const streakMultiplier = Math.min(streak, 5);
+                    const questionPoints = (100 + timeBonus) * streakMultiplier;
+                    
+                    score += questionPoints;
+                    correctHits++;
+
+                    updateHUD();
+                    showFeedback(`¡CORRECTO! +${questionPoints}`, true);
+                    nextQuestion();
+                } else {
+                    // WRONG TARGET HIT
+                    playSound('miss');
+                    createExplosion(target.x, target.y, '#ef4444');
+                    targets.splice(hitTargetIndex, 1); // remove wrong target hit
+
+                    if (shotsLeft <= 0) {
+                        handleWrongAnswer("¡SIN DISPAROS!");
+                    } else {
+                        showFeedback("¡FALLASTE!", false);
+                    }
+                }
+            } else {
+                // MISSED ALL TARGETS (Hit background)
+                playSound('miss');
+                createExplosion(clickX, clickY, '#64748b');
+
+                if (shotsLeft <= 0) {
+                    handleWrongAnswer("¡SIN DISPAROS!");
+                } else {
+                    showFeedback("¡Sigue Intentando!", false);
+                }
+            }
+        }
+
+        function handleTimeOut() {
+            playSound('miss');
+            handleWrongAnswer("¡TIEMPO AGOTADO!");
+        }
+
+        function handleWrongAnswer(reason) {
+            isQuestionActive = false;
+            clearInterval(timerInterval);
+            streak = 0;
+            updateHUD();
+
+            showFeedback(reason, false);
+
+            setTimeout(() => {
+                nextQuestion();
+            }, 1000);
+        }
+
+        function nextQuestion() {
+            isQuestionActive = false;
+            clearInterval(timerInterval);
+
+            setTimeout(() => {
+                currentQIndex++;
+                loadQuestion();
+            }, 600);
+        }
+
+        function endGame() {
+            isQuestionActive = false;
+            clearInterval(timerInterval);
+
+            document.getElementById("final-score").textContent = score;
+            document.getElementById("final-streak").textContent = `x${maxStreak}`;
+            document.getElementById("final-hits").textContent = `${correctHits} / ${questions.length}`;
+
+            const accuracy = totalShotsFired > 0 ? Math.round((correctHits / totalShotsFired) * 100) : 0;
+            document.getElementById("final-accuracy").textContent = `${accuracy}%`;
+
+            modalOverlay.classList.remove("hidden");
+            resultsCard.classList.remove("hidden");
+        }
+
+        // Main Rendering Loop
+        function gameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid background (Automotive garage aesthetic)
+            ctx.strokeStyle = 'rgba(30, 41, 59, 0.4)';
+            ctx.lineWidth = 1;
+            const gridSize = 40;
+            for (let x = 0; x < canvas.width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+
+            // Update & Draw Targets
+            if (isQuestionActive) {
+                targets.forEach(target => {
+                    target.update();
+                    target.draw();
+                });
+            }
+
+            // Particles
+            updateAndDrawParticles();
+
+            animationFrameId = requestAnimationFrame(gameLoop);
+        }
+
+        // EVENT LISTENERS
+        canvas.addEventListener("mousedown", handleShot);
+        canvas.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            handleShot(e);
+        }, { passive: false });
+
+        startBtn.addEventListener("click", startGame);
+        restartBtn.addEventListener("click", startGame);
+
+        // Initial Canvas Setup
+        resizeCanvas();
+    </script>
+</body>
+</html>
