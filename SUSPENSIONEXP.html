@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Técnico: Análisis de Sistemas de Suspensión Automotriz</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0088ff',
+                            600: '#0066cc',
+                            700: '#004db3',
+                            900: '#0b192c',
+                            dark: '#070f1e'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'Fira Code', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #070f1e;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b192c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glass-panel-active {
+            border-color: rgba(0, 136, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 136, 255, 0.2);
+        }
+
+        .tech-grid {
+            background-size: 30px 30px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-200 tech-grid flex flex-col justify-between">
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="glass-panel sticky top-0 z-50 border-b border-slate-800 bg-slate-950/80 px-4 py-3 lg:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
+                    <i class="fa-solid fa-car-side text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-wide text-white flex items-center gap-2">
+                        DASHBOARD TÉCNICO: SUSPENSIÓN AUTOMOTRIZ
+                        <span class="text-xs bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded font-mono">EXPOSICIÓN TÉCNICA</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Guía de arquitectura, dinámicas estructurales y parámetros geotécnicos de alineación</p>
+                </div>
+            </div>
+
+            <!-- CONTROLES GENERALES / BÚSQUEDA -->
+            <div class="flex items-center gap-3 bg-slate-900/90 p-2 rounded-xl border border-slate-800 text-xs font-mono">
+                <span class="text-blue-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-book-bookmark"></i> Manual de Ingeniería
+                </span>
+                <span class="text-slate-600">|</span>
+                <span class="text-slate-400">4 Sistemas Principales</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-7xl mx-auto w-full p-4 md:p-6 flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- LEFT PANEL: SELECTOR DE SISTEMA DE SUSPENSIÓN (4 Cols) -->
+        <div class="lg:col-span-4 flex flex-col gap-6">
+            
+            <div class="glass-panel rounded-2xl p-5">
+                <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-blue-400"></i> Sistemas de Suspensión
+                </h2>
+                <div class="grid grid-cols-1 gap-2.5" id="suspensionSelector">
+                    
+                    <!-- McPherson -->
+                    <button data-type="mcpherson" class="type-btn glass-panel-active glass-panel p-3.5 rounded-xl text-left transition duration-200 hover:border-blue-500/50 flex items-start justify-between group">
+                        <div>
+                            <div class="font-semibold text-sm text-white group-hover:text-blue-400 transition flex items-center gap-2">
+                                <i class="fa-solid fa-angle-right text-xs text-blue-400"></i> McPherson
+                            </div>
+                            <div class="text-xs text-slate-400 mt-1">Columna estructural integradora compacta</div>
+                        </div>
+                        <span class="text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded font-mono">Eje Delantero</span>
+                    </button>
+
+                    <!-- Doble Horquilla -->
+                    <button data-type="double_wishbone" class="type-btn glass-panel p-3.5 rounded-xl text-left transition duration-200 hover:border-blue-500/50 flex items-start justify-between group">
+                        <div>
+                            <div class="font-semibold text-sm text-white group-hover:text-blue-400 transition flex items-center gap-2">
+                                <i class="fa-solid fa-angle-right text-xs text-blue-400"></i> Doble Horquilla
+                            </div>
+                            <div class="text-xs text-slate-400 mt-1">Geometría de alta precisión cinemática</div>
+                        </div>
+                        <span class="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded font-mono">Alto Rendimiento</span>
+                    </button>
+
+                    <!-- Eje Rígido -->
+                    <button data-type="leaf_spring" class="type-btn glass-panel p-3.5 rounded-xl text-left transition duration-200 hover:border-blue-500/50 flex items-start justify-between group">
+                        <div>
+                            <div class="font-semibold text-sm text-white group-hover:text-blue-400 transition flex items-center gap-2">
+                                <i class="fa-solid fa-angle-right text-xs text-blue-400"></i> Eje Rígido / Ballestas
+                            </div>
+                            <div class="text-xs text-slate-400 mt-1">Alta capacidad de soporte y vinculación rígida</div>
+                        </div>
+                        <span class="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-mono">Carga / Trabajo</span>
+                    </button>
+
+                    <!-- Multibrazo -->
+                    <button data-type="multilink" class="type-btn glass-panel p-3.5 rounded-xl text-left transition duration-200 hover:border-blue-500/50 flex items-start justify-between group">
+                        <div>
+                            <div class="font-semibold text-sm text-white group-hover:text-blue-400 transition flex items-center gap-2">
+                                <i class="fa-solid fa-angle-right text-xs text-blue-400"></i> Multibrazo (Multi-link)
+                            </div>
+                            <div class="text-xs text-slate-400 mt-1">Guiado independiente multidireccional</div>
+                        </div>
+                        <span class="text-[10px] bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-0.5 rounded font-mono">Gama Alta / Premium</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ANÁLISIS DE SECUENCIA ANTE UN IMPACTO/OBSTÁCULO -->
+            <div class="glass-panel rounded-2xl p-5">
+                <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-route text-blue-400"></i> Secuencia Dinámica en Impacto
+                </h2>
+                <div class="space-y-3 relative before:absolute before:inset-0 before:left-3 before:w-0.5 before:bg-slate-800">
+                    
+                    <div class="relative pl-7 text-xs">
+                        <div class="absolute left-1.5 top-0.5 w-3 h-3 rounded-full bg-blue-500 border-2 border-slate-900"></div>
+                        <div class="font-semibold text-white">1. Desnivel e Impacto Inicial</div>
+                        <p class="text-slate-400 mt-0.5">El neumático absorbe micro-impactos y transmite la fuerza vertical a la mangueta.</p>
+                    </div>
+
+                    <div class="relative pl-7 text-xs">
+                        <div class="absolute left-1.5 top-0.5 w-3 h-3 rounded-full bg-amber-500 border-2 border-slate-900"></div>
+                        <div class="font-semibold text-white">2. Compresión del Resorte</div>
+                        <p class="text-slate-400 mt-0.5">El resorte helicoidal o ballesta se comprime, almacenando energía potencial mecánica.</p>
+                    </div>
+
+                    <div class="relative pl-7 text-xs">
+                        <div class="absolute left-1.5 top-0.5 w-3 h-3 rounded-full bg-cyan-500 border-2 border-slate-900"></div>
+                        <div class="font-semibold text-white">3. Amortiguación y Disipación</div>
+                        <p class="text-slate-400 mt-0.5">El amortiguador fuerza aceite por válvulas disipando energía en forma de calor para evitar oscilaciones.</p>
+                    </div>
+
+                    <div class="relative pl-7 text-xs">
+                        <div class="absolute left-1.5 top-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-slate-900"></div>
+                        <div class="font-semibold text-white">4. Recuperación del Contacto</div>
+                        <p class="text-slate-400 mt-0.5">La suspensión extiende el resorte manteniendo el neumático presionado firmemente al suelo.</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- DIFERENCIA SISTÉMICA -->
+            <div class="glass-panel rounded-2xl p-5">
+                <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-diagram-project text-blue-400"></i> Sistemas Relacionados
+                </h2>
+                <div class="space-y-2 text-xs">
+                    <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
+                        <span class="font-bold text-blue-400">Suspensión:</span>
+                        <span class="text-slate-300"> Administra fuerzas verticales y sostiene la carga dinámicamente.</span>
+                    </div>
+                    <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
+                        <span class="font-bold text-amber-400">Dirección:</span>
+                        <span class="text-slate-300"> Controla el ángulo de guiñada (trayectoria horizontal) del vehículo.</span>
+                    </div>
+                    <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800">
+                        <span class="font-bold text-emerald-400">Chasis / Bastidor:</span>
+                        <span class="text-slate-300"> Estructura rígida soporte sobre la que se anclan las fuerzas dinámicas.</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT PANEL: DETALLES, ESQUEMA ESTRUCTURAL Y CARACTERÍSTICAS (8 Cols) -->
+        <div class="lg:col-span-8 flex flex-col gap-6">
+
+            <!-- CABECERA DEL SISTEMA SELECCIONADO -->
+            <div class="glass-panel rounded-2xl p-6 relative overflow-hidden">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <h2 id="sysTitle" class="text-2xl font-bold text-white tracking-wide">
+                                Suspensión McPherson
+                            </h2>
+                            <span id="sysBadge" class="text-xs bg-blue-500/20 text-blue-300 border border-blue-500/30 px-3 py-1 rounded-full font-semibold">
+                                Eje Delantero
+                            </span>
+                        </div>
+                        <p id="sysSub" class="text-xs text-slate-400 mt-1">Estructura unificada de columna amortiguadora y amortiguamiento concéntrico.</p>
+                    </div>
+                </div>
+
+                <!-- DIAGRAMA ESTRUCTURAL SVG (ESQUEMA TÉCNICO INTERACTIVO / ILUSTRATIVO) -->
+                <div class="w-full h-64 bg-slate-950/90 rounded-xl border border-slate-800 p-4 relative flex items-center justify-center overflow-hidden">
+                    <svg id="sysDiagram" class="w-full h-full max-w-lg" viewBox="0 0 500 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Dynamic SVG injected via JavaScript -->
+                    </svg>
+                </div>
+
+                <!-- DESCRIPCIÓN DETALLADA -->
+                <div class="mt-4 p-4 bg-slate-900/80 border border-slate-800 rounded-xl text-xs text-slate-300 leading-relaxed" id="sysDesc">
+                    <!-- Injected text -->
+                </div>
+            </div>
+
+            <!-- ESPECIFICACIONES Y MÉRITOS TéCNICOS DE DISEÑO -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- VENTAJAS Y DESVENTAJAS -->
+                <div class="glass-panel rounded-2xl p-5">
+                    <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-scale-balanced text-blue-400"></i> Evaluación de Diseño
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5 mb-2">
+                                <i class="fa-solid fa-circle-check"></i> Ventajas Clave
+                            </span>
+                            <ul id="sysPros" class="space-y-1.5 text-xs text-slate-300 list-disc list-inside">
+                                <!-- Injected -->
+                            </ul>
+                        </div>
+
+                        <div class="border-t border-slate-800/80 pt-3">
+                            <span class="text-xs font-bold text-rose-400 flex items-center gap-1.5 mb-2">
+                                <i class="fa-solid fa-circle-xmark"></i> Limitaciones
+                            </span>
+                            <ul id="sysCons" class="space-y-1.5 text-xs text-slate-300 list-disc list-inside">
+                                <!-- Injected -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- APLICACIONES Y PARÁMETROS GEOMÉTRICOS -->
+                <div class="glass-panel rounded-2xl p-5 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <i class="fa-solid fa-sliders text-amber-400"></i> Comportamiento Cinemático
+                        </h3>
+
+                        <div class="space-y-3">
+                            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                                <div class="text-[11px] text-slate-400 uppercase tracking-wider">Control de Camber en Compresión</div>
+                                <div id="sysCamberBehavior" class="text-xs font-semibold text-white mt-1">Variación moderada del ángulo de caída</div>
+                            </div>
+
+                            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                                <div class="text-[11px] text-slate-400 uppercase tracking-wider">Aislamiento de NVH (Ruido / Vibración)</div>
+                                <div id="sysNvh" class="text-xs font-semibold text-white mt-1">Bueno mediante bujes elásticos</div>
+                            </div>
+
+                            <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                                <div class="text-[11px] text-slate-400 uppercase tracking-wider">Uso Vehicular Típico</div>
+                                <div id="sysApplications" class="text-xs font-semibold text-cyan-400 mt-1">Vehículos de pasajeros comerciales</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- GEOMETRÍA DE ALINEACIÓN (CAMBER, TOE, CASTER) -->
+            <div class="glass-panel rounded-2xl p-5">
+                <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-compass text-blue-400"></i> Parámetros Fundamentales de Alineación de Rueda
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- CAMBER -->
+                    <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-white">Camber (Caída)</span>
+                            <span class="text-[10px] bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-1.5 py-0.5 rounded font-mono">Frente</span>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Inclinación vertical de la rueda al mirarla desde el frente. Un camber negativo mejora el apoyo de la huella del neumático durante el paso por curva.
+                        </p>
+                    </div>
+
+                    <!-- TOE -->
+                    <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-white">Toe (Convergencia)</span>
+                            <span class="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/20 px-1.5 py-0.5 rounded font-mono">Planta</span>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Desviación de las ruedas con respecto al eje longitudinal vistas desde arriba. Define la estabilidad direccional en recta y la agilidad en la entrada de curvas.
+                        </p>
+                    </div>
+
+                    <!-- CASTER -->
+                    <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-white">Caster (Avance)</span>
+                            <span class="text-[10px] bg-purple-500/10 text-purple-400 border border-purple-500/20 px-1.5 py-0.5 rounded font-mono">Perfil</span>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">
+                            Inclinación del eje de giro de la dirección visto de perfil. Proporciona torque de autocentrado del volante y estabilidad a altas velocidades.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MATRIZ COMPARATIVA COMPLETA DE COMPONENTES -->
+            <div class="glass-panel rounded-2xl p-5">
+                <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-table-list text-blue-400"></i> Matriz de Funciones Mecánicas y Diagnóstico
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-slate-400 font-mono">
+                                <th class="p-3">Componente</th>
+                                <th class="p-3">Función Principal</th>
+                                <th class="p-3">Respuesta Mecánica</th>
+                                <th class="p-3">Consecuencia por Inexistencia / Falla</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                            <tr class="hover:bg-slate-900/40">
+                                <td class="p-3 font-semibold text-blue-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-ring"></i> Resorte / Muelle
+                                </td>
+                                <td class="p-3">Soporte de carga estática y aporte de elasticidad.</td>
+                                <td class="p-3">Se comprime al impactar, almacenando energía potencial.</td>
+                                <td class="p-3 text-rose-400">Hundimiento del chasis e impactos secos metálicos.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-900/40">
+                                <td class="p-3 font-semibold text-amber-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-compress"></i> Amortiguador
+                                </td>
+                                <td class="p-3">Disipación de energía cinética en térmica mediante fluido.</td>
+                                <td class="p-3">Aplica resistencia hidráulica en compresión y extensión.</td>
+                                <td class="p-3 text-rose-400">Rebote descontrolado y pérdida severa de adherencia.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-900/40">
+                                <td class="p-3 font-semibold text-emerald-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-code-branch"></i> Horquillas y Brazos
+                                </td>
+                                <td class="p-3">Guían el movimiento cinemático del eje neumático.</td>
+                                <td class="p-3">Restringen traslaciones no deseadas manteniendo la alineación.</td>
+                                <td class="p-3 text-rose-400">Pérdida de trayectoria y deformación geométrica.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-900/40">
+                                <td class="p-3 font-semibold text-purple-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-arrows-left-right-to-line"></i> Barra Estabilizadora
+                                </td>
+                                <td class="p-3">Reduce la inclinación de la carrocería en curvas.</td>
+                                <td class="p-3">Transfiere fuerza de torsión entre el lado izquierdo y derecho.</td>
+                                <td class="p-3 text-rose-400">Balanceo lateral excesivo e inestabilidad en curvas.</td>
+                            </tr>
+                            <tr class="hover:bg-slate-900/40">
+                                <td class="p-3 font-semibold text-cyan-400 flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-dot"></i> Neumático
+                                </td>
+                                <td class="p-3">Primer elemento de contacto y filtrado de alta frecuencia.</td>
+                                <td class="p-3">Deformación elástica de la carcasa sobre el asfalto.</td>
+                                <td class="p-3 text-rose-400">Aumento masivo de vibraciones transmitidas.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="glass-panel border-t border-slate-800 text-center py-4 text-xs text-slate-500 mt-8">
+        <p>Plataforma Didáctica de Ingeniería Automotriz • Guía de Exposición Técnica de Sistemas de Suspensión</p>
+    </footer>
+
+    <!-- SCRIPT DE DATOS Y RENDERIZADO -->
+    <script>
+        /**
+         * BASE DE DATOS TÉCNICA Y GENERADOR DE DIAGRAMAS ESTRUCTURALES
+         */
+
+        const SUSPENSION_DATA = {
+            mcpherson: {
+                title: 'Suspensión McPherson',
+                badge: 'Eje Delantero',
+                badgeColor: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+                sub: 'Estructura simplificada integradora con puntal hidráulico central y horquilla inferior.',
+                desc: '<strong>Principios de Diseño:</strong> La suspensión McPherson integra el amortiguador y el resorte helicoidal en una misma columna estructural (puntal McPherson). Esta columna atornillada a la carrocería soporta las cargas verticales principales y sustituye al brazo superior de suspensión. Utiliza una sola horquilla inferior para guiar la base de la rueda. Es la arquitectura más común en el eje delantero debido a su compacidad y bajo costo.',
+                pros: [
+                    'Bajo costo de fabricación y montaje reducido.',
+                    'Estructura compacta que libera espacio para el motor transversal.',
+                    'Menor masa no suspendida global.',
+                    'Mantenimiento sencillo y repuestos accesibles.'
+                ],
+                cons: [
+                    'Ganancia de Camber subóptima durante la compresión del resorte.',
+                    'Transmite mayores fuerzas dinámicas y vibraciones a la torreta del chasis.',
+                    'Mayor fricción interna por la carga lateral en el vástago del amortiguador.'
+                ],
+                camberBehavior: 'Inclinación variable con cambio pronunciado de caída en apoyos fuertes.',
+                nvh: 'Absorción adecuada, acoplado mediante topes de goma en la torreta.',
+                applications: 'Vehículos utilitarios, sedanes urbanos, crossovers y deportivos compactos.',
+                diagram: `
+                    <!-- Carroceria Torreta -->
+                    <path d="M180,30 L320,30 L340,60 L160,60 Z" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="250" y="45" fill="#94a3b8" font-size="10" text-anchor="middle" font-family="sans-serif">Torreta Chasis / Anclaje Superior</text>
+                    
+                    <!-- Puntal Amortiguador -->
+                    <rect x="240" y="60" width="20" height="70" rx="4" fill="#334155" stroke="#38bdf8" stroke-width="2"/>
+                    <line x1="250" y1="130" x2="250" y2="170" stroke="#cbd5e1" stroke-width="6"/>
+                    
+                    <!-- Resorte Concentrico -->
+                    <path d="M225,70 Q275,75 225,85 Q275,95 225,105 Q275,115 225,125" fill="none" stroke="#0088ff" stroke-width="4" stroke-linecap="round"/>
+
+                    <!-- Brazo Inferior (Horquilla) -->
+                    <path d="M140,195 L245,180" stroke="#64748b" stroke-width="6" stroke-linecap="round"/>
+                    <circle cx="140" cy="195" r="5" fill="#38bdf8"/>
+                    <circle cx="245" cy="180" r="5" fill="#38bdf8"/>
+                    <text x="175" y="215" fill="#94a3b8" font-size="10" font-family="sans-serif">Horquilla Inferior</text>
+
+                    <!-- Mangueta y Rueda -->
+                    <rect x="260" y="140" width="30" height="70" rx="6" fill="#0f172a" stroke="#64748b" stroke-width="2"/>
+                    <rect x="290" y="120" width="35" height="110" rx="10" fill="#1e293b" stroke="#38bdf8" stroke-width="3"/>
+                    <text x="307" y="180" fill="#ffffff" font-size="9" text-anchor="middle" font-family="sans-serif" transform="rotate(90 307 180)">NEUMÁTICO</text>
+                `
+            },
+            double_wishbone: {
+                title: 'Suspensión de Doble Horquilla',
+                badge: 'Alto Rendimiento',
+                badgeColor: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+                sub: 'Arquitectura cinemática cuadrilateral superior e inferior para control absoluto de la huella de pisada.',
+                desc: '<strong>Principios de Diseño:</strong> Utiliza dos brazos articulados en forma de "A" u "O" (horquillas superior e inferior) montados entre el bastidor y la mangueta. La longitud desigual de los brazos se diseña minuciosamente para que, al comprimirse la suspensión, el ángulo de Camber (caída) cambie dinámicamente manteniendo la superficie del neumático completamente plana contra el asfalto durante roces e inclinaciones laterales en curva.',
+                pros: [
+                    'Control geométrico óptimo del Camber, Caster y Toe en todo el recorrido.',
+                    'El amortiguador no soporta cargas estructurales bending (flexión).',
+                    'Excelente rigidez camber durante exigentes fuerzas laterales.'
+                ],
+                cons: [
+                    'Ocupa un volumen significativamente mayor en el paso de rueda.',
+                    'Mayor peso global por el número incrementado de bujes y rótulas.',
+                    'Costo superior de desarrollo, fabricación y alineación.'
+                ],
+                camberBehavior: 'Ganancia de caída negativa perfecta durante la compresión en virajes.',
+                nvh: 'Excelente aislamiento al distribuir fuerzas en múltiples casquillos de goma.',
+                applications: 'Autos deportivos, monoplazas de competición, SUVs de lujo y pickups pesadas.',
+                diagram: `
+                    <!-- Chasis Central -->
+                    <line x1="120" y1="40" x2="120" y2="200" stroke="#334155" stroke-width="4" stroke-dasharray="4"/>
+                    <text x="110" y="120" fill="#64748b" font-size="10" text-anchor="middle" font-family="sans-serif" transform="rotate(-90 110 120)">BASTIDOR / CHASIS</text>
+
+                    <!-- Horquilla Superior -->
+                    <path d="M120,70 L240,85" stroke="#f59e0b" stroke-width="6" stroke-linecap="round"/>
+                    <circle cx="120" cy="70" r="5" fill="#f59e0b"/>
+                    <circle cx="240" cy="85" r="5" fill="#f59e0b"/>
+                    <text x="170" y="65" fill="#f59e0b" font-size="10" font-family="sans-serif">Horquilla Superior</text>
+
+                    <!-- Horquilla Inferior -->
+                    <path d="M120,180 L240,190" stroke="#f59e0b" stroke-width="6" stroke-linecap="round"/>
+                    <circle cx="120" cy="180" r="5" fill="#f59e0b"/>
+                    <circle cx="240" cy="190" r="5" fill="#f59e0b"/>
+                    <text x="170" y="210" fill="#f59e0b" font-size="10" font-family="sans-serif">Horquilla Inferior</text>
+
+                    <!-- Mangueta Vertical -->
+                    <path d="M240,85 L240,190" stroke="#94a3b8" stroke-width="8"/>
+
+                    <!-- Conjunto Resorte/Amortiguador Inclinado -->
+                    <line x1="150" y1="180" x2="210" y2="90" stroke="#38bdf8" stroke-width="4"/>
+                    <path d="M165,155 Q195,150 175,135 Q205,130 185,115" fill="none" stroke="#0088ff" stroke-width="3"/>
+
+                    <!-- Neumatico -->
+                    <rect x="270" y="70" width="40" height="135" rx="10" fill="#1e293b" stroke="#f59e0b" stroke-width="3"/>
+                    <text x="290" y="137" fill="#ffffff" font-size="9" text-anchor="middle" font-family="sans-serif" transform="rotate(90 290 137)">NEUMÁTICO</text>
+                `
+            },
+            leaf_spring: {
+                title: 'Eje Rígido con Ballestas',
+                badge: 'Carga / Trabajo',
+                badgeColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+                sub: 'Viga maciza transversal dependiente con suspensión por hojas elásticas superpuestas.',
+                desc: '<strong>Principios de Diseño:</strong> Es un sistema dependiente donde las ruedas izquierda y derecha están unidas directamente mediante una viga o eje sólido. El elemento elástico es la ballesta, formada por varias hojas de acero de ballesta superpuestas de diferente longitud. Las ballestas no solo absorben las irregularidades actuando como resorte, sino que también ubican estructuralmente el eje longitudinal y transversalmente.',
+                pros: [
+                    'Capacidad extrema para soportar elevadas cargas estáticas y dinámicas.',
+                    'Gran robustez mecánica y resistencia al maltrato en caminos severos.',
+                    'Mantiene la distancia al suelo y el ángulo de caída constante respecto al eje.'
+                ],
+                cons: [
+                    'Cualquier desnivel que afecta a una rueda transmite inclinación a la opuesta.',
+                    'Masa no suspendida muy elevada, perjudicando el confort dinámico.',
+                    'Fenómenos de oscilación y rebote brusco en caminos rizados.'
+                ],
+                camberBehavior: 'Camber nulo respecto al eje, pero cambia bruscamente relativo a la carrocería.',
+                nvh: 'Aislamiento bajo; propensión a chirridos por fricción entre hojas.',
+                applications: 'Camionetas Pick-up, camiones de carga, autobuses y vehículos todoterreno puros.',
+                diagram: `
+                    <!-- Bastidor Superior -->
+                    <rect x="120" y="40" width="260" height="16" rx="4" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+                    <text x="250" y="52" fill="#10b981" font-size="10" text-anchor="middle" font-family="sans-serif">Chasis de Largueros (Escalera)</text>
+
+                    <!-- Ballesta Cóncava (Hojas) -->
+                    <path d="M140,75 Q250,145 360,75" fill="none" stroke="#34d399" stroke-width="5"/>
+                    <path d="M160,85 Q250,145 340,85" fill="none" stroke="#10b981" stroke-width="4"/>
+                    <path d="M180,95 Q250,145 320,95" fill="none" stroke="#059669" stroke-width="3"/>
+
+                    <!-- Gemelos de Anclaje -->
+                    <circle cx="140" cy="75" r="4" fill="#ffffff"/>
+                    <circle cx="360" cy="75" r="4" fill="#ffffff"/>
+
+                    <!-- Eje Rigido Sólido (Sección) -->
+                    <rect x="230" y="120" width="40" height="40" rx="6" fill="#334155" stroke="#10b981" stroke-width="3"/>
+                    <text x="250" y="144" fill="#ffffff" font-size="9" text-anchor="middle" font-family="sans-serif">EJE</text>
+
+                    <!-- Amortiguador Inclinado -->
+                    <line x1="280" y1="60" x2="260" y2="120" stroke="#38bdf8" stroke-width="5"/>
+
+                    <!-- Neumaticos -->
+                    <rect x="380" y="90" width="30" height="110" rx="8" fill="#1e293b" stroke="#34d399" stroke-width="2"/>
+                `
+            },
+            multilink: {
+                title: 'Suspensión Multibrazo (Multi-link)',
+                badge: 'Gama Alta / Premium',
+                badgeColor: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
+                sub: 'Evolución avanzada con 3 a 5 tirantes independientes para desacoplar fuerzas longitudinales y transversales.',
+                desc: '<strong>Principios de Diseño:</strong> Constituye el punto cúlmine del diseño cinemático de suspensiones independientes. Utiliza entre tres y cinco brazos articulados individuales (brazos de control longitudinales, de convergencia y transversales). Esto permite a los ingenieros ajustar por separado la rigidez ante frenadas, aceleraciones y aceleraciones laterales sin comprometer el confort de marcha.',
+                pros: [
+                    'Máximo confort y adaptabilidad a cualquier imperfección del asfalto.',
+                    'Permite el fenómeno de autodirección del eje trasero para mayor estabilidad.',
+                    'Desacople total entre confort de compresión y rigidez lateral.'
+                ],
+                cons: [
+                    'Extrema complejidad de diseño dinámico y múltiples puntos de pivote.',
+                    'Mayor cantidad de bujes de goma sujetos a desgaste con el kilometraje.',
+                    'Costo elevado de producción e inspección técnica.'
+                ],
+                camberBehavior: 'Ajuste cinemático milimétrico adaptativo en tres dimensiones.',
+                nvh: 'Aislamiento acústico y de vibraciones superior clase mundial.',
+                applications: 'Vehículos sedanes premium, SUVs de alta gama y turismos deportivos modernos.',
+                diagram: `
+                    <!-- Subchasis Posterior -->
+                    <rect x="130" y="50" width="90" height="130" rx="8" fill="#1e293b" stroke="#a855f7" stroke-width="2" stroke-dasharray="3"/>
+                    <text x="175" y="115" fill="#a855f7" font-size="9" text-anchor="middle" font-family="sans-serif" transform="rotate(-90 175 115)">SUBCHASIS</text>
+
+                    <!-- Brazo Superior 1 -->
+                    <line x1="220" y1="70" x2="310" y2="80" stroke="#c084fc" stroke-width="5" stroke-linecap="round"/>
+                    <circle cx="220" cy="70" r="4" fill="#a855f7"/>
+
+                    <!-- Brazo Trailing Longitudinal 2 -->
+                    <line x1="220" y1="105" x2="305" y2="115" stroke="#a855f7" stroke-width="4" stroke-linecap="round"/>
+                    <circle cx="220" cy="105" r="4" fill="#a855f7"/>
+
+                    <!-- Brazo Inferior Principal 3 -->
+                    <line x1="220" y1="150" x2="310" y2="160" stroke="#e879f9" stroke-width="6" stroke-linecap="round"/>
+                    <circle cx="220" cy="150" r="4" fill="#a855f7"/>
+
+                    <!-- Tie Rod de Toe 4 -->
+                    <line x1="220" y1="175" x2="295" y2="180" stroke="#38bdf8" stroke-width="3" stroke-linecap="round"/>
+
+                    <!-- Mangueta -->
+                    <path d="M310,75 L310,185" stroke="#94a3b8" stroke-width="6"/>
+
+                    <!-- Neumático -->
+                    <rect x="330" y="60" width="35" height="135" rx="10" fill="#1e293b" stroke="#a855f7" stroke-width="3"/>
+                    <text x="347" y="127" fill="#ffffff" font-size="9" text-anchor="middle" font-family="sans-serif" transform="rotate(90 347 127)">NEUMÁTICO</text>
+                `
+            }
+        };
+
+        // --- MANEJO DE INTERFAZ ---
+        const sysTitle = document.getElementById('sysTitle');
+        const sysBadge = document.getElementById('sysBadge');
+        const sysSub = document.getElementById('sysSub');
+        const sysDesc = document.getElementById('sysDesc');
+        const sysDiagram = document.getElementById('sysDiagram');
+        const sysPros = document.getElementById('sysPros');
+        const sysCons = document.getElementById('sysCons');
+        const sysCamberBehavior = document.getElementById('sysCamberBehavior');
+        const sysNvh = document.getElementById('sysNvh');
+        const sysApplications = document.getElementById('sysApplications');
+
+        function updateDisplay(key) {
+            const data = SUSPENSION_DATA[key];
+            if (!data) return;
+
+            sysTitle.textContent = data.title;
+            sysBadge.textContent = data.badge;
+            sysBadge.className = `text-xs border px-3 py-1 rounded-full font-semibold ${data.badgeColor}`;
+            sysSub.textContent = data.sub;
+            sysDesc.innerHTML = data.desc;
+            sysDiagram.innerHTML = data.diagram;
+
+            // Ventajas
+            sysPros.innerHTML = data.pros.map(p => `<li class="leading-relaxed"><span class="text-slate-200">${p}</span></li>`).join('');
+
+            // Desventajas
+            sysCons.innerHTML = data.cons.map(c => `<li class="leading-relaxed"><span class="text-slate-200">${c}</span></li>`).join('');
+
+            // Parametros
+            sysCamberBehavior.textContent = data.camberBehavior;
+            sysNvh.textContent = data.nvh;
+            sysApplications.textContent = data.applications;
+        }
+
+        // Event Listeners para botones de selección
+        document.querySelectorAll('.type-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.type-btn').forEach(b => {
+                    b.classList.remove('glass-panel-active');
+                });
+                btn.classList.add('glass-panel-active');
+
+                const key = btn.getAttribute('data-type');
+                updateDisplay(key);
+            });
+        });
+
+        // Inicialización por defecto
+        window.onload = function() {
+            updateDisplay('mcpherson');
+        };
+    </script>
+</body>
+</html>
