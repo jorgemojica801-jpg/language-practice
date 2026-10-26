@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESL Brains: Creating a Learning Culture Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Perspective for 3D flip effect */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+
+    <!-- TOP NAVBAR -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold text-xl shadow-md shadow-brand-500/20">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">ESL Brains</h1>
+                        <p class="text-xs text-brand-600 font-medium">Creating a Learning Culture</p>
+                    </div>
+                </div>
+
+                <!-- Progress Bar Container -->
+                <div class="hidden md:flex flex-col w-64">
+                    <div class="flex justify-between items-center text-xs font-semibold text-slate-600 mb-1">
+                        <span>Course Progress</span>
+                        <span id="progress-percent" class="text-brand-600">0%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                        <div id="progress-bar" class="bg-brand-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- User Profile / Stats -->
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    <div class="flex items-center space-x-1.5 bg-brand-50 text-brand-700 px-3 py-1.5 rounded-full text-xs font-semibold border border-brand-100">
+                        <i class="fa-solid fa-fire text-orange-500"></i>
+                        <span>3 Day Streak</span>
+                    </div>
+                    <div class="flex items-center space-x-2 pl-2 border-l border-slate-200">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120" alt="Avatar" class="w-9 h-9 rounded-full ring-2 ring-brand-500/30 object-cover">
+                        <div class="hidden sm:block text-left">
+                            <div class="text-xs font-bold text-slate-800">Alex Morgan</div>
+                            <div class="text-[10px] text-slate-500 font-medium">Advanced Learner</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT LAYOUT -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="lg:col-span-3 space-y-2">
+            <nav class="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-sm sticky top-24">
+                <div class="px-3 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider">Module Nav</div>
+                <button onclick="scrollToSection('warmup')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-brand-600 transition font-medium text-sm text-left group">
+                    <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-brand-50 group-hover:text-brand-600 flex items-center justify-center transition">
+                        <i class="fa-solid fa-rocket"></i>
+                    </span>
+                    <span>1. Warm-Up</span>
+                </button>
+                <button onclick="scrollToSection('vocabulary')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-brand-600 transition font-medium text-sm text-left group">
+                    <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-brand-50 group-hover:text-brand-600 flex items-center justify-center transition">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </span>
+                    <span>2. Key Vocabulary</span>
+                </button>
+                <button onclick="scrollToSection('discussion')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-brand-600 transition font-medium text-sm text-left group">
+                    <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-brand-50 group-hover:text-brand-600 flex items-center justify-center transition">
+                        <i class="fa-solid fa-comments"></i>
+                    </span>
+                    <span>3. Let's Talk</span>
+                </button>
+                <button onclick="scrollToSection('video-insights')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-brand-600 transition font-medium text-sm text-left group">
+                    <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-brand-50 group-hover:text-brand-600 flex items-center justify-center transition">
+                        <i class="fa-solid fa-play-circle"></i>
+                    </span>
+                    <span>4. Video & Insights</span>
+                </button>
+                <button onclick="scrollToSection('this-or-that')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-brand-600 transition font-medium text-sm text-left group">
+                    <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-brand-50 group-hover:text-brand-600 flex items-center justify-center transition">
+                        <i class="fa-solid fa-sliders"></i>
+                    </span>
+                    <span>5. This or That?</span>
+                </button>
+                <button onclick="scrollToSection('debate')" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-slate-600 hover:bg-slate-50 hover:text-brand-600 transition font-medium text-sm text-left group">
+                    <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 group-hover:bg-brand-50 group-hover:text-brand-600 flex items-center justify-center transition">
+                        <i class="fa-solid fa-scale-balanced"></i>
+                    </span>
+                    <span>6. Debate Zone</span>
+                </button>
+
+                <!-- Quick Quiz Banner -->
+                <div class="mt-6 p-4 rounded-xl bg-gradient-to-br from-brand-600 to-brand-800 text-white shadow-md">
+                    <div class="text-xs uppercase tracking-wider text-brand-200 font-semibold mb-1">Interactive Challenge</div>
+                    <p class="text-sm font-bold mb-3">Test your mastery on company learning culture!</p>
+                    <button onclick="openQuizModal()" class="w-full py-2 bg-white text-brand-700 font-semibold text-xs rounded-lg shadow hover:bg-brand-50 transition flex items-center justify-center space-x-1">
+                        <i class="fa-solid fa-bolt text-yellow-500"></i>
+                        <span>Start Mini-Quiz</span>
+                    </button>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- DASHBOARD CONTENT AREA -->
+        <main class="lg:col-span-9 space-y-8">
+
+            <!-- HERO / WELCOME BANNER -->
+            <section class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="space-y-3 z-10 max-w-lg">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand-50 text-brand-600 border border-brand-200">
+                        <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span> Business English Unit
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Creating a Learning Culture</h2>
+                    <p class="text-slate-600 text-sm leading-relaxed">
+                        Explore modern workforce trends, master essential career terminology, and debate strategies for continuous professional development.
+                    </p>
+                    <div class="pt-2 flex items-center space-x-4 text-xs font-medium text-slate-500">
+                        <span class="flex items-center gap-1"><i class="fa-regular fa-clock text-brand-500"></i> ~45 Mins</span>
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-signal text-brand-500"></i> Upper-Int (B2-C1)</span>
+                    </div>
+                </div>
+                <div class="w-full md:w-56 h-40 bg-brand-50 rounded-xl flex items-center justify-center relative overflow-hidden border border-brand-100 flex-shrink-0">
+                    <div class="text-center p-4">
+                        <i class="fa-solid fa-seedling text-5xl text-brand-500 mb-2"></i>
+                        <div class="text-xs font-bold text-brand-900">Growth Mindset</div>
+                        <div class="text-[10px] text-brand-600">Continuous Upskilling</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 1: WARM-UP -->
+            <section id="warmup" class="scroll-mt-24 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-lg bg-brand-100 text-brand-600 flex items-center justify-center font-bold">1</div>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">Warm-Up Activity</h3>
+                            <p class="text-xs text-slate-500">Get your brain activated before diving in</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-medium text-brand-600 bg-brand-50 px-2.5 py-1 rounded-md">Interactive</span>
+                </div>
+
+                <div class="bg-slate-50 rounded-xl p-5 border border-slate-200/60">
+                    <p class="text-sm font-semibold text-slate-700 mb-4">
+                        <i class="fa-solid fa-lightbulb text-yellow-500 mr-2"></i> Look at these three common verbs used in professional growth. Can you explain what sets them apart?
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-brand-300 transition">
+                            <div class="text-brand-600 font-bold text-lg mb-1">upskill</div>
+                            <p class="text-xs text-slate-500">Learn new skills or teach workers new skills to do their current job better.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-brand-300 transition">
+                            <div class="text-brand-600 font-bold text-lg mb-1">reskill</div>
+                            <p class="text-xs text-slate-500">Learn completely new skills so you can do a different job or role.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-brand-300 transition">
+                            <div class="text-brand-600 font-bold text-lg mb-1">deskill</div>
+                            <p class="text-xs text-slate-500">Reduce the level of skill needed to carry out a job, often due to automation.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: INTERACTIVE FLASHCARDS / MATCHING -->
+            <section id="vocabulary" class="scroll-mt-24 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-lg bg-brand-100 text-brand-600 flex items-center justify-center font-bold">2</div>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">Vocabulary Flashcards</h3>
+                            <p class="text-xs text-slate-500">Click each card to flip and learn definitions & examples</p>
+                        </div>
+                    </div>
+                    <button onclick="resetFlashcards()" class="text-xs text-slate-500 hover:text-brand-600 flex items-center gap-1 font-medium">
+                        <i class="fa-solid fa-rotate-right"></i> Reset Cards
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Flashcard 1 -->
+                    <div class="h-56 perspective-1000 cursor-pointer group" onclick="flipCard(this); markStepCompleted(1);">
+                        <div class="relative w-full h-full rounded-2xl transition-transform duration-500 transform-style-3d shadow-sm group-hover:shadow-md border border-slate-200">
+                            <!-- Front -->
+                            <div class="absolute inset-0 bg-gradient-to-b from-white to-brand-50/30 rounded-2xl p-6 flex flex-col justify-between backface-hidden">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold text-brand-600 uppercase tracking-wider bg-brand-100/60 px-2.5 py-1 rounded-md">Verb</span>
+                                    <i class="fa-regular fa-lightbulb text-brand-400"></i>
+                                </div>
+                                <div class="text-center my-auto">
+                                    <h4 class="text-2xl font-extrabold text-slate-800">upskill</h4>
+                                    <p class="text-xs text-slate-400 mt-2">Click to reveal definition</p>
+                                </div>
+                                <div class="text-right text-[11px] text-slate-400 font-medium">1 / 3</div>
+                            </div>
+                            <!-- Back -->
+                            <div class="absolute inset-0 bg-brand-600 text-white rounded-2xl p-6 flex flex-col justify-between backface-hidden rotate-y-180">
+                                <div>
+                                    <div class="text-xs font-semibold text-brand-200 mb-2">DEFINITION</div>
+                                    <p class="text-sm font-medium leading-relaxed">To learn additional skills or enhance existing skills to adapt to new workplace demands.</p>
+                                </div>
+                                <div class="border-t border-brand-500/80 pt-3">
+                                    <div class="text-[10px] font-semibold text-brand-200">EXAMPLE</div>
+                                    <p class="text-xs italic text-brand-100">"Our company provides software training so engineers can upskill."</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flashcard 2 -->
+                    <div class="h-56 perspective-1000 cursor-pointer group" onclick="flipCard(this); markStepCompleted(1);">
+                        <div class="relative w-full h-full rounded-2xl transition-transform duration-500 transform-style-3d shadow-sm group-hover:shadow-md border border-slate-200">
+                            <!-- Front -->
+                            <div class="absolute inset-0 bg-gradient-to-b from-white to-brand-50/30 rounded-2xl p-6 flex flex-col justify-between backface-hidden">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold text-brand-600 uppercase tracking-wider bg-brand-100/60 px-2.5 py-1 rounded-md">Verb</span>
+                                    <i class="fa-regular fa-lightbulb text-brand-400"></i>
+                                </div>
+                                <div class="text-center my-auto">
+                                    <h4 class="text-2xl font-extrabold text-slate-800">reskill</h4>
+                                    <p class="text-xs text-slate-400 mt-2">Click to reveal definition</p>
+                                </div>
+                                <div class="text-right text-[11px] text-slate-400 font-medium">2 / 3</div>
+                            </div>
+                            <!-- Back -->
+                            <div class="absolute inset-0 bg-brand-600 text-white rounded-2xl p-6 flex flex-col justify-between backface-hidden rotate-y-180">
+                                <div>
+                                    <div class="text-xs font-semibold text-brand-200 mb-2">DEFINITION</div>
+                                    <p class="text-sm font-medium leading-relaxed">To train or learn entirely new skills in order to qualify for a completely different role or career.</p>
+                                </div>
+                                <div class="border-t border-brand-500/80 pt-3">
+                                    <div class="text-[10px] font-semibold text-brand-200">EXAMPLE</div>
+                                    <p class="text-xs italic text-brand-100">"Many traditional bank tellers had to reskill into digital support roles."</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flashcard 3 -->
+                    <div class="h-56 perspective-1000 cursor-pointer group" onclick="flipCard(this); markStepCompleted(1);">
+                        <div class="relative w-full h-full rounded-2xl transition-transform duration-500 transform-style-3d shadow-sm group-hover:shadow-md border border-slate-200">
+                            <!-- Front -->
+                            <div class="absolute inset-0 bg-gradient-to-b from-white to-brand-50/30 rounded-2xl p-6 flex flex-col justify-between backface-hidden">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold text-brand-600 uppercase tracking-wider bg-brand-100/60 px-2.5 py-1 rounded-md">Verb</span>
+                                    <i class="fa-regular fa-lightbulb text-brand-400"></i>
+                                </div>
+                                <div class="text-center my-auto">
+                                    <h4 class="text-2xl font-extrabold text-slate-800">deskill</h4>
+                                    <p class="text-xs text-slate-400 mt-2">Click to reveal definition</p>
+                                </div>
+                                <div class="text-right text-[11px] text-slate-400 font-medium">3 / 3</div>
+                            </div>
+                            <!-- Back -->
+                            <div class="absolute inset-0 bg-brand-600 text-white rounded-2xl p-6 flex flex-col justify-between backface-hidden rotate-y-180">
+                                <div>
+                                    <div class="text-xs font-semibold text-brand-200 mb-2">DEFINITION</div>
+                                    <p class="text-sm font-medium leading-relaxed">To automate or simplify a job so much that workers no longer need specialized knowledge.</p>
+                                </div>
+                                <div class="border-t border-brand-500/80 pt-3">
+                                    <div class="text-[10px] font-semibold text-brand-200">EXAMPLE</div>
+                                    <p class="text-xs italic text-brand-100">"Modern software deskilled assembly work by automating calculation steps."</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: LET'S TALK / DISCUSSION CARDS -->
+            <section id="discussion" class="scroll-mt-24 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-lg bg-brand-100 text-brand-600 flex items-center justify-center font-bold">3</div>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">Let's Talk! Discussion Prompts</h3>
+                            <p class="text-xs text-slate-500">Reflect on these questions and record your thoughts or notes</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Prompt 1 -->
+                    <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center space-x-2 text-brand-600 mb-3">
+                                <i class="fa-solid fa-briefcase"></i>
+                                <span class="text-xs font-bold uppercase tracking-wider">Industry Changes</span>
+                            </div>
+                            <p class="text-sm font-bold text-slate-800 leading-snug mb-4">
+                                Think about your industry. What has changed in the last 10 years? (Consider customer needs, automation, and core skills).
+                            </p>
+                        </div>
+                        <textarea oninput="markStepCompleted(2)" placeholder="Type your discussion notes here..." class="w-full text-xs p-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white text-slate-700 h-24 resize-none"></textarea>
+                    </div>
+
+                    <!-- Prompt 2 -->
+                    <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center space-x-2 text-brand-600 mb-3">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                                <span class="text-xs font-bold uppercase tracking-wider">Personal Journey</span>
+                            </div>
+                            <p class="text-sm font-bold text-slate-800 leading-snug mb-4">
+                                Have you been forced or decided to upskill recently? What did you learn and how useful was it? What do you want to learn next?
+                            </p>
+                        </div>
+                        <textarea oninput="markStepCompleted(2)" placeholder="Type your discussion notes here..." class="w-full text-xs p-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white text-slate-700 h-24 resize-none"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 4: VIDEO & EXPERT INSIGHTS HUB -->
+            <section id="video-insights" class="scroll-mt-24 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-lg bg-brand-100 text-brand-600 flex items-center justify-center font-bold">4</div>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">Video & Expert Insights Hub</h3>
+                            <p class="text-xs text-slate-500">Discover key strategies beyond traditional courses</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                    <!-- Video Card Placeholder / Frame -->
+                    <div class="bg-slate-900 rounded-xl overflow-hidden shadow-lg border border-slate-800 text-white">
+                        <div class="relative aspect-video bg-slate-800 flex items-center justify-center group">
+                            <iframe class="w-full h-full" src="https://www.youtube.com/embed/5m3O4-I0Dgg" title="Upskilling Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                        <div class="p-4">
+                            <span class="text-[10px] font-bold text-brand-400 uppercase tracking-wide">Featured Video</span>
+                            <h4 class="text-sm font-bold mt-0.5">Transforming Careers: The Power of Continuous Learning</h4>
+                            <p class="text-xs text-slate-400 mt-1">Watch how modern recruitment and companies foster upskilling.</p>
+                        </div>
+                    </div>
+
+                    <!-- Expert Quotes & Methods -->
+                    <div class="space-y-4">
+                        <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">3 Alternative Ways to Upskill</h4>
+                        
+                        <div class="space-y-3">
+                            <div class="p-3.5 bg-brand-50/60 rounded-xl border border-brand-100 flex items-start space-x-3">
+                                <div class="w-7 h-7 rounded-lg bg-brand-600 text-white flex items-center justify-center text-xs flex-shrink-0 mt-0.5">1</div>
+                                <p class="text-xs text-slate-700 leading-relaxed">
+                                    <strong class="text-brand-900">10-15 Min Daily Habits:</strong> Dedicate 10 to 15 minutes a day reading industry publications, listening to podcasts, or watching TED talks.
+                                </p>
+                            </div>
+
+                            <div class="p-3.5 bg-brand-50/60 rounded-xl border border-brand-100 flex items-start space-x-3">
+                                <div class="w-7 h-7 rounded-lg bg-brand-600 text-white flex items-center justify-center text-xs flex-shrink-0 mt-0.5">2</div>
+                                <p class="text-xs text-slate-700 leading-relaxed">
+                                    <strong class="text-brand-900">Reverse Mentorship:</strong> Find a younger or junior employee with stronger digital skills to mentor senior team members.
+                                </p>
+                            </div>
+
+                            <div class="p-3.5 bg-brand-50/60 rounded-xl border border-brand-100 flex items-start space-x-3">
+                                <div class="w-7 h-7 rounded-lg bg-brand-600 text-white flex items-center justify-center text-xs flex-shrink-0 mt-0.5">3</div>
+                                <p class="text-xs text-slate-700 leading-relaxed">
+                                    <strong class="text-brand-900">Industry Reminders:</strong> Set scheduled reminders to read up on market developments and initiate conversations.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Quote Banner -->
+                        <div class="p-4 bg-slate-900 text-white rounded-xl relative overflow-hidden mt-4">
+                            <i class="fa-solid fa-quote-right absolute -right-2 -bottom-2 text-6xl text-slate-800 opacity-50"></i>
+                            <p class="text-xs italic text-slate-200 relative z-10">
+                                "A successful career will no longer be about promotion. It will be about mastery."
+                            </p>
+                            <p class="text-[11px] font-bold text-brand-400 mt-2 relative z-10">— Michael Martin Hammer</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 5: THIS OR THAT CHOICE ACTIVITY -->
+            <section id="this-or-that" class="scroll-mt-24 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-lg bg-brand-100 text-brand-600 flex items-center justify-center font-bold">5</div>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">"This or That" Choice Activity</h3>
+                            <p class="text-xs text-slate-500">Pick the learning option that suits you best and view key advantages</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Option Pair 1 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Choice 1: Career Direction</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="choice-group-1">
+                            <button onclick="selectOption(this, 1)" class="p-3 bg-white border-2 border-slate-200 rounded-xl hover:border-brand-500 transition text-left flex items-start justify-between group">
+                                <div>
+                                    <div class="text-sm font-bold text-slate-800 group-hover:text-brand-600">Upskilling</div>
+                                    <div class="text-[11px] text-slate-500 mt-1">Deepening knowledge in current field. Fast impact.</div>
+                                </div>
+                                <div class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center group-hover:border-brand-500">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-brand-600 hidden check-icon"></div>
+                                </div>
+                            </button>
+
+                            <button onclick="selectOption(this, 1)" class="p-3 bg-white border-2 border-slate-200 rounded-xl hover:border-brand-500 transition text-left flex items-start justify-between group">
+                                <div>
+                                    <div class="text-sm font-bold text-slate-800 group-hover:text-brand-600">Reskilling</div>
+                                    <div class="text-[11px] text-slate-500 mt-1">Pivoting into new opportunities. Future-proofing.</div>
+                                </div>
+                                <div class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center group-hover:border-brand-500">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-brand-600 hidden check-icon"></div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Option Pair 2 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Choice 2: Mentorship Model</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="choice-group-2">
+                            <button onclick="selectOption(this, 2)" class="p-3 bg-white border-2 border-slate-200 rounded-xl hover:border-brand-500 transition text-left flex items-start justify-between group">
+                                <div>
+                                    <div class="text-sm font-bold text-slate-800 group-hover:text-brand-600">Traditional Mentor</div>
+                                    <div class="text-[11px] text-slate-500 mt-1">Experienced senior guidance, strategic wisdom.</div>
+                                </div>
+                                <div class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center group-hover:border-brand-500">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-brand-600 hidden check-icon"></div>
+                                </div>
+                            </button>
+
+                            <button onclick="selectOption(this, 2)" class="p-3 bg-white border-2 border-slate-200 rounded-xl hover:border-brand-500 transition text-left flex items-start justify-between group">
+                                <div>
+                                    <div class="text-sm font-bold text-slate-800 group-hover:text-brand-600">Reverse Mentor</div>
+                                    <div class="text-[11px] text-slate-500 mt-1">Junior tech-savvy guide for new digital tools.</div>
+                                </div>
+                                <div class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center group-hover:border-brand-500">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-brand-600 hidden check-icon"></div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Option Pair 3 -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Choice 3: Skill Focus</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="choice-group-3">
+                            <button onclick="selectOption(this, 3)" class="p-3 bg-white border-2 border-slate-200 rounded-xl hover:border-brand-500 transition text-left flex items-start justify-between group">
+                                <div>
+                                    <div class="text-sm font-bold text-slate-800 group-hover:text-brand-600">Hard Skills</div>
+                                    <div class="text-[11px] text-slate-500 mt-1">Technical mastery, coding, tools, software.</div>
+                                </div>
+                                <div class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center group-hover:border-brand-500">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-brand-600 hidden check-icon"></div>
+                                </div>
+                            </button>
+
+                            <button onclick="selectOption(this, 3)" class="p-3 bg-white border-2 border-slate-200 rounded-xl hover:border-brand-500 transition text-left flex items-start justify-between group">
+                                <div>
+                                    <div class="text-sm font-bold text-slate-800 group-hover:text-brand-600">Soft Skills</div>
+                                    <div class="text-[11px] text-slate-500 mt-1">Leadership, communication, emotional intelligence.</div>
+                                </div>
+                                <div class="w-5 h-5 rounded-full border border-slate-300 flex items-center justify-center group-hover:border-brand-500">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-brand-600 hidden check-icon"></div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 6: DEBATE & DISCUSSION SIMULATOR -->
+            <section id="debate" class="scroll-mt-24 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm space-y-6">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-lg bg-brand-100 text-brand-600 flex items-center justify-center font-bold">6</div>
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">Debate Zone</h3>
+                            <p class="text-xs text-slate-500">Cast your vote on workplace statements and examine arguments</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <!-- Debate Statement 1 -->
+                    <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-4">
+                        <div class="flex items-start gap-3">
+                            <span class="p-2 bg-brand-100 text-brand-600 rounded-lg text-sm font-bold"><i class="fa-solid fa-quote-left"></i></span>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">"Upskilling creates unnecessary pressure for employees to learn so they don't lose their jobs, adding stress to everyday life."</h4>
+                            </div>
+                        </div>
+
+                        <!-- Voting & Opinion -->
+                        <div class="flex flex-wrap items-center gap-3 pt-2">
+                            <button onclick="voteDebate(this, 's1', 'agree')" class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-700 hover:border-green-500 hover:text-green-600 transition flex items-center gap-1.5 shadow-sm">
+                                <i class="fa-regular fa-thumbs-up"></i> Agree
+                            </button>
+                            <button onclick="voteDebate(this, 's1', 'disagree')" class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-700 hover:border-red-500 hover:text-red-600 transition flex items-center gap-1.5 shadow-sm">
+                                <i class="fa-regular fa-thumbs-down"></i> Disagree
+                            </button>
+                            <span id="s1-status" class="text-xs font-semibold text-brand-600 hidden">Vote recorded!</span>
+                        </div>
+
+                        <div class="text-xs bg-white p-3 rounded-lg border border-slate-200/80 text-slate-600 leading-relaxed">
+                            <strong class="text-slate-800">Key Counter-Argument:</strong> While constant change can feel overwhelming, upskilling increases job security and empowers employees with high-value transferable skills.
+                        </div>
+                    </div>
+
+                    <!-- Debate Statement 2 -->
+                    <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-4">
+                        <div class="flex items-start gap-3">
+                            <span class="p-2 bg-brand-100 text-brand-600 rounded-lg text-sm font-bold"><i class="fa-solid fa-quote-left"></i></span>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">"Upskilling is just a corporate buzzword. Employers don't provide the right conditions or time for genuine learning."</h4>
+                            </div>
+                        </div>
+
+                        <!-- Voting & Opinion -->
+                        <div class="flex flex-wrap items-center gap-3 pt-2">
+                            <button onclick="voteDebate(this, 's2', 'agree')" class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-700 hover:border-green-500 hover:text-green-600 transition flex items-center gap-1.5 shadow-sm">
+                                <i class="fa-regular fa-thumbs-up"></i> Agree
+                            </button>
+                            <button onclick="voteDebate(this, 's2', 'disagree')" class="px-4 py-2 bg-white border border-slate-300 rounded-lg text-xs font-bold text-slate-700 hover:border-red-500 hover:text-red-600 transition flex items-center gap-1.5 shadow-sm">
+                                <i class="fa-regular fa-thumbs-down"></i> Disagree
+                            </button>
+                            <span id="s2-status" class="text-xs font-semibold text-brand-600 hidden">Vote recorded!</span>
+                        </div>
+
+                        <div class="text-xs bg-white p-3 rounded-lg border border-slate-200/80 text-slate-600 leading-relaxed">
+                            <strong class="text-slate-800">Key Counter-Argument:</strong> Top organizations now allocate dedicated learning hours weekly and offer budget incentives because employee growth directly drives company productivity.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- QUIZ MODAL -->
+    <div id="quiz-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-5 animate-in fade-in zoom-in duration-200">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div class="flex items-center space-x-2 text-brand-600 font-bold">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Quick Knowledge Check</span>
+                </div>
+                <button onclick="closeQuizModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div id="quiz-content" class="space-y-4">
+                <div id="quiz-q1" class="space-y-3">
+                    <p class="text-sm font-bold text-slate-800">1. What does 'reskill' specifically mean?</p>
+                    <div class="space-y-2">
+                        <button onclick="answerQuiz(1, false)" class="w-full text-left p-2.5 rounded-lg border border-slate-200 text-xs hover:bg-brand-50 hover:border-brand-300 font-medium transition">
+                            A) Improving current skills in the exact same job.
+                        </button>
+                        <button onclick="answerQuiz(1, true)" class="w-full text-left p-2.5 rounded-lg border border-slate-200 text-xs hover:bg-brand-50 hover:border-brand-300 font-medium transition">
+                            B) Learning entirely new skills to transition into a new role.
+                        </button>
+                        <button onclick="answerQuiz(1, false)" class="w-full text-left p-2.5 rounded-lg border border-slate-200 text-xs hover:bg-brand-50 hover:border-brand-300 font-medium transition">
+                            C) Automating tasks to simplify work processes.
+                        </button>
+                    </div>
+                </div>
+
+                <div id="quiz-q2" class="space-y-3 hidden">
+                    <p class="text-sm font-bold text-slate-800">2. According to experts, a successful modern career is increasingly about...</p>
+                    <div class="space-y-2">
+                        <button onclick="answerQuiz(2, false)" class="w-full text-left p-2.5 rounded-lg border border-slate-200 text-xs hover:bg-brand-50 hover:border-brand-300 font-medium transition">
+                            A) Immediate promotion and title changes.
+                        </button>
+                        <button onclick="answerQuiz(2, true)" class="w-full text-left p-2.5 rounded-lg border border-slate-200 text-xs hover:bg-brand-50 hover:border-brand-300 font-medium transition">
+                            B) Continuous mastery and skill development.
+                        </button>
+                        <button onclick="answerQuiz(2, false)" class="w-full text-left p-2.5 rounded-lg border border-slate-200 text-xs hover:bg-brand-50 hover:border-brand-300 font-medium transition">
+                            C) Delegating tasks entirely to junior employees.
+                        </button>
+                    </div>
+                </div>
+
+                <div id="quiz-results" class="text-center py-6 space-y-3 hidden">
+                    <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto text-2xl">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <h4 class="text-lg font-bold text-slate-800">Great Job!</h4>
+                    <p class="text-xs text-slate-600">You've completed the learning culture knowledge check!</p>
+                    <button onclick="closeQuizModal()" class="px-5 py-2 bg-brand-600 text-white rounded-lg text-xs font-bold hover:bg-brand-700 transition">
+                        Back to Dashboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400">
+            <p>© 2026 ESL Brains Interactive Learning Dashboard. Design based on 'Creating a Learning Culture'.</p>
+        </div>
+    </footer>
+
+    <!-- INTERACTIVE SCRIPT LOGIC -->
+    <script>
+        // Track completed steps to update header progress bar
+        const completedSteps = new Set();
+        const totalSteps = 4;
+
+        function markStepCompleted(stepNum) {
+            completedSteps.add(stepNum);
+            const percentage = Math.min(Math.round((completedSteps.size / totalSteps) * 100), 100);
+            
+            document.getElementById('progress-bar').style.width = percentage + '%';
+            document.getElementById('progress-percent').innerText = percentage + '%';
+        }
+
+        // Smooth Scroll helper
+        function scrollToSection(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Flip Card logic
+        function flipCard(cardContainer) {
+            const inner = cardContainer.firstElementChild;
+            inner.classList.toggle('rotate-y-180');
+        }
+
+        function resetFlashcards() {
+            const cards = document.querySelectorAll('.rotate-y-180');
+            cards.forEach(card => card.classList.remove('rotate-y-180'));
+        }
+
+        // Option Selector logic
+        function selectOption(button, groupNum) {
+            const group = document.getElementById(`choice-group-${groupNum}`);
+            const buttons = group.querySelectorAll('button');
+            
+            buttons.forEach(btn => {
+                btn.classList.remove('border-brand-500', 'bg-brand-50/40');
+                btn.classList.add('border-slate-200', 'bg-white');
+                const check = btn.querySelector('.check-icon');
+                if(check) check.classList.add('hidden');
+            });
+
+            button.classList.remove('border-slate-200', 'bg-white');
+            button.classList.add('border-brand-500', 'bg-brand-50/40');
+            const activeCheck = button.querySelector('.check-icon');
+            if(activeCheck) activeCheck.classList.remove('hidden');
+
+            markStepCompleted(3);
+        }
+
+        // Vote Debate logic
+        function voteDebate(btn, statementId, type) {
+            const statusEl = document.getElementById(`${statementId}-status`);
+            statusEl.classList.remove('hidden');
+            markStepCompleted(4);
+        }
+
+        // Modal Logic
+        function openQuizModal() {
+            document.getElementById('quiz-modal').classList.remove('hidden');
+            document.getElementById('quiz-q1').classList.remove('hidden');
+            document.getElementById('quiz-q2').classList.add('hidden');
+            document.getElementById('quiz-results').classList.add('hidden');
+        }
+
+        function closeQuizModal() {
+            document.getElementById('quiz-modal').classList.add('hidden');
+        }
+
+        function answerQuiz(qNum, isCorrect) {
+            if (qNum === 1) {
+                document.getElementById('quiz-q1').classList.add('hidden');
+                document.getElementById('quiz-q2').classList.remove('hidden');
+            } else if (qNum === 2) {
+                document.getElementById('quiz-q2').classList.add('hidden');
+                document.getElementById('quiz-results').classList.remove('hidden');
+                markStepCompleted(4);
+            }
+        }
+    </script>
+</body>
+</html>
