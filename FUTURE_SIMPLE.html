@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automotive Future English Dashboard</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        auto: {
+                            accent: '#f59e0b',
+                            dark: '#0f172a',
+                            card: '#1e293b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(100, 116, 139, 0.3);
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-full font-sans antialiased flex flex-col selection:bg-brand-500 selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700/60 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-brand-500 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-amber-500/20">
+                    <i class="fa-solid font-black fa-car-wrench text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight bg-gradient-to-r from-amber-400 via-sky-300 to-white bg-clip-text text-transparent">
+                        AutoEnglish Voiz Studio
+                    </h1>
+                    <p class="text-xs text-slate-400">Futuro Técnico Automotriz (Will & Be Going To)</p>
+                </div>
+            </div>
+
+            <!-- Stats & Quick Voice Config -->
+            <div class="flex items-center space-x-4">
+                <div class="hidden md:flex items-center bg-slate-900/80 border border-slate-700/60 rounded-lg px-3 py-1.5 text-xs text-slate-300 space-x-3">
+                    <span class="flex items-center"><i class="fa-solid fa-layer-group text-amber-400 mr-1.5"></i> <span id="masteredCount">0</span>/30 Dominadas</span>
+                    <span class="h-3 w-px bg-slate-700"></span>
+                    <span class="flex items-center"><i class="fa-solid fa-bolt text-brand-500 mr-1.5"></i> <span id="rhythmsRate">1.0x</span> Voz</span>
+                </div>
+
+                <button id="toggleVoiceSettingsBtn" class="p-2.5 rounded-lg bg-slate-700/60 hover:bg-slate-700 text-slate-300 hover:text-white transition flex items-center space-x-1.5 text-xs font-medium border border-slate-600/40">
+                    <i class="fa-solid fa-sliders text-amber-400"></i>
+                    <span class="hidden sm:inline">Voz TTS</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Voice Control Panel Modal / Drawer -->
+    <div id="voiceDrawer" class="hidden bg-slate-800 border-b border-slate-700 p-4 shadow-xl transition-all">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div>
+                <label class="block text-slate-400 font-medium mb-1"><i class="fa-solid fa-microphone text-brand-500 mr-1"></i> Voz de Salida (TTS)</label>
+                <select id="voiceSelect" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <option value="">Cargando voces...</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-slate-400 font-medium mb-1"><i class="fa-solid fa-gauge-high text-amber-400 mr-1"></i> Velocidad: <span id="speedVal">1.0</span>x</label>
+                <input id="speechSpeed" type="range" min="0.5" max="1.5" step="0.1" value="1.0" class="w-full accent-amber-500 bg-slate-900 rounded-lg">
+            </div>
+            <div>
+                <label class="block text-slate-400 font-medium mb-1"><i class="fa-solid fa-volume-high text-emerald-400 mr-1"></i> Tono (Pitch): <span id="pitchVal">1.0</span></label>
+                <input id="speechPitch" type="range" min="0.7" max="1.3" step="0.1" value="1.0" class="w-full accent-brand-500 bg-slate-900 rounded-lg">
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+
+        <!-- Navigation Tabs -->
+        <div class="flex flex-wrap items-center justify-between border-b border-slate-700/80 pb-3 gap-3">
+            <div class="flex space-x-2 bg-slate-800/80 p-1 rounded-xl border border-slate-700/60">
+                <button id="tabCards" onclick="switchTab('cards')" class="px-4 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 transition bg-brand-500 text-white shadow">
+                    <i class="fa-solid fa-clone"></i>
+                    <span>Flashcards & Audio</span>
+                </button>
+                <button id="tabPractice" onclick="switchTab('practice')" class="px-4 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 transition text-slate-400 hover:text-slate-200 hover:bg-slate-700/40">
+                    <i class="fa-solid fa-headphones"></i>
+                    <span>Voiz Listening Game</span>
+                </button>
+                <button id="tabGrammar" onclick="switchTab('grammar')" class="px-4 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 transition text-slate-400 hover:text-slate-200 hover:bg-slate-700/40">
+                    <i class="fa-solid fa-book-open text-amber-400"></i>
+                    <span>Estructura Futuro</span>
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div id="cardsFilterBar" class="flex items-center space-x-2 text-xs">
+                <span class="text-slate-400 hidden sm:inline"><i class="fa-solid fa-filter mr-1"></i>Filtrar:</span>
+                <select id="filterSelect" onchange="applyFilter()" class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    <option value="ALL">Todas las Expresiones (30)</option>
+                    <option value="WILL">Solo "WILL" (Decisión/Promesa)</option>
+                    <option value="GOING_TO">Solo "BE GOING TO" (Plan/Evidencia)</option>
+                    <option value="MASTERED">Solo Dominadas</option>
+                    <option value="REVIEW">Pendientes por Repasar</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- VIEW 1: FLASHCARDS INTERFACE -->
+        <section id="viewCards" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                
+                <!-- Main Flashcard Presenter -->
+                <div class="lg:col-span-7 flex flex-col items-center space-y-6">
+                    
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden border border-slate-700/60">
+                        <div id="deckProgress" class="bg-gradient-to-r from-amber-500 to-brand-500 h-full transition-all duration-300" style="width: 3.33%"></div>
+                    </div>
+
+                    <!-- Flip Card Container -->
+                    <div class="w-full aspect-[16/10] sm:aspect-[16/9] perspective-1000 group">
+                        <div id="flashcard" onclick="flipCard()" class="relative w-full h-full rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/80 shadow-2xl transition-all duration-500 transform-style-3d cursor-pointer hover:border-brand-500/50">
+                            
+                            <!-- Card Front (English) -->
+                            <div class="absolute inset-0 w-full h-full rounded-2xl p-6 sm:p-8 flex flex-col justify-between backface-hidden bg-slate-800/90 backdrop-blur">
+                                <div class="flex items-center justify-between">
+                                    <span id="cardBadge" class="px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                                        WILL
+                                    </span>
+                                    <span id="cardCounter" class="text-xs font-mono text-slate-400">1 / 30</span>
+                                </div>
+
+                                <div class="text-center my-auto space-y-4">
+                                    <h2 id="cardFrontText" class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-snug">
+                                        I will check the body frame
+                                    </h2>
+                                    <p id="cardGrammarHint" class="text-xs sm:text-sm text-slate-400 font-medium italic">
+                                        Will + check + body frame
+                                    </p>
+                                </div>
+
+                                <div class="flex items-center justify-between text-xs text-slate-500 border-t border-slate-700/60 pt-3">
+                                    <span class="flex items-center"><i class="fa-solid fa-rotate mr-1.5"></i> Clic para voltear</span>
+                                    <button onclick="event.stopPropagation(); speakCurrentCard()" class="text-brand-400 hover:text-brand-300 flex items-center space-x-1 bg-brand-500/10 px-3 py-1.5 rounded-lg border border-brand-500/20">
+                                        <i class="fa-solid fa-volume-high text-sm"></i>
+                                        <span class="font-semibold">Escuchar Pronunciación</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Card Back (Spanish Translation) -->
+                            <div class="absolute inset-0 w-full h-full rounded-2xl p-6 sm:p-8 flex flex-col justify-between backface-hidden rotate-y-180 bg-gradient-to-br from-slate-800 to-brand-900/40 border border-brand-500/30">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-brand-500/20 text-brand-300 border border-brand-500/30">
+                                        TRADUCCIÓN TÉCNICA
+                                    </span>
+                                    <span class="text-xs font-mono text-slate-400"><i class="fa-solid fa-language text-lg"></i></span>
+                                </div>
+
+                                <div class="text-center my-auto space-y-3">
+                                    <h3 id="cardBackText" class="text-xl sm:text-2xl font-bold text-slate-100">
+                                        Revisaré el chasis del vehículo
+                                    </h3>
+                                    <div id="systemTag" class="inline-block px-3 py-1 rounded-lg bg-slate-900/80 border border-slate-700 text-xs text-amber-300">
+                                        Chasis & Carrocería
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between text-xs text-slate-400 border-t border-slate-700/60 pt-3">
+                                    <span>Traducción contextual</span>
+                                    <span class="text-amber-400 font-medium">Volver al frente <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Card Controls -->
+                    <div class="flex flex-wrap items-center justify-center gap-3 w-full">
+                        <button onclick="prevCard()" class="p-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700 transition">
+                            <i class="fa-solid fa-chevron-left text-lg"></i>
+                        </button>
+
+                        <button onclick="speakCurrentCard()" class="px-5 py-3 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-semibold shadow-lg shadow-brand-600/30 flex items-center space-x-2 transition">
+                            <i class="fa-solid fa-volume-high"></i>
+                            <span>Audio</span>
+                        </button>
+
+                        <button id="masterBtn" onclick="toggleMastered()" class="px-4 py-3 bg-slate-800 hover:bg-emerald-600/20 hover:text-emerald-400 text-slate-300 border border-slate-700 rounded-xl font-medium flex items-center space-x-2 transition">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span id="masterBtnText">Marcar Dominada</span>
+                        </button>
+
+                        <button onclick="shuffleDeck()" class="p-3 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-xl border border-slate-700 transition" title="Mezclar tarjetas">
+                            <i class="fa-solid fa-shuffle text-lg"></i>
+                        </button>
+
+                        <button onclick="nextCard()" class="p-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700 transition">
+                            <i class="fa-solid fa-chevron-right text-lg"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Right Side: Interactive List View -->
+                <div class="lg:col-span-5 bg-slate-800/80 rounded-2xl p-5 border border-slate-700/60 shadow-xl flex flex-col h-[520px]">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-700/60">
+                        <h3 class="font-bold text-slate-200 text-sm flex items-center">
+                            <i class="fa-solid fa-list-check text-amber-400 mr-2"></i>
+                            Listado de Frases Término
+                        </h3>
+                        <span id="listCounter" class="text-xs bg-slate-900 px-2.5 py-1 rounded-full text-slate-400 border border-slate-700">30 de 30</span>
+                    </div>
+
+                    <div id="cardsList" class="flex-grow overflow-y-auto space-y-2.5 custom-scrollbar pr-1">
+                        <!-- Dynamically populated card items -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- VIEW 2: LISTENING & PRACTICE MODE -->
+        <section id="viewPractice" class="hidden space-y-6">
+            <div class="max-w-3xl mx-auto bg-slate-800/90 rounded-2xl p-6 sm:p-8 border border-slate-700/80 shadow-2xl space-y-6">
+                
+                <div class="text-center space-y-2">
+                    <span class="px-3 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/30 rounded-full text-xs font-bold uppercase tracking-wider">
+                        Desafío de Escucha Activa
+                    </span>
+                    <h2 class="text-2xl font-bold text-white">Escucha el audio y selecciona la opción correcta</h2>
+                    <p class="text-xs text-slate-400">Entrena tu oído para reconocer términos técnicos de mecánica automotriz en inglés.</p>
+                </div>
+
+                <!-- Listening Audio Player Trigger -->
+                <div class="bg-slate-900/90 rounded-2xl p-8 border border-slate-700 text-center flex flex-col items-center justify-center space-y-4">
+                    <button onclick="playPracticeAudio()" class="w-20 h-20 bg-gradient-to-tr from-amber-500 to-brand-500 hover:scale-105 active:scale-95 text-slate-950 rounded-full flex items-center justify-center shadow-xl shadow-amber-500/20 transition-all">
+                        <i class="fa-solid fa-play text-3xl ml-1"></i>
+                    </button>
+                    <p class="text-xs text-slate-400">Haz clic para escuchar la expresión en inglés</p>
+                </div>
+
+                <!-- Answer Choices Grid -->
+                <div id="practiceOptions" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Feedback Area -->
+                <div id="practiceFeedback" class="hidden p-4 rounded-xl border text-center font-medium text-sm"></div>
+
+                <div class="flex justify-between items-center pt-4 border-t border-slate-700/60">
+                    <div class="text-xs text-slate-400">
+                        Puntaje: <span id="scoreVal" class="text-emerald-400 font-bold">0</span> Aciertos
+                    </div>
+                    <button onclick="nextPracticeQuestion()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl text-xs font-bold transition">
+                        Siguiente Pregunta <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- VIEW 3: GRAMMAR & USAGE REFERENCE -->
+        <section id="viewGrammar" class="hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- WILL Explanation Card -->
+                <div class="bg-slate-800/90 rounded-2xl p-6 border border-amber-500/30 shadow-xl space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center font-bold">
+                            WILL
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white text-lg">Futuro con "Will"</h3>
+                            <p class="text-xs text-amber-400">Sujeto + WILL + Verb en Infinitivo</p>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Se utiliza en el taller para **decisiones espontáneas**, promesas de servicio, o predicciones sobre fallas mecánicas basadas en conocimiento general.
+                    </p>
+
+                    <div class="space-y-2 text-xs">
+                        <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700">
+                            <span class="font-bold text-amber-300">Ejemplo:</span> "I will scan for error codes."
+                            <p class="text-slate-400 text-[11px]">Decisión tomada en el momento de recibir el auto.</p>
+                        </div>
+                        <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700">
+                            <span class="font-bold text-amber-300">Ejemplo:</span> "They will balance the front tires."
+                            <p class="text-slate-400 text-[11px]">Compromiso de mantenimiento acordado.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BE GOING TO Explanation Card -->
+                <div class="bg-slate-800/90 rounded-2xl p-6 border border-brand-500/30 shadow-xl space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-brand-500/20 text-brand-400 border border-brand-500/30 flex items-center justify-center font-bold">
+                            GO
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white text-lg">Futuro con "Be Going To"</h3>
+                            <p class="text-xs text-brand-400">Sujeto + am/is/are + GOING TO + Verb</p>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Se usa para **planes previos**, tareas programadas en la orden de trabajo o cuando hay **evidencia física visible** de una falla o reparación imminente.
+                    </p>
+
+                    <div class="space-y-2 text-xs">
+                        <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700">
+                            <span class="font-bold text-brand-300">Ejemplo:</span> "We are going to replace spark plugs."
+                            <p class="text-slate-400 text-[11px]">Plan agendado previamente en el mantenimiento preventivo.</p>
+                        </div>
+                        <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700">
+                            <span class="font-bold text-brand-300">Ejemplo:</span> "I am going to flush coolant."
+                            <p class="text-slate-400 text-[11px]">Acción programada por diagnóstico previo de líquido sucio.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Vocabulary Index grid -->
+            <div class="bg-slate-800/80 rounded-2xl p-6 border border-slate-700/60 shadow-xl space-y-4">
+                <h3 class="font-bold text-white text-sm flex items-center">
+                    <i class="fa-solid fa-screwdriver-wrench text-amber-400 mr-2"></i>
+                    Glosario de Verbos Técnicos Automotrices
+                </h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 text-xs">
+                    <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-700 text-center">
+                        <span class="block font-bold text-amber-400">check</span>
+                        <span class="text-slate-400 text-[11px]">revisar / chequear</span>
+                    </div>
+                    <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-700 text-center">
+                        <span class="block font-bold text-amber-400">replace</span>
+                        <span class="text-slate-400 text-[11px]">reemplazar</span>
+                    </div>
+                    <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-700 text-center">
+                        <span class="block font-bold text-amber-400">flush / drain</span>
+                        <span class="text-slate-400 text-[11px]">purgar / drenar</span>
+                    </div>
+                    <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-700 text-center">
+                        <span class="block font-bold text-amber-400">scan</span>
+                        <span class="text-slate-400 text-[11px]">escanear</span>
+                    </div>
+                    <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-700 text-center">
+                        <span class="block font-bold text-amber-400">align</span>
+                        <span class="text-slate-400 text-[11px]">alinear</span>
+                    </div>
+                    <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-700 text-center">
+                        <span class="block font-bold text-amber-400">rebuild / weld</span>
+                        <span class="text-slate-400 text-[11px]">reconstruir / soldar</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800/50 border-t border-slate-700/60 py-4 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            AutoEnglish Voiz Studio &copy; 2026 • Expresiones Técnicas en Inglés Automotriz con Síntesis de Voz
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Array of 30 Automotive Future Tense Flashcards
+        const flashcardsData = [
+            { id: 1, front: "I will check the body frame", back: "Revisaré el chasis del vehículo", hint: "Will + check + body frame", type: "WILL", system: "Chasis" },
+            { id: 2, front: "We are going to replace spark plugs", back: "Vamos a reemplazar las bujías", hint: "Going to + replace + spark plugs", type: "GOING_TO", system: "Motor" },
+            { id: 3, front: "He will test the brake pads", back: "Él probará las pastillas de freno", hint: "Will + test + brake pads", type: "WILL", system: "Frenos" },
+            { id: 4, front: "I am going to flush coolant", back: "Voy a purgar el refrigerante", hint: "Going to + flush + coolant", type: "GOING_TO", system: "Enfriamiento" },
+            { id: 5, front: "They will balance the front tires", back: "Ellos balancearán las llantas delanteras", hint: "Will + balance + front tires", type: "WILL", system: "Neumáticos" },
+            { id: 6, front: "She is going to inspect suspension", back: "Ella va a inspeccionar la suspensión", hint: "Going to + inspect + suspension", type: "GOING_TO", system: "Suspensión" },
+            { id: 7, front: "I will scan for error codes", back: "Escanearé en busca de códigos de error", hint: "Will + scan + error codes", type: "WILL", system: "Eléctrico" },
+            { id: 8, front: "We are going to drain oil", back: "Vamos a drenar el aceite", hint: "Going to + drain + oil", type: "GOING_TO", system: "Motor" },
+            { id: 9, front: "He will align the steering wheel", back: "Él alineará el volante de dirección", hint: "Will + align + steering wheel", type: "WILL", system: "Dirección" },
+            { id: 10, front: "I am going to fix exhaust", back: "Voy a reparar el escape", hint: "Going to + fix + exhaust", type: "GOING_TO", system: "Escape" },
+            { id: 11, front: "They will recharge the car battery", back: "Ellos recargarán la batería del auto", hint: "Will + recharge + battery", type: "WILL", system: "Eléctrico" },
+            { id: 12, front: "We are going to check transmission", back: "Vamos a revisar la transmisión", hint: "Going to + check + transmission", type: "GOING_TO", system: "Transmisión" },
+            { id: 13, front: "I will clean the fuel injectors", back: "Limpiaré los inyectores de combustible", hint: "Will + clean + fuel injectors", type: "WILL", system: "Combustible" },
+            { id: 14, front: "She is going to change filter", back: "Ella va a cambiar el filtro", hint: "Going to + change + filter", type: "GOING_TO", system: "Filtración" },
+            { id: 15, front: "He will tighten the wheel nuts", back: "Él apretará las tuercas de rueda", hint: "Will + tighten + wheel nuts", type: "WILL", system: "Neumáticos" },
+            { id: 16, front: "I am going to test alternator", back: "Voy a probar el alternador", hint: "Going to + test + alternator", type: "GOING_TO", system: "Eléctrico" },
+            { id: 17, front: "They will replace the timing belt", back: "Ellos reemplazarán la correa de distribución", hint: "Will + replace + timing belt", type: "WILL", system: "Motor" },
+            { id: 18, front: "We are going to bleed brakes", back: "Vamos a purgar los frenos", hint: "Going to + bleed + brakes", type: "GOING_TO", system: "Frenos" },
+            { id: 19, front: "I will check the tire pressure", back: "Revisaré la presión de neumáticos", hint: "Will + check + tire pressure", type: "WILL", system: "Neumáticos" },
+            { id: 20, front: "He is going to repair radiator", back: "Él va a reparar el radiador", hint: "Going to + repair + radiator", type: "GOING_TO", system: "Enfriamiento" },
+            { id: 21, front: "We will lubricate the door hinges", back: "Lubricaremos las bisagras de puerta", hint: "Will + lubricate + door hinges", type: "WILL", system: "Carrocería" },
+            { id: 22, front: "I am going to install clutch", back: "Voy a instalar el embrague", hint: "Going to + install + clutch", type: "GOING_TO", system: "Transmisión" },
+            { id: 23, front: "They will adjust the handbrake cable", back: "Ellos ajustarán el cable de freno", hint: "Will + adjust + handbrake cable", type: "WILL", system: "Frenos" },
+            { id: 24, front: "She is going to test headlights", back: "Ella va a probar los faros", hint: "Going to + test + headlights", type: "GOING_TO", system: "Eléctrico" },
+            { id: 25, front: "I will inspect the drive shaft", back: "Inspeccionaré el árbol de transmisión", hint: "Will + inspect + drive shaft", type: "WILL", system: "Transmisión" },
+            { id: 26, front: "We are going to check fuses", back: "Vamos a revisar los fusibles", hint: "Going to + check + fuses", type: "GOING_TO", system: "Eléctrico" },
+            { id: 27, front: "He will replace the cabin filter", back: "Él reemplazará el filtro de cabina", hint: "Will + replace + cabin filter", type: "WILL", system: "Filtración" },
+            { id: 28, front: "I am going to rebuild engine", back: "Voy a reconstruir el motor", hint: "Going to + rebuild + engine", type: "GOING_TO", system: "Motor" },
+            { id: 29, front: "They will weld the damaged frame", back: "Ellos soldarán el chasis dañado", hint: "Will + weld + damaged frame", type: "WILL", system: "Chasis" },
+            { id: 30, front: "We are going to test shocks", back: "Vamos a probar los amortiguadores", hint: "Going to + test + shocks", type: "GOING_TO", system: "Suspensión" }
+        ];
+
+        // Application State
+        let activeDeck = [...flashcardsData];
+        let currentIndex = 0;
+        let isFlipped = false;
+        let masteredIds = new Set();
+        let currentVoice = null;
+        let synth = window.speechSynthesis;
+        let practiceCurrentItem = null;
+        let practiceScore = 0;
+
+        // DOM Elements
+        const flashcardEl = document.getElementById('flashcard');
+        const cardFrontText = document.getElementById('cardFrontText');
+        const cardBackText = document.getElementById('cardBackText');
+        const cardGrammarHint = document.getElementById('cardGrammarHint');
+        const cardBadge = document.getElementById('cardBadge');
+        const cardCounter = document.getElementById('cardCounter');
+        const deckProgress = document.getElementById('deckProgress');
+        const systemTag = document.getElementById('systemTag');
+        const masterBtn = document.getElementById('masterBtn');
+        const masterBtnText = document.getElementById('masterBtnText');
+        const cardsListEl = document.getElementById('cardsList');
+        const voiceSelect = document.getElementById('voiceSelect');
+        const speechSpeed = document.getElementById('speechSpeed');
+        const speechPitch = document.getElementById('speechPitch');
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            initVoices();
+            renderDeck();
+            renderList();
+            setupVoiceControls();
+        });
+
+        // Speech Synthesis Voices setup
+        function initVoices() {
+            if (!synth) return;
+            
+            function populateVoiceList() {
+                const voices = synth.getVoices().filter(v => v.lang.startsWith('en'));
+                voiceSelect.innerHTML = '';
+                
+                if (voices.length === 0) {
+                    const opt = document.createElement('option');
+                    opt.value = '';
+                    opt.textContent = 'Voz predeterminada del sistema';
+                    voiceSelect.appendChild(opt);
+                    return;
+                }
+
+                voices.forEach((voice, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `${voice.name} (${voice.lang})`;
+                    if (voice.default || voice.name.includes('US') || voice.name.includes('Natural')) {
+                        option.selected = true;
+                        currentVoice = voice;
+                    }
+                    voiceSelect.appendChild(option);
+                });
+
+                if (!currentVoice && voices.length > 0) {
+                    currentVoice = voices[0];
+                }
+            }
+
+            populateVoiceList();
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+                speechSynthesis.onvoiceschanged = populateVoiceList;
+            }
+        }
+
+        function setupVoiceControls() {
+            document.getElementById('toggleVoiceSettingsBtn').addEventListener('click', () => {
+                document.getElementById('voiceDrawer').classList.toggle('hidden');
+            });
+
+            voiceSelect.addEventListener('change', (e) => {
+                const voices = synth.getVoices().filter(v => v.lang.startsWith('en'));
+                if (voices[e.target.value]) {
+                    currentVoice = voices[e.target.value];
+                }
+            });
+
+            speechSpeed.addEventListener('input', (e) => {
+                document.getElementById('speedVal').textContent = e.target.value;
+                document.getElementById('rhythmsRate').textContent = e.target.value + 'x';
+            });
+
+            speechPitch.addEventListener('input', (e) => {
+                document.getElementById('pitchVal').textContent = e.target.value;
+            });
+        }
+
+        // Text To Speech Execution
+        function speakText(text) {
+            if (!synth) return;
+            synth.cancel(); // Stop any ongoing speech
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            if (currentVoice) utterance.voice = currentVoice;
+            utterance.rate = parseFloat(speechSpeed.value) || 1.0;
+            utterance.pitch = parseFloat(speechPitch.value) || 1.0;
+            utterance.lang = 'en-US';
+
+            synth.speak(utterance);
+        }
+
+        function speakCurrentCard() {
+            if (activeDeck.length === 0) return;
+            speakText(activeDeck[currentIndex].front);
+        }
+
+        // Render current card state
+        function renderDeck() {
+            if (activeDeck.length === 0) {
+                cardFrontText.textContent = "No hay tarjetas disponibles en este filtro";
+                cardGrammarHint.textContent = "";
+                cardBackText.textContent = "Selecciona otro filtro de tarjetas";
+                cardCounter.textContent = "0 / 0";
+                deckProgress.style.width = "0%";
+                return;
+            }
+
+            const item = activeDeck[currentIndex];
+            
+            // Reset Flip back to front on render
+            if (isFlipped) {
+                flashcardEl.classList.remove('rotate-y-180');
+                isFlipped = false;
+            }
+
+            setTimeout(() => {
+                cardFrontText.textContent = item.front;
+                cardGrammarHint.textContent = item.hint;
+                cardBackText.textContent = item.back;
+                systemTag.textContent = `Sistema: ${item.system}`;
+
+                if (item.type === 'WILL') {
+                    cardBadge.textContent = 'WILL (Decisión/Promesa)';
+                    cardBadge.className = 'px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-amber-500/20 text-amber-400 border border-amber-500/30';
+                } else {
+                    cardBadge.textContent = 'BE GOING TO (Plan/Evidencia)';
+                    cardBadge.className = 'px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-brand-500/20 text-brand-300 border border-brand-500/30';
+                }
+
+                cardCounter.textContent = `${currentIndex + 1} / ${activeDeck.length}`;
+                deckProgress.style.width = `${((currentIndex + 1) / activeDeck.length) * 100}%`;
+
+                // Update Mastered Button style
+                if (masteredIds.has(item.id)) {
+                    masterBtn.className = "px-4 py-3 bg-emerald-600/20 text-emerald-400 border border-emerald-500/40 rounded-xl font-medium flex items-center space-x-2 transition";
+                    masterBtnText.textContent = "Dominada";
+                } else {
+                    masterBtn.className = "px-4 py-3 bg-slate-800 hover:bg-emerald-600/20 hover:text-emerald-400 text-slate-300 border border-slate-700 rounded-xl font-medium flex items-center space-x-2 transition";
+                    masterBtnText.textContent = "Marcar Dominada";
+                }
+            }, isFlipped ? 200 : 0);
+
+            highlightActiveListItem();
+        }
+
+        function flipCard() {
+            if (activeDeck.length === 0) return;
+            isFlipped = !isFlipped;
+            flashcardEl.classList.toggle('rotate-y-180');
+        }
+
+        function nextCard() {
+            if (activeDeck.length === 0) return;
+            currentIndex = (currentIndex + 1) % activeDeck.length;
+            renderDeck();
+        }
+
+        function prevCard() {
+            if (activeDeck.length === 0) return;
+            currentIndex = (currentIndex - 1 + activeDeck.length) % activeDeck.length;
+            renderDeck();
+        }
+
+        function shuffleDeck() {
+            for (let i = activeDeck.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [activeDeck[i], activeDeck[j]] = [activeDeck[j], activeDeck[i]];
+            }
+            currentIndex = 0;
+            renderDeck();
+            renderList();
+        }
+
+        function toggleMastered() {
+            if (activeDeck.length === 0) return;
+            const currentItem = activeDeck[currentIndex];
+            if (masteredIds.has(currentItem.id)) {
+                masteredIds.delete(currentItem.id);
+            } else {
+                masteredIds.add(currentItem.id);
+            }
+            document.getElementById('masteredCount').textContent = masteredIds.size;
+            renderDeck();
+            renderList();
+        }
+
+        // Render List view on right panel
+        function renderList() {
+            cardsListEl.innerHTML = '';
+            document.getElementById('listCounter').textContent = `${activeDeck.length} de ${flashcardsData.length}`;
+
+            activeDeck.forEach((item, idx) => {
+                const div = document.createElement('div');
+                const isCurrent = idx === currentIndex;
+                const isMastered = masteredIds.has(item.id);
+
+                div.className = `p-3 rounded-xl border transition flex items-center justify-between cursor-pointer ${
+                    isCurrent 
+                        ? 'bg-slate-700/80 border-brand-500/80 text-white shadow' 
+                        : 'bg-slate-900/60 hover:bg-slate-700/40 border-slate-700/60 text-slate-300'
+                }`;
+
+                div.onclick = () => {
+                    currentIndex = idx;
+                    renderDeck();
+                };
+
+                div.innerHTML = `
+                    <div class="flex items-center space-x-3 overflow-hidden mr-2">
+                        <button onclick="event.stopPropagation(); speakText('${item.front}')" class="text-slate-400 hover:text-amber-400 transition">
+                            <i class="fa-solid fa-volume-high text-xs"></i>
+                        </button>
+                        <div class="truncate">
+                            <p class="font-semibold text-xs text-white truncate">${item.front}</p>
+                            <p class="text-[11px] text-slate-400 truncate">${item.back}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2 flex-shrink-0">
+                        <span class="text-[10px] px-2 py-0.5 rounded ${item.type === 'WILL' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-brand-500/10 text-brand-300 border border-brand-500/20'}">
+                            ${item.type}
+                        </span>
+                        ${isMastered ? '<i class="fa-solid fa-circle-check text-emerald-400 text-xs"></i>' : ''}
+                    </div>
+                `;
+                cardsListEl.appendChild(div);
+            });
+        }
+
+        function highlightActiveListItem() {
+            const items = cardsListEl.children;
+            for (let i = 0; i < items.length; i++) {
+                if (i === currentIndex) {
+                    items[i].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+        }
+
+        // Apply Deck Filters
+        function applyFilter() {
+            const filter = document.getElementById('filterSelect').value;
+            if (filter === 'ALL') {
+                activeDeck = [...flashcardsData];
+            } else if (filter === 'WILL') {
+                activeDeck = flashcardsData.filter(item => item.type === 'WILL');
+            } else if (filter === 'GOING_TO') {
+                activeDeck = flashcardsData.filter(item => item.type === 'GOING_TO');
+            } else if (filter === 'MASTERED') {
+                activeDeck = flashcardsData.filter(item => masteredIds.has(item.id));
+            } else if (filter === 'REVIEW') {
+                activeDeck = flashcardsData.filter(item => !masteredIds.has(item.id));
+            }
+            currentIndex = 0;
+            renderDeck();
+            renderList();
+        }
+
+        // Tab Navigation
+        function switchTab(tabName) {
+            document.getElementById('viewCards').classList.add('hidden');
+            document.getElementById('viewPractice').classList.add('hidden');
+            document.getElementById('viewGrammar').classList.add('hidden');
+
+            document.getElementById('tabCards').className = "px-4 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 transition text-slate-400 hover:text-slate-200 hover:bg-slate-700/40";
+            document.getElementById('tabPractice').className = "px-4 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 transition text-slate-400 hover:text-slate-200 hover:bg-slate-700/40";
+            document.getElementById('tabGrammar').className = "px-4 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 transition text-slate-400 hover:text-slate-200 hover:bg-slate-700/40";
+
+            if (tabName === 'cards') {
+                document.getElementById('viewCards').classList.remove('hidden');
+                document.getElementById('tabCards').className = "px-4 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 transition bg-brand-500 text-white shadow";
+                document.getElementById('cardsFilterBar').classList.remove('hidden');
+            } else if (tabName === 'practice') {
+                document.getElementById('viewPractice').classList.remove('hidden');
+                document.getElementById('tabPractice').className = "px-4 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 transition bg-brand-500 text-white shadow";
+                document.getElementById('cardsFilterBar').classList.add('hidden');
+                initPracticeGame();
+            } else if (tabName === 'grammar') {
+                document.getElementById('viewGrammar').classList.remove('hidden');
+                document.getElementById('tabGrammar').className = "px-4 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 transition bg-brand-500 text-white shadow";
+                document.getElementById('cardsFilterBar').classList.add('hidden');
+            }
+        }
+
+        // LISTENING PRACTICE GAME LOGIC
+        function initPracticeGame() {
+            nextPracticeQuestion();
+        }
+
+        function nextPracticeQuestion() {
+            const feedbackEl = document.getElementById('practiceFeedback');
+            feedbackEl.classList.add('hidden');
+
+            // Pick random card
+            const randomIndex = Math.floor(Math.random() * flashcardsData.length);
+            practiceCurrentItem = flashcardsData[randomIndex];
+
+            // Generate 3 distractors
+            const distractors = [];
+            while (distractors.length < 3) {
+                const rand = flashcardsData[Math.floor(Math.random() * flashcardsData.length)];
+                if (rand.id !== practiceCurrentItem.id && !distractors.includes(rand)) {
+                    distractors.push(rand);
+                }
+            }
+
+            // Shuffle options
+            const options = [practiceCurrentItem, ...distractors];
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+
+            // Render options
+            const optionsContainer = document.getElementById('practiceOptions');
+            optionsContainer.innerHTML = '';
+
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "p-4 bg-slate-900/80 hover:bg-slate-700/60 border border-slate-700 rounded-xl text-left text-xs font-medium text-slate-200 transition flex flex-col justify-between space-y-1 hover:border-brand-500/50";
+                btn.onclick = () => checkPracticeAnswer(opt, btn);
+                btn.innerHTML = `
+                    <span class="font-semibold text-white text-sm">${opt.front}</span>
+                    <span class="text-slate-400 text-xs">${opt.back}</span>
+                `;
+                optionsContainer.appendChild(btn);
+            });
+
+            // Automatically play sound
+            setTimeout(() => {
+                playPracticeAudio();
+            }, 300);
+        }
+
+        function playPracticeAudio() {
+            if (practiceCurrentItem) {
+                speakText(practiceCurrentItem.front);
+            }
+        }
+
+        function checkPracticeAnswer(selectedOption, buttonEl) {
+            const feedbackEl = document.getElementById('practiceFeedback');
+            feedbackEl.classList.remove('hidden');
+
+            if (selectedOption.id === practiceCurrentItem.id) {
+                practiceScore++;
+                document.getElementById('scoreVal').textContent = practiceScore;
+                feedbackEl.className = "p-4 rounded-xl border text-center font-bold text-xs bg-emerald-500/20 text-emerald-300 border-emerald-500/40";
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-check mr-2 text-sm"></i> ¡Correcto! "${practiceCurrentItem.front}" significa "${practiceCurrentItem.back}"`;
+            } else {
+                feedbackEl.className = "p-4 rounded-xl border text-center font-bold text-xs bg-rose-500/20 text-rose-300 border-rose-500/40";
+                feedbackEl.innerHTML = `<i class="fa-solid fa-circle-xmark mr-2 text-sm"></i> Incorrecto. La respuesta correcta era: "${practiceCurrentItem.front}"`;
+            }
+        }
+    </script>
+</body>
+</html>
