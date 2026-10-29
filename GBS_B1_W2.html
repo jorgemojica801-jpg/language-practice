@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GBS Language Training - Voiz System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            200: '#bae0fd',
+                            500: '#0284c7',
+                            600: '#0265d2',
+                            700: '#034ea2',
+                            800: '#073b7a',
+                            900: '#0c3161',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .tab-btn.active {
+            color: #0284c7;
+            border-bottom: 3px solid #0284c7;
+            font-weight: 700;
+        }
+        /* Custom Circular Progress */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        /* Micro-interactions */
+        .card-hover {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.15);
+        }
+    </style>
+</head>
+<body class="text-slate-800 bg-slate-50 min-h-screen flex flex-col justify-between">
+
+    <!-- Header Navigation -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo & Branding -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-gradient-to-br from-brand-600 to-brand-800 text-white p-2.5 rounded-xl shadow-md">
+                        <i class="fa-solid fa-microphone-lines text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight text-slate-900">GBS <span class="text-brand-600">Language Training</span></h1>
+                        <p class="text-xs text-slate-500 font-medium">Technical English & VOIZ Sprint System</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="flex space-x-8 h-full">
+                    <button onclick="switchTab('glossary')" id="tab-glossary" class="tab-btn active px-2 flex items-center space-x-2 text-slate-600 hover:text-brand-600 text-sm font-medium transition-colors">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                        <span>Glossary</span>
+                    </button>
+                    <button onclick="switchTab('grammar')" id="tab-grammar" class="tab-btn px-2 flex items-center space-x-2 text-slate-600 hover:text-brand-600 text-sm font-medium transition-colors">
+                        <i class="fa-solid fa-diagram-project"></i>
+                        <span>Grammar in Practice</span>
+                    </button>
+                    <button onclick="switchTab('voiz')" id="tab-voiz" class="tab-btn px-2 flex items-center space-x-2 text-slate-600 hover:text-brand-600 text-sm font-medium transition-colors">
+                        <i class="fa-solid fa-bolt text-amber-500"></i>
+                        <span>VOIZ (30 Prompts)</span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+
+        <!-- ================= SECTION 1: GLOSSARY ================= -->
+        <section id="section-glossary" class="space-y-6">
+            <!-- Section Title & Description -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">Technical Glossary</h2>
+                    <p class="text-slate-500 text-sm mt-1">Key terminology and structural concepts extracted from the course module.</p>
+                </div>
+                <!-- Search & Filters -->
+                <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    <div class="relative w-full sm:w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="glossary-search" oninput="filterGlossary()" placeholder="Search terms or IPA..." class="w-full pl-9 pr-4 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                    </div>
+                    <select id="glossary-filter" onchange="filterGlossary()" class="px-4 py-2 border border-slate-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700">
+                        <option value="all">All Categories</option>
+                        <option value="Vocabulary">Film & Studio Terminology</option>
+                        <option value="Grammar">Grammar Structures</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Glossary Grid -->
+            <div id="glossary-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cards will be populated by JS -->
+            </div>
+        </section>
+
+
+        <!-- ================= SECTION 2: GRAMMAR IN PRACTICE ================= -->
+        <section id="section-grammar" class="hidden space-y-8">
+            <!-- Header -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">
+                <h2 class="text-2xl font-bold text-slate-900">Grammar in Practice</h2>
+                <p class="text-slate-500 text-sm mt-1">Mastering Passive Voice vs Active Voice & Temporal Framing in Professional Descriptions.</p>
+            </div>
+
+            <!-- Visual Breakdown (Timeline + Formulas) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Formula Card -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                    <div class="flex items-center space-x-3 text-brand-600">
+                        <i class="fa-solid fa-calculator text-xl"></i>
+                        <h3 class="text-lg font-bold text-slate-900">Structural Formulas</h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="bg-brand-50 p-4 rounded-xl border border-brand-100">
+                            <span class="text-xs font-bold text-brand-700 uppercase tracking-wide">Passive Voice Formula</span>
+                            <p class="text-base font-semibold text-brand-900 mt-1">Subject + [To Be] + Past Participle (+ by Agent)</p>
+                            <p class="text-xs text-slate-600 mt-1"><em>Example: "The film was shot in 1997."</em></p>
+                        </div>
+                        <div class="bg-slate-100 p-4 rounded-xl border border-slate-200">
+                            <span class="text-xs font-bold text-slate-600 uppercase tracking-wide">Active Contrast</span>
+                            <p class="text-base font-semibold text-slate-800 mt-1">Subject + Action Verb + Direct Object</p>
+                            <p class="text-xs text-slate-600 mt-1"><em>Example: "The director shot the film in 1997."</em></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Diagram Card -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                    <div class="flex items-center space-x-3 text-brand-600">
+                        <i class="fa-solid fa-timeline text-xl"></i>
+                        <h3 class="text-lg font-bold text-slate-900">Temporal Framing Timeline</h3>
+                    </div>
+                    <!-- Diagram -->
+                    <div class="relative pl-6 border-l-2 border-brand-300 space-y-6 my-2">
+                        <div class="relative">
+                            <span class="absolute -left-[31px] top-0 bg-brand-500 w-4 h-4 rounded-full ring-4 ring-white"></span>
+                            <p class="text-xs font-bold text-brand-600">PAST ACTION (Completed)</p>
+                            <p class="text-sm font-semibold text-slate-800">"The movie was filmed in New Zealand."</p>
+                            <p class="text-xs text-slate-500">Focus on the production process that finished in the past.</p>
+                        </div>
+                        <div class="relative">
+                            <span class="absolute -left-[31px] top-0 bg-emerald-500 w-4 h-4 rounded-full ring-4 ring-white"></span>
+                            <p class="text-xs font-bold text-emerald-600">PRESENT STATE (Permanent/Continuous)</p>
+                            <p class="text-sm font-semibold text-slate-800">"The movie is set in a fictional universe."</p>
+                            <p class="text-xs text-slate-500">Focus on narrative background, state, or setting today.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Grammar Quiz / Practice -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Grammar Verification Challenge</h3>
+                        <p class="text-xs text-slate-500">Choose the correct voice or verb form based on context.</p>
+                    </div>
+                    <span id="quiz-score" class="text-xs font-bold bg-brand-100 text-brand-700 px-3 py-1 rounded-full">Score: 0 / 5</span>
+                </div>
+
+                <div id="grammar-quiz-container" class="space-y-4">
+                    <!-- Dynamic Grammar Questions -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= SECTION 3: VOIZ 30 SPEAKING PROMPTS ================= -->
+        <section id="section-voiz" class="hidden space-y-8">
+            <!-- Header & Controls -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900">VOIZ Engine (30 Speaking Prompts)</h2>
+                    <p class="text-slate-500 text-sm mt-1">High-intensity 10-second vocalization sprint for rapid fluency acquisition.</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs font-semibold text-slate-500">Prompt Selector:</span>
+                    <select id="prompt-select" onchange="loadPrompt(parseInt(this.value))" class="px-3 py-2 border border-slate-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <!-- 30 Options filled via JS -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Interactive VOIZ Workspace -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Left: Sprint Controls & Audio Recorder (5 cols) -->
+                <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col items-center text-center space-y-6">
+                    <div class="w-full flex justify-between items-center text-xs text-slate-400 font-semibold uppercase tracking-wider">
+                        <span>Sprint Motor</span>
+                        <span id="prompt-badge" class="bg-brand-50 text-brand-700 px-2.5 py-1 rounded-full border border-brand-200">Prompt 1 of 30</span>
+                    </div>
+
+                    <!-- Circular Progress Timer -->
+                    <div class="relative w-48 h-48 flex items-center justify-center">
+                        <svg class="w-full h-full" viewBox="0 0 120 120">
+                            <circle class="text-slate-100" stroke-width="8" stroke="currentColor" fill="transparent" r="50" cx="60" cy="60"/>
+                            <circle id="timer-circle" class="text-brand-600 progress-ring__circle" stroke-width="8" stroke-dasharray="314.15" stroke-dashoffset="0" stroke-linecap="round" stroke="currentColor" fill="transparent" r="50" cx="60" cy="60"/>
+                        </svg>
+                        <div class="absolute flex flex-col items-center">
+                            <span id="timer-display" class="text-4xl font-extrabold text-slate-900 tracking-tight">10.0</span>
+                            <span class="text-xs text-slate-400 uppercase font-bold mt-1">Seconds</span>
+                        </div>
+                    </div>
+
+                    <!-- Recording Status -->
+                    <div id="recording-status" class="text-xs font-medium text-slate-500 h-5">
+                        Press Start Sprint to speak
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex gap-3 w-full">
+                        <button id="btn-start-sprint" onclick="startSprint()" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-play"></i>
+                            <span>Start Sprint</span>
+                        </button>
+                        <button id="btn-reset-sprint" onclick="resetSprint()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 px-4 rounded-xl transition-all">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
+
+                    <!-- Audio Playback Area -->
+                    <div id="playback-area" class="w-full pt-4 border-t border-slate-100 hidden space-y-2">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block text-left">Recorded Feedback</span>
+                        <audio id="audio-playback" controls class="w-full h-10 rounded-lg"></audio>
+                    </div>
+                </div>
+
+                <!-- Right: Prompt Details, Target Vocab & Benchmark (7 cols) -->
+                <div class="lg:col-span-7 space-y-6">
+                    <!-- Current Prompt Box -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+                        <span class="text-xs font-bold text-brand-600 uppercase tracking-wider">Speaking Task</span>
+                        <h3 id="prompt-title" class="text-xl font-bold text-slate-900 leading-snug">
+                            <!-- Prompt Question -->
+                        </h3>
+
+                        <!-- Target Vocabulary Chips -->
+                        <div>
+                            <span class="text-xs font-semibold text-slate-400 uppercase block mb-2">Required Target Vocabulary:</span>
+                            <div id="prompt-target-vocab" class="flex flex-wrap gap-2">
+                                <!-- Target Words -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reference Answer (Benchmark) -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-circle-check"></i>
+                                Benchmark Answer (Reference)
+                            </span>
+                            <button onclick="speakText(document.getElementById('benchmark-text').innerText)" class="text-xs text-brand-600 hover:text-brand-800 font-semibold flex items-center gap-1">
+                                <i class="fa-solid fa-volume-high"></i> Listen Model
+                            </button>
+                        </div>
+                        <p id="benchmark-text" class="text-sm text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100 italic">
+                            <!-- Benchmark Answer Text -->
+                        </p>
+                    </div>
+
+                    <!-- Navigation Footer -->
+                    <div class="flex justify-between items-center pt-2">
+                        <button onclick="navigatePrompt(-1)" class="px-4 py-2 border border-slate-300 rounded-xl text-sm font-semibold text-slate-700 hover:bg-slate-100 transition-colors flex items-center space-x-2">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Previous</span>
+                        </button>
+                        <button onclick="navigatePrompt(1)" class="px-4 py-2 bg-brand-600 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors flex items-center space-x-2">
+                            <span>Next Prompt</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500">
+            GBS Language Training System &copy; 2026. Empowering Technical English Speech via VOIZ Method.
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        /* ================= DATA STRUCTURES ================= */
+
+        // 1. Glossary Data (20 Items)
+        const glossaryData = [
+            { term: "Behind-the-scenes", category: "Vocabulary", ipa: "/bɪˈhaɪnd ðə siːnz/", def: "Out of sight of the audience, showing real production context.", ex: "I love watching behind-the-scenes footage of film sets." },
+            { term: "Film location", category: "Vocabulary", ipa: "/fɪlm ləʊˈkeɪʃn/", def: "A real place outside a studio where scenes are recorded.", ex: "New Zealand became a famous film location for fantasy movies." },
+            { term: "Iconic scene", category: "Vocabulary", ipa: "/aɪˈkɒnɪk siːn/", def: "A widely recognized, famous, and memorable cinematic moment.", ex: "The staircase moment in Titanic is an iconic scene." },
+            { term: "Shoot a film", category: "Vocabulary", ipa: "/ʃuːt ə fɪlm/", def: "To record or capture video/cinema footage.", ex: "The filmmakers decided to shoot a film in a public plaza." },
+            { term: "Studio", category: "Vocabulary", ipa: "/ˈstjuːdiəʊ/", def: "A specialized facility equipped for movie production.", ex: "It is hard to notice if a show was filmed in a studio." },
+            { term: "Film set", category: "Vocabulary", ipa: "/fɪlm set/", def: "An artificially constructed environment where a scene is filmed.", ex: "It requires a huge budget to build a complex film set." },
+            { term: "Set in (Location)", category: "Vocabulary", ipa: "/set ɪn/", def: "To establish the narrative background or environment.", ex: "When a movie is set in Paris, it makes me want to travel." },
+            { term: "Props", category: "Vocabulary", ipa: "/prɒps/", def: "Portable objects used by actors during a performance.", ex: "Diagon Alley features authentic props and magic wands." },
+            { term: "Green screen", category: "Vocabulary", ipa: "/ɡriːn skriːn/", def: "A background backdrop replaced by digital CGI visuals.", ex: "Actors perform key action sequences in front of a green screen." },
+            { term: "Stunt work", category: "Vocabulary", ipa: "/stʌnt wɜːk/", def: "Dangerous physical maneuvers performed by professionals.", ex: "Filmpark Babelsberg offers live demonstrations of stunt work." },
+            { term: "Special effects", category: "Vocabulary", ipa: "/ˈspeʃl ɪˈfekts/", def: "Visual or practical illusions created for film.", ex: "Blockbuster movies rely heavily on modern computer special effects." },
+            { term: "Preserve a set", category: "Vocabulary", ipa: "/prɪˈzɜːv ə set/", def: "To maintain and protect a production set for future tours.", ex: "Historic film sets should be preserved rather than demolished." },
+            { term: "Passive Voice", category: "Grammar", ipa: "/ˈpæsɪv vɔɪs/", def: "Structure focusing on the action/object over the agent.", ex: "'The movie was filmed in 1997' uses passive voice." },
+            { term: "Agent", category: "Grammar", ipa: "/ˈeɪdʒənt/", def: "The performer of an action, introduced by 'by' in passive voice.", ex: "In 'Directed by Spielberg', 'Spielberg' is the active agent." },
+            { term: "Past Participle", category: "Grammar", ipa: "/pɑːst pɑːˈtɪsɪpl/", def: "Third verb form used in perfect tenses and passive voice.", ex: "The verb 'shot' is the past participle of 'shoot'." },
+            { term: "Temporal Framing", category: "Grammar", ipa: "/ˈtempərəl ˈfreɪmɪŋ/", def: "Distinguishing completed past actions vs present continuous states.", ex: "Use 'was set' for historic shooting and 'is set' for current setting." },
+            { term: "Active Voice", category: "Grammar", ipa: "/ˈæktɪv vɔɪs/", def: "Structure where the subject performs the verb action.", ex: "'The director shot the scene' is an active voice sentence." },
+            { term: "Sound stage", category: "Vocabulary", ipa: "/saʊnd steɪdʒ/", def: "A soundproofed studio building for filming movies.", ex: "Paramount includes over 30 independent sound stages." },
+            { term: "Costume", category: "Vocabulary", ipa: "/ˈkɒstjuːm/", def: "Attire or clothing worn by actors to portray a persona.", ex: "Visitors can inspect authentic original movie costumes." },
+            { term: "Preservation", category: "Vocabulary", ipa: "/ˌprezəˈveɪʃn/", def: "The process of keeping something in its original state.", ex: "Set preservation allows fans to experience historical filming." }
+        ];
+
+        // 2. Grammar Questions Data (5 Items)
+        const grammarQuestions = [
+            {
+                q: "1. Complete with Passive Voice: 'The iconic blockbuster ________ (shoot) in a desert location in 2001.'",
+                options: ["was shot", "is shooting", "shoots", "were shot"],
+                correct: 0,
+                explanation: "Use Past Passive ('was shot') for a completed action at a specific past time."
+            },
+            {
+                q: "2. Active vs Passive: 'The movie ________ in London, but it ________ in a futuristic city.'",
+                options: ["was filmed / is set", "is filmed / was set", "filmed / sets", "was filming / set"],
+                correct: 0,
+                explanation: "'was filmed' describes past production; 'is set' describes the current setting/story world."
+            },
+            {
+                q: "3. Identify the Passive Agent: 'Special effects were designed by Babelsberg technicians.'",
+                options: ["Special effects", "were designed", "Babelsberg technicians", "by"],
+                correct: 2,
+                explanation: "'Babelsberg technicians' perform the action following the preposition 'by'."
+            },
+            {
+                q: "4. Select the Passive Voice equivalent of: 'Filmmakers preserved the set.'",
+                options: ["The set was preserved by filmmakers.", "Filmmakers were preserving the set.", "The set preserved filmmakers.", "The set is preserved by filmmakers."],
+                correct: 0,
+                explanation: "Subject (The set) + Past Passive (was preserved) + by + Agent (filmmakers)."
+            },
+            {
+                q: "5. Temporal Choice: 'Diagon Alley ________ today by thousands of Harry Potter fans.'",
+                options: ["is visited", "was visited", "visited", "will visit"],
+                correct: 0,
+                explanation: "'is visited' uses Present Passive to describe a regular, current action."
+            }
+        ];
+
+        // 3. VOIZ Speaking Prompts (30 Prompts)
+        const voizPrompts = [
+            { id: 1, title: "Describe your favorite behind-the-scenes movie feature.", vocab: ["behind-the-scenes", "film set"], benchmark: "I love behind-the-scenes videos that show how a film set is constructed." },
+            { id: 2, title: "Explain why tourists visit famous film locations.", vocab: ["film locations", "iconic"], benchmark: "Tourists visit famous film locations to feel connected to iconic scenes." },
+            { id: 3, title: "Discuss a movie set in an unfamiliar country.", vocab: ["set in", "studio"], benchmark: "When a movie is set in Morocco, I want to visit the location instead of a studio." },
+            { id: 4, title: "Compare filming in a studio vs real locations.", vocab: ["studio", "film locations"], benchmark: "Filming in a studio offers controlled lighting, whereas film locations add realism." },
+            { id: 5, title: "Describe an iconic scene from a fantasy film.", vocab: ["iconic scene", "special effects"], benchmark: "The iconic scene features extraordinary special effects created on a green screen." },
+            { id: 6, title: "State your opinion on preserving old film sets.", vocab: ["preserve a set", "film set"], benchmark: "Studios ought to preserve a film set rather than destroy it after shooting." },
+            { id: 7, title: "Explain how filmmakers shoot action movies.", vocab: ["shoot a film", "stunt work"], benchmark: "To shoot a film with high action, directors coordinate professional stunt work." },
+            { id: 8, title: "Describe authentic props you would like to inspect.", vocab: ["props", "behind-the-scenes"], benchmark: "In behind-the-scenes tours, I prefer inspecting authentic movie props." },
+            { id: 9, title: "Discuss the advantage of using a green screen.", vocab: ["green screen", "special effects"], benchmark: "A green screen enables seamless integration of complex digital special effects." },
+            { id: 10, title: "Explain stunt work safety on set.", vocab: ["stunt work", "film set"], benchmark: "Precise safety protocols are strictly observed during stunt work on the film set." },
+            { id: 11, title: "Talk about movie ticket prices for studio tours.", vocab: ["studio", "props"], benchmark: "Paying ticket fees for a studio tour is worth it to see original props up close." },
+            { id: 12, title: "Describe a historical film set design.", vocab: ["film set", "set in"], benchmark: "The historical film set was built meticulously because the film is set in 1912." },
+            { id: 13, title: "Explain how passive voice highlights movie production.", vocab: ["was shot", "was filmed"], benchmark: "Passive voice is ideal: 'The blockbuster was shot in Los Angeles studio stages.'" },
+            { id: 14, title: "Describe Warner Bros Leavesden studio features.", vocab: ["studio", "props"], benchmark: "The Warner Bros studio contains legendary sets, costumes, and magical props." },
+            { id: 15, title: "Discuss filming in public city streets.", vocab: ["shoot a film", "film locations"], benchmark: "It is challenging to shoot a film in public film locations with live crowds." },
+            { id: 16, title: "Explain why an iconic set attracts tourists.", vocab: ["iconic scene", "preserve a set"], benchmark: "When studios preserve a set, fans travel globally to recreate an iconic scene." },
+            { id: 17, title: "Describe your opinion on theme park stunt shows.", vocab: ["stunt work", "special effects"], benchmark: "Live theme park shows demonstrate stunt work alongside impressive special effects." },
+            { id: 18, title: "Explain active vs passive verb usage for sets.", vocab: ["was built", "is set"], benchmark: "The set was built in 2005, but the story is set in an ancient kingdom." },
+            { id: 19, title: "Describe a sci-fi set constructed on a sound stage.", vocab: ["studio", "green screen"], benchmark: "Sci-fi production relies on studio sound stages combined with green screen tech." },
+            { id: 20, title: "Talk about visiting Atlas Film Studios in Morocco.", vocab: ["film set", "shoot a film"], benchmark: "Atlas Film Studios constructed an enormous desert film set to shoot a film." },
+            { id: 21, title: "Discuss the role of authentic movie costumes.", vocab: ["costume", "behind-the-scenes"], benchmark: "Viewing original costumes during behind-the-scenes tours reveals rich details." },
+            { id: 22, title: "Explain whether green screens ruin movie magic.", vocab: ["green screen", "behind-the-scenes"], benchmark: "Learning how green screen visuals work behind-the-scenes can enhance magic." },
+            { id: 23, title: "Describe a scene from a book you want filmed.", vocab: ["set in", "iconic scene"], benchmark: "If set in an ancient castle, that novel chapter would become an iconic scene." },
+            { id: 24, title: "Explain the purpose of movie props in narrative.", vocab: ["props", "film set"], benchmark: "Actors use detailed props on the film set to make characters believable." },
+            { id: 25, title: "State if fans should visit live movie shootings.", vocab: ["shoot a film", "film locations"], benchmark: "Fans should avoid interrupting crews while they shoot a film on film locations." },
+            { id: 26, title: "Describe Paramount Studios' recreated streets.", vocab: ["studio", "film set"], benchmark: "Paramount studio features a massive outdoor film set depicting New York." },
+            { id: 27, title: "Explain why high budget sets are built.", vocab: ["film set", "special effects"], benchmark: "A realistic film set reduces reliance on post-production digital special effects." },
+            { id: 28, title: "Describe a memorable behind-the-scenes documentary.", vocab: ["behind-the-scenes", "stunt work"], benchmark: "The documentary revealed behind-the-scenes training required for stunt work." },
+            { id: 29, title: "Summarize why film location preservation matters.", vocab: ["preserve a set", "film locations"], benchmark: "To preserve a set on real film locations protects cultural cinema heritage." },
+            { id: 30, title: "Provide a quick summary of GBS technical vocabulary.", vocab: ["studio", "props", "iconic"], benchmark: "Our studio tour showcased iconic sets and props used in legendary cinema." }
+        ];
+
+        /* ================= APP STATE ================= */
+        let currentPromptIndex = 0;
+        let timerInterval = null;
+        let timeLeft = 10.0;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let audioBlob = null;
+        let quizScore = 0;
+
+        /* ================= WEB SPEECH API ================= */
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Stop current speech
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Audio synthesis is not supported on your browser.");
+            }
+        }
+
+        /* ================= NAVIGATION ================= */
+        function switchTab(tabName) {
+            // Update active styles
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+
+            // Toggle Section Visibility
+            document.getElementById('section-glossary').classList.add('hidden');
+            document.getElementById('section-grammar').classList.add('hidden');
+            document.getElementById('section-voiz').classList.add('hidden');
+
+            document.getElementById(`section-${tabName}`).classList.remove('hidden');
+        }
+
+        /* ================= GLOSSARY ENGINE ================= */
+        function renderGlossary(data) {
+            const grid = document.getElementById('glossary-grid');
+            grid.innerHTML = '';
+
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm card-hover flex flex-col justify-between space-y-3";
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-full ${item.category === 'Grammar' ? 'bg-amber-50 text-amber-700 border border-amber-200' : 'bg-brand-50 text-brand-700 border border-brand-200'}">
+                                ${item.category}
+                            </span>
+                            <button onclick="speakText('${item.term}')" class="text-slate-400 hover:text-brand-600 transition-colors p-1" title="Pronounce Audio">
+                                <i class="fa-solid fa-volume-high text-lg"></i>
+                            </button>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900">${item.term}</h3>
+                        <p class="text-xs font-mono text-brand-600 bg-slate-50 px-2 py-0.5 rounded inline-block">${item.ipa}</p>
+                        <p class="text-sm text-slate-600 leading-snug">${item.def}</p>
+                    </div>
+                    <div class="pt-3 border-t border-slate-100">
+                        <p class="text-xs text-slate-500 italic">"${item.ex}"</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterGlossary() {
+            const searchVal = document.getElementById('glossary-search').value.toLowerCase();
+            const filterVal = document.getElementById('glossary-filter').value;
+
+            const filtered = glossaryData.filter(item => {
+                const matchesSearch = item.term.toLowerCase().includes(searchVal) || item.def.toLowerCase().includes(searchVal) || item.ipa.toLowerCase().includes(searchVal);
+                const matchesFilter = filterVal === 'all' || item.category === filterVal;
+                return matchesSearch && matchesFilter;
+            });
+
+            renderGlossary(filtered);
+        }
+
+        /* ================= GRAMMAR ENGINE ================= */
+        function renderGrammarQuiz() {
+            const container = document.getElementById('grammar-quiz-container');
+            container.innerHTML = '';
+
+            grammarQuestions.forEach((q, idx) => {
+                const qCard = document.createElement('div');
+                qCard.className = "p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3";
+                
+                let optionsHTML = '';
+                q.options.forEach((opt, optIdx) => {
+                    optionsHTML += `
+                        <button onclick="checkAnswer(${idx}, ${optIdx})" class="quiz-opt-${idx} text-left text-sm font-medium p-3 rounded-lg border border-slate-200 bg-white hover:bg-brand-50 hover:border-brand-300 transition-all w-full flex items-center justify-between">
+                            <span>${opt}</span>
+                            <i class="fa-regular fa-circle text-slate-300"></i>
+                        </button>
+                    `;
+                });
+
+                qCard.innerHTML = `
+                    <p class="text-sm font-semibold text-slate-800">${q.q}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        ${optionsHTML}
+                    </div>
+                    <div id="explanation-${idx}" class="hidden text-xs p-2.5 rounded-lg"></div>
+                `;
+                container.appendChild(qCard);
+            });
+        }
+
+        function checkAnswer(qIdx, optIdx) {
+            const q = grammarQuestions[qIdx];
+            const buttons = document.querySelectorAll(`.quiz-opt-${qIdx}`);
+            const expBox = document.getElementById(`explanation-${qIdx}`);
+
+            // Disable further selection for this question
+            buttons.forEach(btn => btn.onclick = null);
+
+            if (optIdx === q.correct) {
+                buttons[optIdx].classList.remove('bg-white', 'border-slate-200');
+                buttons[optIdx].classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-800');
+                buttons[optIdx].querySelector('i').className = "fa-solid fa-circle-check text-emerald-600";
+                
+                expBox.className = "text-xs p-2.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 mt-2";
+                expBox.innerHTML = `<strong>Correct!</strong> ${q.explanation}`;
+                quizScore += 1;
+            } else {
+                buttons[optIdx].classList.remove('bg-white', 'border-slate-200');
+                buttons[optIdx].classList.add('bg-rose-50', 'border-rose-400', 'text-rose-800');
+                buttons[optIdx].querySelector('i').className = "fa-solid fa-circle-xmark text-rose-500";
+
+                buttons[q.correct].classList.remove('bg-white', 'border-slate-200');
+                buttons[q.correct].classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-800');
+
+                expBox.className = "text-xs p-2.5 rounded-lg bg-rose-50 text-rose-800 border border-rose-200 mt-2";
+                expBox.innerHTML = `<strong>Incorrect.</strong> ${q.explanation}`;
+            }
+
+            expBox.classList.remove('hidden');
+            document.getElementById('quiz-score').innerText = `Score: ${quizScore} / ${grammarQuestions.length}`;
+        }
+
+        /* ================= VOIZ SPRINT ENGINE ================= */
+        function initVoizSelector() {
+            const select = document.getElementById('prompt-select');
+            select.innerHTML = '';
+            voizPrompts.forEach((p, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.innerText = `Prompt ${p.id}: ${p.title.substring(0, 30)}...`;
+                select.appendChild(opt);
+            });
+            loadPrompt(0);
+        }
+
+        function loadPrompt(index) {
+            currentPromptIndex = index;
+            document.getElementById('prompt-select').value = index;
+            const data = voizPrompts[index];
+
+            document.getElementById('prompt-badge').innerText = `Prompt ${data.id} of 30`;
+            document.getElementById('prompt-title').innerText = data.title;
+            document.getElementById('benchmark-text').innerText = data.benchmark;
+
+            // Target Vocab
+            const targetContainer = document.getElementById('prompt-target-vocab');
+            targetContainer.innerHTML = '';
+            data.vocab.forEach(word => {
+                const chip = document.createElement('span');
+                chip.className = "bg-brand-50 text-brand-700 font-semibold text-xs px-3 py-1 rounded-full border border-brand-200";
+                chip.innerText = word;
+                targetContainer.appendChild(chip);
+            });
+
+            resetSprint();
+        }
+
+        function navigatePrompt(direction) {
+            let newIndex = currentPromptIndex + direction;
+            if (newIndex >= 0 && newIndex < voizPrompts.length) {
+                loadPrompt(newIndex);
+            }
+        }
+
+        // Sound FX Beep generator using Web Audio API
+        function playBeep(freq = 800, duration = 0.1) {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.frequency.value = freq;
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {
+                console.log("Audio FX not supported");
+            }
+        }
+
+        function startSprint() {
+            resetSprint();
+            document.getElementById('btn-start-sprint').disabled = true;
+            document.getElementById('btn-start-sprint').classList.add('opacity-50');
+            document.getElementById('recording-status').innerHTML = `<span class="text-rose-600 font-bold animate-pulse"><i class="fa-solid fa-circle text-xs mr-1"></i> Recording... Speak now!</span>`;
+
+            playBeep(1000, 0.15); // Start Beep
+
+            // Start Audio Recording if supported
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        mediaRecorder = new MediaRecorder(stream);
+                        audioChunks = [];
+                        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                        mediaRecorder.onstop = () => {
+                            audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+                            const audioUrl = URL.createObjectURL(audioBlob);
+                            const audioPlayer = document.getElementById('audio-playback');
+                            audioPlayer.src = audioUrl;
+                            document.getElementById('playback-area').classList.remove('hidden');
+                        };
+                        mediaRecorder.start();
+                    })
+                    .catch(err => console.log("Microphone access denied/not available"));
+            }
+
+            // Start 10s Countdown
+            timeLeft = 10.0;
+            const circle = document.getElementById('timer-circle');
+            const totalDash = 314.15;
+
+            timerInterval = setInterval(() => {
+                timeLeft -= 0.1;
+                if (timeLeft <= 0) {
+                    timeLeft = 0;
+                    stopSprint();
+                }
+
+                // Update UI Display
+                document.getElementById('timer-display').innerText = timeLeft.toFixed(1);
+                
+                // SVG Progress offset
+                const offset = totalDash - (timeLeft / 10.0) * totalDash;
+                circle.style.strokeDashoffset = offset;
+
+                // Beeps for last 3 seconds
+                if (timeLeft <= 3.0 && Math.abs(timeLeft % 1) < 0.1) {
+                    playBeep(600, 0.08);
+                }
+            }, 100);
+        }
+
+        function stopSprint() {
+            clearInterval(timerInterval);
+            playBeep(1200, 0.3); // Stop Beep
+
+            document.getElementById('recording-status').innerHTML = `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-check mr-1"></i> Sprint Completed! Listen to audio below.</span>`;
+            document.getElementById('btn-start-sprint').disabled = false;
+            document.getElementById('btn-start-sprint').classList.remove('opacity-50');
+
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                // Stop mic track
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+        }
+
+        function resetSprint() {
+            clearInterval(timerInterval);
+            timeLeft = 10.0;
+            document.getElementById('timer-display').innerText = "10.0";
+            document.getElementById('timer-circle').style.strokeDashoffset = 0;
+            document.getElementById('recording-status').innerText = "Press Start Sprint to speak";
+            document.getElementById('playback-area').classList.add('hidden');
+            document.getElementById('btn-start-sprint').disabled = false;
+            document.getElementById('btn-start-sprint').classList.remove('opacity-50');
+
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+        }
+
+        /* ================= INITIALIZATION ================= */
+        window.onload = function() {
+            renderGlossary(glossaryData);
+            renderGrammarQuiz();
+            initVoizSelector();
+        };
+    </script>
+</body>
+</html>
