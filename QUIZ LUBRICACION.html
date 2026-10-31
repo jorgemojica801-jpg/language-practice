@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Lubricación - SENA</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sena: {
+                            green: '#39A900',      // Verde oficial SENA
+                            dark: '#00324D',       // Azul/Verde oscuro institucional
+                            light: '#E6F4EA',      // Verde suave de fondo
+                            accent: '#2e8b00',
+                            border: '#a4e28c'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7f6;
+            color: #1a202c;
+        }
+
+        .sena-card {
+            background: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(57, 169, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e2e8f0;
+        }
+
+        .btn-option {
+            background-color: #ffffff;
+            border: 2px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+
+        .btn-option:hover:not(:disabled) {
+            border-color: #39A900;
+            background-color: #f0fdf4;
+            transform: translateY(-2px);
+        }
+
+        .btn-option.selected {
+            border-color: #39A900;
+            background-color: #E6F4EA;
+            color: #00324D;
+        }
+
+        .btn-option.correct {
+            border-color: #10b981 !important;
+            background-color: #d1fae5 !important;
+            color: #065f46 !important;
+        }
+
+        .btn-option.wrong {
+            border-color: #ef4444 !important;
+            background-color: #fee2e2 !important;
+            color: #991b1b !important;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-slate-50">
+
+    <!-- Header Principal SENA -->
+    <header class="bg-white border-b-4 border-sena-green shadow-sm sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+            <!-- Logo SENA & Título -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center">
+                    <svg class="w-full h-full text-sena-green" viewBox="0 0 100 100" fill="currentColor">
+                        <path d="M50 5 C25.1 5 5 25.1 5 50 C5 74.9 25.1 95 50 95 C74.9 95 95 74.9 95 50 C95 25.1 74.9 5 50 5 Z M50 15 C69.3 15 85 30.7 85 50 C85 69.3 69.3 85 50 85 C30.7 85 15 69.3 15 50 C15 30.7 30.7 15 50 15 Z" fill="#39A900"/>
+                        <circle cx="50" cy="30" r="8" fill="#39A900"/>
+                        <path d="M50 42 L35 75 L45 75 L50 63 L55 75 L65 75 Z" fill="#39A900"/>
+                        <rect x="30" y="48" width="40" height="5" fill="#39A900"/>
+                    </svg>
+                </div>
+                <div>
+                    <span class="text-xs font-bold tracking-widest text-sena-green uppercase block">Servicio Nacional de Aprendizaje</span>
+                    <h1 class="text-xl md:text-2xl font-extrabold text-sena-dark tracking-tight leading-none">DASHBOARD: LUBRICACIÓN</h1>
+                </div>
+            </div>
+
+            <!-- Indicador de Usuario activo -->
+            <div id="user-pill" class="hidden flex items-center gap-2 bg-sena-light px-3 py-1.5 rounded-full border border-sena-border">
+                <i class="fa-solid fa-user-circle text-sena-green text-lg"></i>
+                <span id="header-user-name" class="text-xs md:text-sm font-bold text-sena-dark"></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenedores Principales -->
+    <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center">
+
+        <!-- PANTALLA 1: REGISTRO DE APRENDIZ / USUARIO -->
+        <div id="screen-register" class="w-full max-w-md mx-auto sena-card p-6 md:p-8">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-sena-light rounded-full flex items-center justify-center mx-auto mb-3 text-sena-green text-2xl border border-sena-border">
+                    <i class="fa-solid fa-oil-can"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-sena-dark">Ingreso al Quiz Técnico</h2>
+                <p class="text-xs text-gray-500 mt-1">Evaluación de conocimientos en Tribología y Lubricación Industrial</p>
+            </div>
+
+            <form onsubmit="handleRegister(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nombre Completo *</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <input type="text" id="input-name" required placeholder="Ej: Maria Fernanda Pérez" 
+                            class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-sena-green focus:border-sena-green outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Número de Ficha / Documento</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <i class="fa-solid fa-id-card"></i>
+                        </span>
+                        <input type="text" id="input-id" placeholder="Ej: 2674891" 
+                            class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-sena-green focus:border-sena-green outline-none">
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full bg-sena-green hover:bg-sena-accent text-white font-bold py-3 rounded-lg shadow-md transition duration-200 flex items-center justify-center gap-2">
+                        <span>COMENZAR EVALUACIÓN</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+            
+            <div class="mt-6 text-center text-xs text-gray-400 border-t pt-4">
+                <p>15 Preguntas Selección Múltiple • SENA Regional Centro</p>
+            </div>
+        </div>
+
+        <!-- PANTALLA 2: DASHBOARD DE PREGUNTAS (QUIZ ACTIVO) -->
+        <div id="screen-quiz" class="hidden flex-1 flex flex-col justify-between space-y-6">
+
+            <!-- Dashboard Header stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div class="sena-card p-3 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-sena-light rounded-lg flex items-center justify-center text-sena-green font-bold">
+                        <i class="fa-solid fa-list-check"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-gray-500 uppercase font-bold block">Progreso</span>
+                        <span id="stat-progress" class="text-sm font-extrabold text-sena-dark">1 de 15</span>
+                    </div>
+                </div>
+
+                <div class="sena-card p-3 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center text-emerald-600 font-bold">
+                        <i class="fa-solid fa-check"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-gray-500 uppercase font-bold block">Correctas</span>
+                        <span id="stat-correct" class="text-sm font-extrabold text-emerald-600">0</span>
+                    </div>
+                </div>
+
+                <div class="sena-card p-3 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-rose-100 rounded-lg flex items-center justify-center text-rose-600 font-bold">
+                        <i class="fa-solid fa-xmark"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-gray-500 uppercase font-bold block">Incorrectas</span>
+                        <span id="stat-wrong" class="text-sm font-extrabold text-rose-600">0</span>
+                    </div>
+                </div>
+
+                <div class="sena-card p-3 flex items-center gap-3">
+                    <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center text-amber-600 font-bold">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] text-gray-500 uppercase font-bold block">Puntaje</span>
+                        <span id="stat-score" class="text-sm font-extrabold text-amber-600">0 pts</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Barra de progreso superior -->
+            <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
+                <div id="progress-bar" class="bg-sena-green h-2.5 rounded-full transition-all duration-300" style="width: 6.6%"></div>
+            </div>
+
+            <!-- Tarjeta Central de la Pregunta -->
+            <div class="sena-card p-6 md:p-8 flex-1 flex flex-col justify-between border-t-4 border-t-sena-green">
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <span id="question-category" class="bg-sena-light text-sena-green text-xs font-bold px-3 py-1 rounded-full uppercase border border-sena-border">
+                            Categoría: Tribología
+                        </span>
+                        <span class="text-xs text-gray-400 font-medium">Pregunta <span id="q-num">1</span>/15</span>
+                    </div>
+                    
+                    <h3 id="question-text" class="text-lg md:text-xl font-bold text-sena-dark leading-relaxed mb-6">
+                        Cargando pregunta...
+                    </h3>
+
+                    <!-- Opciones de Respuesta -->
+                    <div id="options-container" class="grid grid-cols-1 gap-3">
+                    </div>
+                </div>
+
+                <!-- Panel Explicativo de Retroalimentación -->
+                <div id="explanation-box" class="hidden mt-6 p-4 rounded-xl border text-sm leading-relaxed transition-all">
+                </div>
+
+                <!-- Botón Siguiente -->
+                <div class="mt-6 flex justify-end">
+                    <button id="btn-next" onclick="nextQuestion()" disabled class="bg-gray-300 text-gray-500 font-bold px-6 py-2.5 rounded-lg text-sm flex items-center gap-2 transition cursor-not-allowed">
+                        <span>Siguiente Pregunta</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- PANTALLA 3: RESULTADOS Y CERTIFICADO -->
+        <div id="screen-results" class="hidden w-full max-w-2xl mx-auto sena-card p-6 md:p-10 border-t-8 border-t-sena-green">
+            
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-sena-light rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-sena-green text-sena-green text-4xl">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+                <span class="text-xs font-bold tracking-widest text-sena-green uppercase block">Resultados de Evaluación</span>
+                <h2 class="text-2xl md:text-3xl font-extrabold text-sena-dark mt-1">RESUMEN DEL APRENDIZ</h2>
+            </div>
+
+            <!-- Ficha del Aprendiz -->
+            <div class="bg-gray-50 border border-gray-200 rounded-xl p-5 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                        <span class="text-gray-500 text-xs block font-bold uppercase">Aprendiz Evaluado:</span>
+                        <span id="res-user-name" class="font-extrabold text-sena-dark text-lg">---</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500 text-xs block font-bold uppercase">Ficha / Identificación:</span>
+                        <span id="res-user-id" class="font-semibold text-gray-700">---</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500 text-xs block font-bold uppercase">Módulo Evaluado:</span>
+                        <span class="font-semibold text-sena-green">Lubricación y Tribología</span>
+                    </div>
+                    <div>
+                        <span class="text-gray-500 text-xs block font-bold uppercase">Fecha de Realización:</span>
+                        <span id="res-date" class="font-semibold text-gray-700">---</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desglose del Puntaje -->
+            <div class="grid grid-cols-3 gap-4 mb-8 text-center">
+                <div class="bg-sena-light p-4 rounded-xl border border-sena-border">
+                    <span class="text-xs text-sena-dark font-bold uppercase block">Puntaje Final</span>
+                    <span id="res-score" class="text-2xl md:text-3xl font-black text-sena-green">0/15</span>
+                </div>
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                    <span class="text-xs text-blue-800 font-bold uppercase block">Efectividad</span>
+                    <span id="res-percentage" class="text-2xl md:text-3xl font-black text-blue-600">0%</span>
+                </div>
+                <div class="bg-amber-50 p-4 rounded-xl border border-amber-200">
+                    <span class="text-xs text-amber-800 font-bold uppercase block">Calificación</span>
+                    <span id="res-grade" class="text-sm md:text-base font-black text-amber-600 block mt-2">Aprobado</span>
+                </div>
+            </div>
+
+            <!-- Mensaje de Desempeño -->
+            <div id="res-feedback" class="p-4 rounded-xl text-center text-sm font-semibold mb-8">
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center no-print">
+                <button onclick="restartQuiz()" class="bg-sena-green hover:bg-sena-accent text-white font-bold py-3 px-6 rounded-lg text-sm shadow transition flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>REINTENTAR EVALUACIÓN</span>
+                </button>
+                <button onclick="window.print()" class="bg-sena-dark hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-lg text-sm shadow transition flex items-center justify-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-print"></i>
+                    <span>IMPRIMIR RESULTADOS</span>
+                </button>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer SENA -->
+    <footer class="bg-white border-t border-gray-200 py-3 text-center text-xs text-gray-500 mt-6 no-print">
+        <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+            <span>Servicio Nacional de Aprendizaje SENA - Mantenimiento Mecánico e Industrial</span>
+            <span class="text-sena-green font-bold">Programa Técnico de Lubricación</span>
+        </div>
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT -->
+    <script>
+        // BANCO DE 15 PREGUNTAS TÉCNICAS CLAVES DE LUBRICACIÓN Y TRIBOLOGÍA
+        const questions = [
+            {
+                category: "Tribología Básica",
+                question: "¿Cuál es la función principal de la viscosidad en un aceite lubricante?",
+                options: [
+                    "Evaporar el calor rápidamente del cárter",
+                    "Resistir el flujo y mantener una película protectora entre superficies móviles",
+                    "Aumentar el consumo de combustible del motor",
+                    "Limpiar los residuos químicos de la combustión"
+                ],
+                correct: 1,
+                explanation: "La viscosidad mide la resistencia interna a fluir y es la propiedad más crítica para formar la película lubricante que evita el contacto metal-metal."
+            },
+            {
+                category: "Clasificación de Aceites",
+                question: "En la norma SAE 15W-40, ¿qué representa el número '15W'?",
+                options: [
+                    "El peso total en gramos por litro",
+                    "El grado de viscosidad en frío o bajas temperaturas (W = Winter)",
+                    "El número máximo de caballos de fuerza admitidos",
+                    "El porcentaje de aditivos detergentes"
+                ],
+                correct: 1,
+                explanation: "La 'W' significa Winter (Invierno). El número antes de la W indica el comportamiento de fluidez del aceite al arrancar a bajas temperaturas."
+            },
+            {
+                category: "Propiedades Químicas",
+                question: "¿Qué indica un valor alto de TBN (Total Base Number) en un lubricante usado?",
+                options: [
+                    "El aceite está contaminado con agua",
+                    "El aceite conserva capacidad para neutralizar los ácidos derivados de la combustión",
+                    "El aceite ha perdido toda su viscosidad",
+                    "El lubricante contiene demasiados residuos carbonosos"
+                ],
+                correct: 1,
+                explanation: "El TBN mide la reserva alcalina del lubricante para neutralizar ácidos (como el ácido sulfúrico derivado de la combustión del azufre)."
+            },
+            {
+                category: "Mantenimiento Preventivo",
+                question: "¿Qué síntoma indica que un aceite industrial ha sufrido un proceso de Oxidación severo?",
+                options: [
+                    "Aumento de viscosidad, cambio a color oscuro y formación de barnices/lodos",
+                    "El aceite se vuelve completamente transparente como agua",
+                    "Disminución drástica de la temperatura del sistema",
+                    "El aceite pierde la capacidad de conducir corriente"
+                ],
+                correct: 0,
+                explanation: "La oxidación degrada las moléculas del aceite provocando oscurecimiento, incremento de viscosidad, olores acres y sedimentos sólidos."
+            },
+            {
+                category: "Grasas Lubricantes",
+                question: "¿Cuál es la función del 'espesante' en la estructura de una grasa lubricante?",
+                options: [
+                    "Generar chispas para la ignición",
+                    "Actuar como una esponja que retiene y libera el aceite base lubricante",
+                    "Disminución de la viscosidad a cero",
+                    "Solamente darle un color vistoso para empaque"
+                ],
+                correct: 1,
+                explanation: "El espesante (jabones de litio, calcio, sulfonato, etc.) mantiene el aceite en su matriz y lo libera bajo esfuerzo mecánico en los puntos lubricados."
+            },
+            {
+                category: "Clasificación NLGI",
+                question: "¿Qué institución clasifica la Consistencia (firmeza) de las grasas lubricantes en rangos de 000 a 6?",
+                options: [
+                    "ISO (Organización Internacional de Normalización)",
+                    "NLGI (National Lubricating Grease Institute)",
+                    "API (American Petroleum Institute)",
+                    "SAE (Society of Automotive Engineers)"
+                ],
+                correct: 1,
+                explanation: "La NLGI gradúa la consistencia de las grasas mediante la prueba de penetración de cono (donde 000 es fluida y 6 es muy dura)."
+            },
+            {
+                category: "Gestión Ambiental y Reciclaje",
+                question: "¿Cuál es el proceso prioritario legal según normativas ambientales para el aceite usado?",
+                options: [
+                    "Incinera el 100% en vertederos locales",
+                    "La REGENERACIÓN para devolver el residuo a bases lubricantes utilizables",
+                    "Mezclarlo con agua de alcantarillado",
+                    "Usarlo únicamente como pintura de madera"
+                ],
+                correct: 1,
+                explanation: "La regeneración es la prioridad legal ya que permite re-refinar el aceite usado transformándolo en nuevas bases lubricantes de alta pureza."
+            },
+            {
+                category: "Ensayos de Laboratorio",
+                question: "¿Qué mide la norma ASTM D877 / ASTM D1816 en aceites dieléctricos de transformadores?",
+                options: [
+                    "El punto de congelación",
+                    "La rigidez dieléctrica (capacidad de aislamiento eléctrico sin producir arcos)",
+                    "El índice de cetano del aceite",
+                    "La velocidad de filtración de partículas"
+                ],
+                correct: 1,
+                explanation: "Mide el voltaje máximo de ruptura dieléctrica que el aceite puede soportar sin conducir electricidad entre dos electrodos."
+            },
+            {
+                category: "Mecanismos de Desgaste",
+                question: "¿Qué tipo de desgaste se produce cuando partículas duras externas rayan las superficies metálicas?",
+                options: [
+                    "Desgaste por Cavitación",
+                    "Desgaste Abrasivo",
+                    "Desgaste Corrosivo",
+                    "Desgaste Galvánico"
+                ],
+                correct: 1,
+                explanation: "El desgaste abrasivo ocurre cuando partículas de mayor dureza (como sílice o suciedad) actúan como lijas entre las superficies metálicas."
+            },
+            {
+                category: "Índice de Viscosidad (IV)",
+                question: "¿Qué indica un Alto Índice de Viscosidad (VI > 130) en un lubricante?",
+                options: [
+                    "Que la viscosidad cambia drásticamente con cualquier cambio de temperatura",
+                    "Que la viscosidad se mantiene muy estable ante variaciones de temperatura",
+                    "Que el aceite solo sirve a 0°C",
+                    "Que es un aceite mineral no refinado"
+                ],
+                correct: 1,
+                explanation: "A mayor Índice de Viscosidad (VI), menor es la variación de la viscosidad frente a cambios térmicos (ideal para arrancar en frío y operar en caliente)."
+            },
+            {
+                category: "Vehículos Eléctricos e Híbridos",
+                question: "¿Por qué los vehículos 100% Eléctricos (BEV) requieren fluidos lubricantes especiales?",
+                options: [
+                    "Porque deben quemar aceite en el tubo de escape",
+                    "Para lubricar los reductores/diferenciales y refrigerar componentes eléctricos con aislamiento dieléctrico",
+                    "No requieren ningún fluido de ningún tipo",
+                    "Para aumentar el peso del vehículo"
+                ],
+                correct: 1,
+                explanation: "Los e-Fluids en vehículos eléctricos deben lubricar la caja reductora y diferencial, ofrecer compatibilidad dieléctrica y refrigerar motores eléctricos."
+            },
+            {
+                category: "Aditivos Lubricantes",
+                question: "¿Cuál es la función de los aditivos EP (Extrema Presión)?",
+                options: [
+                    "Generar espuma dentro del cárter",
+                    "Reaccionar químicamente con el metal para formar una capa protectora contra microsoldaduras a altas cargas",
+                    "Disolver el filtro de aceite",
+                    "Aumentar la volatilidad del lubricante"
+                ],
+                correct: 1,
+                explanation: "Los aditivos EP (azufre, fósforo) reaccionan con la superficie metálica bajo cargas extremas para evitar el engranamiento y soldadura de dientes de engranajes."
+            },
+            {
+                category: "Análisis de Aceite Usado",
+                question: "¿Qué método se utiliza para evaluar la contaminación por agua en el campo (prueba rápida del crepitar)?",
+                options: [
+                    "Prueba de la Plancha Caliente (Crackle Test)",
+                    "Ensayo de Dureza Brinell",
+                    "Espectrometría FTIR",
+                    "Cromatografía de gases"
+                ],
+                correct: 0,
+                explanation: "La prueba de la plancha caliente (Crackle test) consiste en colocar gotas de aceite sobre una placa a ~160°C; el chasquido/burbujeo indica presencia de agua."
+            },
+            {
+                category: "Contaminación Peligrosa",
+                question: "¿Qué kit químico colorimétrico se utiliza para detectar PCB's (Bifenilos Policlorados) tóxicos en aceites?",
+                options: [
+                    "CLOR-N-OIL 50",
+                    "Saybolt D156",
+                    "TAN-Kit API",
+                    "Conradson Carbon test"
+                ],
+                correct: 0,
+                explanation: "El kit CLOR-N-OIL 50 es la prueba estándar de terreno para detectar presencia de cloro orgánico nocivo (PCB's) en dieléctricos."
+            },
+            {
+                category: "Selección de Grasas",
+                question: "¿Qué parámetro geométrico y operativo determina el Factor de Velocidad (n · dm) para seleccionar grasas en rodamientos?",
+                options: [
+                    "Velocidad de giro (RPM) multiplicada por el Diámetro Medio del rodamiento",
+                    "Presión de la bomba de grasa por el largo del eje",
+                    "Temperatura ambiente multiplicada por los dientes del engranaje",
+                    "El peso total de la máquina en toneladas"
+                ],
+                correct: 0,
+                explanation: "El factor n · dm = RPM × [(Diámetro Int + Diámetro Ext)/2] ayuda a decidir la viscosidad del aceite base y el tipo de espesante apropiado para el rodamiento."
+            }
+        ];
+
+        // ESTADO GLOBAL DE LA APLICACIÓN
+        let currentUser = {
+            name: "",
+            id: ""
+        };
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let selectedOption = null;
+
+        // INICIALIZACIÓN DE REGISTRO
+        function handleRegister(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('input-name').value.trim();
+            const idInput = document.getElementById('input-id').value.trim();
+
+            if (!nameInput) return;
+
+            currentUser.name = nameInput;
+            currentUser.id = idInput || "Sin Ficha Registrada";
+
+            // Actualizar interfaz
+            document.getElementById('header-user-name').innerText = currentUser.name;
+            document.getElementById('user-pill').classList.remove('hidden');
+
+            // Cambiar pantalla
+            document.getElementById('screen-register').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+
+            startQuiz();
+        }
+
+        // INICIAR QUIZ
+        function startQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            correctCount = 0;
+            wrongCount = 0;
+
+            updateStats();
+            loadQuestion();
+        }
+
+        function updateStats() {
+            document.getElementById('stat-progress').innerText = `${currentQuestionIndex + 1} de 15`;
+            document.getElementById('stat-correct').innerText = correctCount;
+            document.getElementById('stat-wrong').innerText = wrongCount;
+            document.getElementById('stat-score').innerText = `${score} pts`;
+
+            // Actualizar barra de progreso
+            const percentage = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+        }
+
+        // CARGAR PREGUNTA ACTUAL
+        function loadQuestion() {
+            selectedOption = null;
+            const q = questions[currentQuestionIndex];
+
+            // Reset de UI
+            document.getElementById('q-num').innerText = currentQuestionIndex + 1;
+            document.getElementById('question-category').innerText = `Categoría: ${q.category}`;
+            document.getElementById('question-text').innerText = q.question;
+
+            // Ocultar caja explicativa
+            const expBox = document.getElementById('explanation-box');
+            expBox.classList.add('hidden');
+
+            // Deshabilitar botón Siguiente
+            const btnNext = document.getElementById('btn-next');
+            btnNext.disabled = true;
+            btnNext.className = "bg-gray-300 text-gray-500 font-bold px-6 py-2.5 rounded-lg text-sm flex items-center gap-2 transition cursor-not-allowed";
+
+            // Renderizar Opciones
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            const optionLetters = ['A', 'B', 'C', 'D'];
+
+            q.options.forEach((optText, index) => {
+                const btn = document.createElement('button');
+                btn.id = `opt-${index}`;
+                btn.onclick = () => selectOption(index);
+                btn.className = "btn-option w-full p-4 rounded-xl text-left font-medium text-sm md:text-base flex items-start gap-3 cursor-pointer";
+                
+                btn.innerHTML = `
+                    <span class="w-7 h-7 rounded-full bg-slate-100 text-sena-dark font-extrabold flex items-center justify-center text-xs flex-shrink-0 border border-slate-300">
+                        ${optionLetters[index]}
+                    </span>
+                    <span class="flex-1 text-gray-800 leading-snug">${optText}</span>
+                `;
+                container.appendChild(btn);
+            });
+
+            updateStats();
+        }
+
+        // SELECCIONAR OPCIÓN
+        function selectOption(index) {
+            if (selectedOption !== null) return;
+            selectedOption = index;
+
+            const q = questions[currentQuestionIndex];
+            const isCorrect = (index === q.correct);
+
+            // Deshabilitar todas las opciones
+            for (let i = 0; i < q.options.length; i++) {
+                const optBtn = document.getElementById(`opt-${i}`);
+                optBtn.disabled = true;
+
+                if (i === q.correct) {
+                    optBtn.classList.add('correct');
+                } else if (i === index && !isCorrect) {
+                    optBtn.classList.add('wrong');
+                }
+            }
+
+            // Actualizar Contadores
+            if (isCorrect) {
+                correctCount++;
+                score += 100;
+            } else {
+                wrongCount++;
+            }
+
+            updateStats();
+
+            // Mostrar Explicación
+            const expBox = document.getElementById('explanation-box');
+            expBox.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-300', 'text-emerald-900', 'bg-rose-50', 'border-rose-300', 'text-rose-900');
+
+            if (isCorrect) {
+                expBox.classList.add('bg-emerald-50', 'border-emerald-300', 'text-emerald-900');
+                expBox.innerHTML = `
+                    <div class="flex items-center gap-2 font-bold mb-1">
+                        <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                        <span>¡Respuesta Correcta!</span>
+                    </div>
+                    <p>${q.explanation}</p>
+                `;
+            } else {
+                expBox.classList.add('bg-rose-50', 'border-rose-300', 'text-rose-900');
+                expBox.innerHTML = `
+                    <div class="flex items-center gap-2 font-bold mb-1">
+                        <i class="fa-solid fa-circle-xmark text-rose-600"></i>
+                        <span>Respuesta Incorrecta</span>
+                    </div>
+                    <p>${q.explanation}</p>
+                `;
+            }
+
+            // Habilitar Botón Siguiente
+            const btnNext = document.getElementById('btn-next');
+            btnNext.disabled = false;
+            btnNext.className = "bg-sena-green hover:bg-sena-accent text-white font-bold px-6 py-2.5 rounded-lg text-sm flex items-center gap-2 shadow transition cursor-pointer";
+        }
+
+        // AVANZAR A SIGUIENTE PREGUNTA O FINALIZAR
+        function nextQuestion() {
+            if (selectedOption === null) return;
+
+            currentQuestionIndex++;
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // PANTALLA DE RESULTADOS
+        function showResults() {
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-results').classList.remove('hidden');
+
+            // Cargar datos de aprendiz
+            document.getElementById('res-user-name').innerText = currentUser.name;
+            document.getElementById('res-user-id').innerText = currentUser.id;
+            
+            const now = new Date();
+            document.getElementById('res-date').innerText = now.toLocaleDateString('es-CO', {
+                year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+
+            // Totales
+            document.getElementById('res-score').innerText = `${correctCount}/15`;
+            const percentage = Math.round((correctCount / 15) * 100);
+            document.getElementById('res-percentage').innerText = `${percentage}%`;
+
+            const gradeEl = document.getElementById('res-grade');
+            const feedbackEl = document.getElementById('res-feedback');
+
+            if (percentage >= 70) {
+                gradeEl.innerText = "APROBADO";
+                gradeEl.className = "text-lg md:text-xl font-black text-emerald-600 block mt-1";
+                
+                feedbackEl.className = "p-4 rounded-xl text-center text-sm font-semibold bg-emerald-50 border border-emerald-200 text-emerald-900";
+                feedbackEl.innerHTML = `
+                    <i class="fa-solid fa-graduation-cap text-2xl text-emerald-600 block mb-2"></i>
+                    ¡Excelente desempeño, <strong>${currentUser.name}</strong>! Has demostrado competencias técnicas sólidas en el módulo de Lubricación y Tribología Industrial.
+                `;
+            } else {
+                gradeEl.innerText = "NO APROBADO";
+                gradeEl.className = "text-lg md:text-xl font-black text-rose-600 block mt-1";
+                
+                feedbackEl.className = "p-4 rounded-xl text-center text-sm font-semibold bg-rose-50 border border-rose-200 text-rose-900";
+                feedbackEl.innerHTML = `
+                    <i class="fa-solid fa-book-open text-2xl text-rose-600 block mb-2"></i>
+                    Estimado(a) <strong>${currentUser.name}</strong>, te sugerimos repasar el material de formación sobre propiedades físicas, químicas y aditivos antes de reintentar la evaluación.
+                `;
+            }
+        }
+
+        // REINICIAR QUIZ
+        function restartQuiz() {
+            document.getElementById('screen-results').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            startQuiz();
+        }
+    </script>
+</body>
+</html>
