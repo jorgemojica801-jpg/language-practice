@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Quién Quiere Ser Millonario? - Edición Tribología & Lubricantes</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        millonario: {
+                            dark: '#030712',
+                            bg: '#070b19',
+                            panel: '#0d1530',
+                            border: '#1e3a8a',
+                            gold: '#f59e0b',
+                            goldLight: '#fbbf24',
+                            accent: '#2563eb',
+                            correct: '#16a34a',
+                            wrong: '#dc2626'
+                        }
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        roboto: ['Roboto', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #030712;
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            user-select: none;
+            overflow-x: hidden;
+        }
+
+        /* Estilos de botones estilo hexágono/millonario */
+        .option-btn {
+            position: relative;
+            background: linear-gradient(180deg, #0f172a 0%, #090d16 100%);
+            border: 2px solid #2563eb;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: linear-gradient(180deg, #1e3a8a 0%, #0f172a 100%);
+            border-color: #f59e0b;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+            transform: scale(1.01);
+        }
+
+        .option-btn.selected {
+            background: linear-gradient(180deg, #b45309 0%, #78350f 100%) !important;
+            border-color: #f59e0b !important;
+            animation: pulse-gold 1s infinite alternate;
+        }
+
+        .option-btn.correct {
+            background: linear-gradient(180deg, #15803d 0%, #14532d 100%) !important;
+            border-color: #22c55e !important;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.8) !important;
+        }
+
+        .option-btn.wrong {
+            background: linear-gradient(180deg, #b91c1c 0%, #7f1d1d 100%) !important;
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.8) !important;
+        }
+
+        .lifeline-btn {
+            background: radial-gradient(circle, #1e3a8a 0%, #090d16 100%);
+            border: 2px solid #3b82f6;
+            transition: all 0.3s ease;
+        }
+
+        .lifeline-btn:hover:not(:disabled) {
+            border-color: #f59e0b;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .lifeline-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            filter: grayscale(100%);
+            border-color: #4b5563;
+        }
+
+        @keyframes pulse-gold {
+            from { box-shadow: 0 0 10px #f59e0b; }
+            to { box-shadow: 0 0 25px #f59e0b; }
+        }
+
+        .pyramid-step {
+            background: rgba(15, 23, 42, 0.8);
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .pyramid-step.active {
+            background: linear-gradient(90deg, #b45309 0%, #0f172a 100%);
+            border-left-color: #f59e0b;
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .pyramid-step.safe {
+            color: #ffffff;
+        }
+
+        .pyramid-step.passed {
+            color: #22c55e;
+            opacity: 0.7;
+        }
+
+        /* Modal styling */
+        .modal-bg {
+            background-color: rgba(3, 7, 18, 0.85);
+            backdrop-filter: blur(8px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-millonario-dark text-white selection:bg-millonario-gold selection:text-black">
+
+    <!-- Header / Top Bar -->
+    <header class="bg-millonario-bg border-b border-millonario-border/50 px-4 py-3 flex justify-between items-center shadow-lg relative z-10">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-900 to-amber-500 flex items-center justify-center border border-amber-400">
+                <i class="fa-solid font-bold text-amber-300 text-lg">🛢️</i>
+            </div>
+            <div>
+                <h1 class="font-orbitron text-lg sm:text-xl font-extrabold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-amber-200 via-amber-400 to-amber-100">
+                    ¿QUIÉN QUIERE SER MILLONARIO?
+                </h1>
+                <p class="text-xs text-blue-400 font-semibold tracking-widest">EDICIÓN TRIBOLOGÍA Y LUBRICANTES</p>
+            </div>
+        </div>
+
+        <button id="reset-game-btn" class="text-xs sm:text-sm bg-blue-950/80 hover:bg-blue-900 border border-blue-600 px-3 py-1.5 rounded-lg text-blue-200 transition flex items-center gap-2">
+            <i class="fa-solid fa-rotate-right"></i>
+            <span class="hidden sm:inline">Reiniciar Juego</span>
+        </button>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-2 sm:p-4 grid grid-cols-1 lg:grid-cols-4 gap-4 items-stretch">
+        
+        <!-- Left / Central Section: Game Area (3 cols on desktop) -->
+        <section class="lg:col-span-3 flex flex-col justify-between gap-4">
+            
+            <!-- Lifelines & Info Bar -->
+            <div class="bg-millonario-panel p-3 sm:p-4 rounded-xl border border-millonario-border flex justify-between items-center shadow-md">
+                <!-- Comodines -->
+                <div class="flex gap-2 sm:gap-4">
+                    <button id="lifeline-5050" class="lifeline-btn w-12 h-12 sm:w-14 sm:h-14 rounded-full flex flex-col items-center justify-center text-amber-400 font-bold text-xs sm:text-sm shadow-inner" title="Comodín 50:50">
+                        <span>50:50</span>
+                    </button>
+                    <button id="lifeline-friend" class="lifeline-btn w-12 h-12 sm:w-14 sm:h-14 rounded-full flex flex-col items-center justify-center text-amber-400 text-lg sm:text-xl" title="Llamada a un amigo">
+                        <i class="fa-solid fa-phone"></i>
+                    </button>
+                    <button id="lifeline-audience" class="lifeline-btn w-12 h-12 sm:w-14 sm:h-14 rounded-full flex flex-col items-center justify-center text-amber-400 text-lg sm:text-xl" title="Opinión del público">
+                        <i class="fa-solid fa-users"></i>
+                    </button>
+                </div>
+
+                <!-- Current Prize Status (Mobile/Desktop) -->
+                <div class="text-right">
+                    <div class="text-xs text-blue-400 font-semibold">PREMIO ACTUAL</div>
+                    <div id="current-prize-display" class="text-xl sm:text-3xl font-orbitron font-extrabold text-amber-400">
+                        $ 0
+                    </div>
+                </div>
+            </div>
+
+            <!-- Graphic Stage / Visual Center -->
+            <div class="relative flex-1 bg-gradient-to-b from-millonario-panel to-millonario-bg border border-millonario-border rounded-xl p-4 min-h-[180px] sm:min-h-[240px] flex flex-col items-center justify-center overflow-hidden shadow-2xl">
+                <!-- Background Studio Light Effect -->
+                <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/30 via-transparent to-transparent"></div>
+                
+                <div class="z-10 text-center px-4 max-w-2xl">
+                    <div class="inline-block px-3 py-1 rounded-full bg-blue-950/80 border border-blue-500/40 text-blue-300 text-xs font-semibold mb-2" id="question-category">
+                        CATEGORÍA: CUESTIONARIO TRIBOLÓGICO
+                    </div>
+                    <p class="text-slate-400 text-xs sm:text-sm">Demuestra tus conocimientos técnicos sobre aceites, ensayos ASTM y electrotribología.</p>
+                </div>
+            </div>
+
+            <!-- Question Box -->
+            <div class="bg-gradient-to-r from-blue-950 via-millonario-panel to-blue-950 border-2 border-amber-500/70 rounded-2xl p-4 sm:p-6 text-center shadow-2xl relative">
+                <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-500 text-black text-xs font-black font-orbitron px-4 py-0.5 rounded-full uppercase tracking-wider">
+                    Pregunta <span id="question-number">1</span> / 15
+                </div>
+                <h2 id="question-text" class="text-base sm:text-xl md:text-2xl font-bold text-white leading-relaxed pt-2">
+                    Cargando pregunta...
+                </h2>
+            </div>
+
+            <!-- Answer Options (Grid 2x2) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                <button class="option-btn rounded-xl p-3 sm:p-4 text-left flex items-center space-x-3" data-index="0">
+                    <span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 font-orbitron font-extrabold flex items-center justify-center border border-amber-500/40 shrink-0">A</span>
+                    <span class="option-text text-sm sm:text-base font-medium text-slate-100 flex-1">Opción A</span>
+                </button>
+                <button class="option-btn rounded-xl p-3 sm:p-4 text-left flex items-center space-x-3" data-index="1">
+                    <span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 font-orbitron font-extrabold flex items-center justify-center border border-amber-500/40 shrink-0">B</span>
+                    <span class="option-text text-sm sm:text-base font-medium text-slate-100 flex-1">Opción B</span>
+                </button>
+                <button class="option-btn rounded-xl p-3 sm:p-4 text-left flex items-center space-x-3" data-index="2">
+                    <span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 font-orbitron font-extrabold flex items-center justify-center border border-amber-500/40 shrink-0">C</span>
+                    <span class="option-text text-sm sm:text-base font-medium text-slate-100 flex-1">Opción C</span>
+                </button>
+                <button class="option-btn rounded-xl p-3 sm:p-4 text-left flex items-center space-x-3" data-index="3">
+                    <span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 font-orbitron font-extrabold flex items-center justify-center border border-amber-500/40 shrink-0">D</span>
+                    <span class="option-text text-sm sm:text-base font-medium text-slate-100 flex-1">Opción D</span>
+                </button>
+            </div>
+
+        </section>
+
+        <!-- Right Section: Money Pyramid Sidebar -->
+        <aside class="bg-millonario-panel border border-millonario-border rounded-xl p-4 flex flex-col justify-between shadow-xl">
+            <div>
+                <h3 class="font-orbitron font-extrabold text-sm text-center text-blue-300 pb-3 border-b border-millonario-border mb-3 tracking-widest">
+                    ESCALA DE PREMIOS
+                </h3>
+                
+                <div id="pyramid-container" class="space-y-1 text-xs sm:text-sm font-orbitron">
+                    <!-- Dinámicamente generado con JS -->
+                </div>
+            </div>
+
+            <!-- Abandon / Secure cash button -->
+            <div class="mt-4 pt-3 border-t border-millonario-border/50 text-center">
+                <button id="retire-btn" class="w-full bg-amber-600/20 hover:bg-amber-600/40 border border-amber-500/50 text-amber-300 font-bold py-2 rounded-lg text-xs transition">
+                    Retirarse con el pozo acumulado
+                </button>
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- Modal: Phone a Friend -->
+    <div id="modal-friend" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-millonario-panel border-2 border-amber-500 rounded-2xl p-6 max-w-md w-full shadow-2xl relative text-center">
+            <div class="w-16 h-16 rounded-full bg-blue-900 border-2 border-amber-400 flex items-center justify-center mx-auto mb-4 text-amber-400 text-2xl">
+                <i class="fa-solid fa-user-gear"></i>
+            </div>
+            <h3 class="text-xl font-orbitron font-bold text-amber-400 mb-1">Llamada a un Experto</h3>
+            <p class="text-xs text-blue-300 mb-4">Ingeniero Especialista en Tribología Aplicada</p>
+            
+            <div class="bg-slate-900/90 border border-blue-600/40 rounded-xl p-4 mb-5 text-left text-sm italic text-slate-200 leading-relaxed">
+                "<span id="friend-response-text">Hola, revisando la documentación técnica y las normas ASTM correspondientes...</span>"
+            </div>
+
+            <button class="close-modal-btn w-full bg-amber-500 hover:bg-amber-600 text-black font-extrabold py-2.5 rounded-xl transition font-orbitron text-sm">
+                ¡Gracias por el consejo!
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal: Audience Poll -->
+    <div id="modal-audience" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-millonario-panel border-2 border-amber-500 rounded-2xl p-6 max-w-md w-full shadow-2xl relative text-center">
+            <div class="w-16 h-16 rounded-full bg-blue-900 border-2 border-amber-400 flex items-center justify-center mx-auto mb-4 text-amber-400 text-2xl">
+                <i class="fa-solid fa-chart-simple"></i>
+            </div>
+            <h3 class="text-xl font-orbitron font-bold text-amber-400 mb-1">Votación del Público</h3>
+            <p class="text-xs text-blue-300 mb-5">Resultados expresados por porcentaje del auditorio técnico</p>
+            
+            <!-- Graphic bars -->
+            <div class="space-y-3 mb-6 text-xs font-bold text-slate-200">
+                <div>
+                    <div class="flex justify-between mb-1"><span>A</span><span id="aud-percent-A">0%</span></div>
+                    <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden border border-blue-900">
+                        <div id="aud-bar-A" class="bg-gradient-to-r from-blue-600 to-amber-400 h-full transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between mb-1"><span>B</span><span id="aud-percent-B">0%</span></div>
+                    <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden border border-blue-900">
+                        <div id="aud-bar-B" class="bg-gradient-to-r from-blue-600 to-amber-400 h-full transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between mb-1"><span>C</span><span id="aud-percent-C">0%</span></div>
+                    <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden border border-blue-900">
+                        <div id="aud-bar-C" class="bg-gradient-to-r from-blue-600 to-amber-400 h-full transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between mb-1"><span>D</span><span id="aud-percent-D">0%</span></div>
+                    <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden border border-blue-900">
+                        <div id="aud-bar-D" class="bg-gradient-to-r from-blue-600 to-amber-400 h-full transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="close-modal-btn w-full bg-amber-500 hover:bg-amber-600 text-black font-extrabold py-2.5 rounded-xl transition font-orbitron text-sm">
+                Entendido
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal: Game Over / Victory -->
+    <div id="modal-gameover" class="fixed inset-0 modal-bg z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-millonario-panel border-2 border-amber-500 rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative text-center">
+            <div id="gameover-icon" class="w-20 h-20 rounded-full bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center mx-auto mb-4 text-amber-400 text-4xl">
+                🏆
+            </div>
+            <h3 id="gameover-title" class="text-2xl sm:text-3xl font-orbitron font-extrabold text-amber-400 mb-2">
+                ¡RESULTADO FINAL!
+            </h3>
+            <p id="gameover-message" class="text-sm text-slate-300 mb-6 leading-relaxed">
+                Has respondido correctamente las preguntas sobre lubricación.
+            </p>
+            
+            <div class="bg-slate-900/90 border border-blue-600/40 rounded-xl p-4 mb-6">
+                <span class="text-xs text-blue-400 uppercase font-bold block mb-1">Premio Obtenido</span>
+                <span id="gameover-prize" class="text-3xl sm:text-4xl font-orbitron font-black text-amber-400">$ 0</span>
+            </div>
+
+            <button id="restart-modal-btn" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-black font-orbitron font-black py-3 rounded-xl transition shadow-lg text-base">
+                JUGAR DE NUEVO
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-millonario-dark border-t border-millonario-border/30 px-4 py-2 text-center text-xs text-slate-500">
+        Basado en los documentos técnicos: Propiedades Físicas, Químicas, Térmicas, Manejo de Aceite Usado y Electrotribología en EV.
+    </footer>
+
+    <!-- Game Logic Script -->
+    <script>
+        // --- BANCO DE PREGUNTAS TÉCNICAS EXTRAÍDAS DE LOS DOCUMENTOS ---
+        const questionsDatabase = [
+            // Nivel 1 ($ 100)
+            {
+                category: "PROPIEDADES FÍSICAS",
+                question: "¿Cómo se define la viscosidad de un aceite lubricante?",
+                options: [
+                    "La temperatura mínima a la que destila el aceite",
+                    "La resistencia interna a fluir que presentan las moléculas de un líquido",
+                    "El porcentaje de aditivos detergentes presentes en la base",
+                    "La capacidad para conducir corriente eléctrica a baja frecuencia"
+                ],
+                correct: 1,
+                explanation: "Según la norma ASTM D88/D445, la viscosidad es la resistencia interna a fluir que presentan las moléculas de un líquido al moverse unas al lado de otras."
+            },
+            // Nivel 2 ($ 200)
+            {
+                category: "MANEJO DE ACEITE USADO",
+                question: "¿Cuántos litros de aceite lubricante nuevo se obtienen aproximadamente a partir de 3 litros de aceite usado mediante regeneración?",
+                options: [
+                    "0.5 Litros",
+                    "1.0 Litro",
+                    "2.0 Litros",
+                    "3.0 Litros"
+                ],
+                correct: 2,
+                explanation: "Con 3 litros de aceite usado se obtienen 2 litros de aceite nuevo. Para obtener esa cantidad a partir del primer refino de petróleo se necesitarían cerca de 140 litros."
+            },
+            // Nivel 3 ($ 300)
+            {
+                category: "PROPIEDADES TÉRMICAS",
+                question: "¿Qué evalúa la norma ASTM D97 en los aceites lubricantes?",
+                options: [
+                    "Punto de inflamación y chispa",
+                    "Rigidez dieléctrica bajo alto voltaje",
+                    "Punto de fluidez, nebulosidad y congelamiento",
+                    "Residuo de carbón Conradson"
+                ],
+                correct: 2,
+                explanation: "La norma ASTM D97 evalúa las limitaciones del aceite a bajas temperaturas, determinando los puntos de fluidez, nebulosidad y congelamiento."
+            },
+            // Nivel 4 ($ 500)
+            {
+                category: "ELECTROTRIBOLOGÍA EN EV",
+                question: "¿Cuál es la causa principal del fenómeno de daño por micro-arco (EDM) en los rodamientos de vehículos eléctricos?",
+                options: [
+                    "La baja temperatura del fluido del e-Axle",
+                    "El voltaje de modo común que supera la tensión de ruptura dieléctrica del lubricante",
+                    "El exceso de cenizas sulfatadas en el aceite de motor",
+                    "La presencia de agua en disolución"
+                ],
+                correct: 1,
+                explanation: "El daño por descarga eléctrica (EDM) se produce cuando el voltaje del eje (V_eje) supera la tensión de ruptura dieléctrica del lubricante (V_ruptura)."
+            },
+            // Nivel 5 ($ 1.000) - SEGURO 1
+            {
+                category: "PROPIEDADES QUÍMICAS",
+                question: "¿Qué mide el Número Básico Total (TBN) evaluado por normas como ASTM D2896?",
+                options: [
+                    "La cantidad de ácidos presentes provenientes de la oxidación",
+                    "La alcalinidad del aceite y su reserva detergente/dispersante para neutralizar ácidos",
+                    "La resistencia del aceite a formar espumas a 25°C",
+                    "El contenido de agua mediante titulación de Fischer"
+                ],
+                correct: 1,
+                explanation: "El TBN especifica la reserva alcalina (en mg KOH/g) para neutralizar los subproductos ácidos formados durante la combustión o servicio."
+            },
+            // Nivel 6 ($ 2.000)
+            {
+                category: "ELECTROTRIBOLOGÍA EN EV",
+                question: "¿Cómo se denomina la morfología final de falla catastrófica por arcos eléctricos caracterizada por estrías transversales regulares?",
+                options: [
+                    "Pitting (Picaduras)",
+                    "Frosting (Deslustrado)",
+                    "Fluting (Acanalado)",
+                    "Fretting (Desgaste por vibración)"
+                ],
+                correct: 2,
+                explanation: "El 'Fluting' o acanalado es la fase final del daño electromecánico donde el acoplamiento resonante entre la conmutación PWM y los rodillos genera estrías transversales."
+            },
+            // Nivel 7 ($ 4.000)
+            {
+                category: "PROPIEDADES FÍSICAS",
+                question: "¿Cuál es el valor más aceptado de gravedad específica a 15.6°C (ASTM D287) para aceites derivados del petróleo?",
+                options: [
+                    "0.70",
+                    "0.91",
+                    "1.15",
+                    "0.50"
+                ],
+                correct: 1,
+                explanation: "Para aceites derivados del petróleo, la gravedad específica se comprende entre 0.89 y 0.93, siendo 0.91 el valor más ampliamente aceptado."
+            },
+            // Nivel 8 ($ 8.000)
+            {
+                category: "PROPIEDADES QUÍMICAS",
+                question: "En la prueba de detección de PCB's (Kit CLOR-N-OIL 50), ¿qué indica un color resultante PÚRPURA?",
+                options: [
+                    "Presencia de más de 500 ppm de PCB's",
+                    "Ausencia de cloro y menos de 50 ppm de PCB's",
+                    "Contaminación severa por agua",
+                    "Aceite degradado por alta temperatura"
+                ],
+                correct: 1,
+                explanation: "Si la prueba CLOR-N-OIL 50 da como resultado una coloración púrpura, indica ausencia de cloro y que la muestra posee menos de 50 ppm de PCB's."
+            },
+            // Nivel 9 ($ 16.000)
+            {
+                category: "PROPIEDADES TÉRMICAS",
+                question: "¿Qué diferencia existe entre el punto de inflamación (chispa) y el punto de combustión?",
+                options: [
+                    "El punto de combustión suele estar entre 30°C y 60°C por encima del punto de inflamación y sostiene la llama al menos 5 segundos",
+                    "El punto de inflamación requiere llama externa y el de combustión ocurre automáticamente a 0°C",
+                    "Son exactamente el mismo parámetro evaluado por normas diferentes",
+                    "El punto de inflamación es solo para grasas y el de combustión para aceites sintéticos"
+                ],
+                correct: 0,
+                explanation: "El punto de combustión requiere que los vapores mantengan la llama encendida durante 5 segundos como mínimo y es entre 30°C y 60°C superior al de inflamación."
+            },
+            // Nivel 10 ($ 32.000) - SEGURO 2
+            {
+                category: "ELECTROTRIBOLOGÍA EN EV",
+                question: "¿Qué ventaja ofrece la estrategia de formular grasas conductoras con Nanotubos de Carbono (MWCNT) en motores de EV?",
+                options: [
+                    "Aumenta la viscosidad ISO VG a más de 1000 cSt",
+                    "Transforma el lubricante en un medio disipador drenando la carga estática sin generar micro-arcos violentos",
+                    "Elimina por completo la necesidad de rodamientos de acero",
+                    "Evita el calentamiento del estator por encima de los 50°C"
+                ],
+                correct: 1,
+                explanation: "Al reducir intencionadamente la resistividad del lubricante, se drena continuamente la carga estática a través de micro-corrientes seguras, evitando arcos destructivos."
+            },
+            // Nivel 11 ($ 64.000)
+            {
+                category: "PROPIEDADES FÍSICAS",
+                question: "¿Qué norma y equipo se utiliza convencionalmente para evaluar la rigidez dieléctrica mediante electrodos espaciados a 0.1 pulgada?",
+                options: [
+                    "ASTM D1500 (Colorímetro Saybolt)",
+                    "ASTM D877 (Discos opuestos a 0.1 pulgada)",
+                    "ASTM D92 (Cápsula abierta Cleveland)",
+                    "ASTM D665 (Barra de acero bruñida)"
+                ],
+                correct: 1,
+                explanation: "La norma ASTM D877 evalúa la capacidad de aislamiento eléctrico aplicando voltaje entre dos discos planos separados por 0.1 pulgada."
+            },
+            // Nivel 12 ($ 125.000)
+            {
+                category: "PROPIEDADES QUÍMICAS",
+                question: "¿Cuál es el principal factor contaminante que causa el descenso drástico de la resistencia dieléctrica en un aceite?",
+                options: [
+                    "El exceso de viscosidad sintética",
+                    "La presencia de agua libre o emulsionada",
+                    "El color azul oscuro del indicador universal",
+                    "La adición de depresores del punto de fluidez"
+                ],
+                correct: 1,
+                explanation: "La causa principal en la caída de la resistencia dieléctrica es el agua presente en el aceite, seguida por los productos de la oxidación."
+            },
+            // Nivel 13 ($ 250.000)
+            {
+                category: "PROPIEDADES QUÍMICAS",
+                question: "¿Qué representa el Punto de Anilina (ASTM D611) en un lubricante?",
+                options: [
+                    "La temperatura de congelamiento total del aceite base",
+                    "Un indicativo del contenido de hidrocarburos saturados y del poder de dilución/afectación sobre sellos de caucho",
+                    "La corrosión en lámina de cobre expuesta a 100°C",
+                    "La cantidad de azufre remanente en combustible diésel"
+                ],
+                correct: 1,
+                explanation: "Un punto de anilina bajo indica alto poder de solvencia y tendencia a ablandar o deformar los sellos de caucho de las máquinas."
+            },
+            // Nivel 14 ($ 500.000)
+            {
+                category: "ELECTROTRIBOLOGÍA EN EV",
+                question: "En la arquitectura de protección combinada de un e-Axle, ¿qué combinación se usa habitualmente en el extremo no acoplado (NDE) y en el extremo acoplado (DE)?",
+                options: [
+                    "Rodamiento de madera en NDE y aceite mineral sin aditivos en DE",
+                    "Rodamiento Aislado Cerámico en NDE para cortar corrientes circulantes y Anillo SGR en DE para drenar voltaje capacitivo",
+                    "Pincel de grafito en ambos extremos sin grasa",
+                    "Rodamiento puramente conductor en NDE y plástico rígido en DE"
+                ],
+                correct: 1,
+                explanation: "El co-diseño óptimo utiliza aislamiento cerámico en el NDE para cortar bucles de corriente y un anillo de puesta a tierra SGR en el DE para drenar la carga a masa."
+            },
+            // Nivel 15 ($ 1.000.000) - PREMIO MAYOR
+            {
+                category: "MANEJO Y VALORIZACIÓN DE ACEITES",
+                question: "Según los datos de eficiencia energética y valorización, ¿cuánta energía equivalente contiene 1 litro de aceite usado procesado como fuel óleo?",
+                options: [
+                    "Aproximadamente 2 kWh",
+                    "Aproximadamente 11 kWh (suficiente para 5 horas de un calefactor de 220V)",
+                    "Cerca de 100 kWh de capacidad eléctrica",
+                    "No genera energía debido a los sedimentos metálicos"
+                ],
+                correct: 1,
+                explanation: "Un litro de aceite industrial usado procesado como fuel óleo posee cerca de 11 kWh de poder calorífico, capaz de alimentar un calefactor durante 5 horas."
+            }
+        ];
+
+        const prizePyramid = [
+            { level: 15, amount: "$ 1.000.000", safe: true },
+            { level: 14, amount: "$ 500.000", safe: false },
+            { level: 13, amount: "$ 250.000", safe: false },
+            { level: 12, amount: "$ 125.000", safe: false },
+            { level: 11, amount: "$ 64.000", safe: false },
+            { level: 10, amount: "$ 32.000", safe: true },
+            { level: 9, amount: "$ 16.000", safe: false },
+            { level: 8, amount: "$ 8.000", safe: false },
+            { level: 7, amount: "$ 4.000", safe: false },
+            { level: 6, amount: "$ 2.000", safe: false },
+            { level: 5, amount: "$ 1.000", safe: true },
+            { level: 4, amount: "$ 500", safe: false },
+            { level: 3, amount: "$ 300", safe: false },
+            { level: 2, amount: "$ 200", safe: false },
+            { level: 1, amount: "$ 100", safe: false }
+        ];
+
+        // --- ESTADO DEL JUEGO ---
+        let currentQuestionIndex = 0;
+        let selectedOptionIndex = null;
+        let isAnswering = false;
+
+        let lifelinesUsed = {
+            "5050": false,
+            "friend": false,
+            "audience": false
+        };
+
+        // --- ELEMENTOS DOM ---
+        const questionNumberEl = document.getElementById("question-number");
+        const questionCategoryEl = document.getElementById("question-category");
+        const questionTextEl = document.getElementById("question-text");
+        const optionBtns = document.querySelectorAll(".option-btn");
+        const currentPrizeDisplay = document.getElementById("current-prize-display");
+        const pyramidContainer = document.getElementById("pyramid-container");
+
+        const btn5050 = document.getElementById("lifeline-5050");
+        const btnFriend = document.getElementById("lifeline-friend");
+        const btnAudience = document.getElementById("lifeline-audience");
+        const btnReset = document.getElementById("reset-game-btn");
+        const btnRetire = document.getElementById("retire-btn");
+
+        // Modales
+        const modalFriend = document.getElementById("modal-friend");
+        const modalAudience = document.getElementById("modal-audience");
+        const modalGameOver = document.getElementById("modal-gameover");
+        const friendResponseText = document.getElementById("friend-response-text");
+
+        // --- INICIALIZACIÓN ---
+        function initGame() {
+            currentQuestionIndex = 0;
+            selectedOptionIndex = null;
+            isAnswering = false;
+
+            lifelinesUsed = { "5050": false, "friend": false, "audience": false };
+            
+            btn5050.disabled = false;
+            btnFriend.disabled = false;
+            btnAudience.disabled = false;
+
+            renderPyramid();
+            loadQuestion(currentQuestionIndex);
+        }
+
+        function renderPyramid() {
+            pyramidContainer.innerHTML = "";
+            prizePyramid.forEach(item => {
+                const stepEl = document.createElement("div");
+                stepEl.className = `pyramid-step px-3 py-1 rounded flex justify-between items-center text-xs ${
+                    item.safe ? 'safe border-l-amber-400 font-bold' : ''
+                }`;
+                stepEl.dataset.level = item.level;
+
+                const stepNumber = document.createElement("span");
+                stepNumber.textContent = `${item.level} •`;
+                stepNumber.className = "w-6 inline-block text-amber-500/80";
+
+                const stepAmount = document.createElement("span");
+                stepAmount.textContent = item.amount;
+
+                stepEl.appendChild(stepNumber);
+                stepEl.appendChild(stepAmount);
+
+                pyramidContainer.appendChild(stepEl);
+            });
+            updatePyramidHighlight();
+        }
+
+        function updatePyramidHighlight() {
+            const steps = document.querySelectorAll(".pyramid-step");
+            steps.forEach(step => {
+                const lvl = parseInt(step.dataset.level);
+                step.classList.remove("active", "passed");
+                
+                if (lvl === currentQuestionIndex + 1) {
+                    step.classList.add("active");
+                } else if (lvl < currentQuestionIndex + 1) {
+                    step.classList.add("passed");
+                }
+            });
+
+            // Actualizar premio en header
+            if (currentQuestionIndex === 0) {
+                currentPrizeDisplay.textContent = "$ 0";
+            } else {
+                currentPrizeDisplay.textContent = prizePyramid[15 - currentQuestionIndex].amount;
+            }
+        }
+
+        function loadQuestion(index) {
+            isAnswering = false;
+            selectedOptionIndex = null;
+
+            const q = questionsDatabase[index];
+            questionNumberEl.textContent = index + 1;
+            questionCategoryEl.textContent = `CATEGORÍA: ${q.category}`;
+            questionTextEl.textContent = q.question;
+
+            optionBtns.forEach((btn, i) => {
+                btn.classList.remove("selected", "correct", "wrong");
+                btn.style.visibility = "visible";
+                btn.disabled = false;
+                
+                const optionText = btn.querySelector(".option-text");
+                optionText.textContent = q.options[i];
+            });
+
+            updatePyramidHighlight();
+        }
+
+        // --- MANEJO DE SELECCIÓN DE RESPUESTA ---
+        optionBtns.forEach(btn => {
+            btn.addEventListener("click", function() {
+                if (isAnswering) return;
+
+                const index = parseInt(this.dataset.index);
+                selectedOptionIndex = index;
+
+                // Marcar botón como seleccionado (naranja suspendido)
+                optionBtns.forEach(b => b.classList.remove("selected"));
+                this.classList.add("selected");
+
+                isAnswering = true;
+
+                // Tiempo de tensión estilo programa de TV (2 segundos)
+                setTimeout(() => {
+                    verifyAnswer();
+                }, 2000);
+            });
+        });
+
+        function verifyAnswer() {
+            const currentQ = questionsDatabase[currentQuestionIndex];
+            const correctIndex = currentQ.correct;
+
+            optionBtns.forEach((btn, i) => {
+                btn.classList.remove("selected");
+                if (i === correctIndex) {
+                    btn.classList.add("correct");
+                }
+            });
+
+            if (selectedOptionIndex === correctIndex) {
+                // Respuesta Correcta
+                setTimeout(() => {
+                    if (currentQuestionIndex < questionsDatabase.length - 1) {
+                        currentQuestionIndex++;
+                        loadQuestion(currentQuestionIndex);
+                    } else {
+                        // ¡Ganador del Millón!
+                        showGameOver(true, "$ 1.000.000", "¡Felicidades! Has completado el desafío tribológico perfecto y eres millonario.");
+                    }
+                }, 2000);
+            } else {
+                // Respuesta Incorrecta
+                optionBtns[selectedOptionIndex].classList.add("wrong");
+                
+                // Calcular premio de consolación seguro
+                let safePrize = "$ 0";
+                if (currentQuestionIndex >= 10) {
+                    safePrize = "$ 32.000";
+                } else if (currentQuestionIndex >= 5) {
+                    safePrize = "$ 1.000";
+                }
+
+                setTimeout(() => {
+                    showGameOver(false, safePrize, `Respuesta incorrecta. ${currentQ.explanation}`);
+                }, 2500);
+            }
+        }
+
+        // --- COMODINES ---
+
+        // 1. Comodín 50:50
+        btn5050.addEventListener("click", function() {
+            if (lifelinesUsed["5050"] || isAnswering) return;
+
+            lifelinesUsed["5050"] = true;
+            this.disabled = true;
+
+            const correctIndex = questionsDatabase[currentQuestionIndex].correct;
+            let removedCount = 0;
+
+            // Ocultar 2 respuestas incorrectas al azar
+            let indices = [0, 1, 2, 3].filter(i => i !== correctIndex);
+            indices.sort(() => Math.random() - 0.5);
+
+            indices.slice(0, 2).forEach(i => {
+                optionBtns[i].style.visibility = "hidden";
+            });
+        });
+
+        // 2. Llamada a un amigo
+        btnFriend.addEventListener("click", function() {
+            if (lifelinesUsed["friend"] || isAnswering) return;
+
+            lifelinesUsed["friend"] = true;
+            this.disabled = true;
+
+            const q = questionsDatabase[currentQuestionIndex];
+            const correctIndex = q.correct;
+            const letters = ["A", "B", "C", "D"];
+
+            // Simular respuesta inteligente del amigo
+            const confidence = Math.random();
+            let suggestedLetter = letters[correctIndex];
+
+            if (confidence < 0.15) {
+                // 15% de probabilidad de equivocarse
+                const wrongIndices = [0, 1, 2, 3].filter(i => i !== correctIndex);
+                suggestedLetter = letters[wrongIndices[Math.floor(Math.random() * wrongIndices.length)]];
+            }
+
+            friendResponseText.textContent = `Hola. Según las hojas técnicas que revisé sobre '${q.category}', estoy un 90% seguro de que la respuesta correcta es la opción ${suggestedLetter}.`;
+
+            modalFriend.classList.remove("hidden");
+        });
+
+        // 3. Opinión del público
+        btnAudience.addEventListener("click", function() {
+            if (lifelinesUsed["audience"] || isAnswering) return;
+
+            lifelinesUsed["audience"] = true;
+            this.disabled = true;
+
+            const correctIndex = questionsDatabase[currentQuestionIndex].correct;
+            let percents = [0, 0, 0, 0];
+
+            // Asignar mayor porcentaje a la correcta
+            let mainPercent = Math.floor(Math.random() * 25) + 55; // 55% a 80%
+            percents[correctIndex] = mainPercent;
+
+            let remaining = 100 - mainPercent;
+
+            let otherIndices = [0, 1, 2, 3].filter(i => i !== correctIndex);
+            otherIndices.forEach((idx, i) => {
+                if (i === otherIndices.length - 1) {
+                    percents[idx] = remaining;
+                } else {
+                    let p = Math.floor(Math.random() * remaining);
+                    percents[idx] = p;
+                    remaining -= p;
+                }
+            });
+
+            // Actualizar interfaz del modal
+            const letters = ["A", "B", "C", "D"];
+            letters.forEach((l, i) => {
+                document.getElementById(`aud-percent-${l}`).textContent = `${percents[i]}%`;
+                document.getElementById(`aud-bar-${l}`).style.width = `${percents[i]}%`;
+            });
+
+            modalAudience.classList.remove("hidden");
+        });
+
+        // --- CERRAR MODALES ---
+        document.querySelectorAll(".close-modal-btn").forEach(btn => {
+            btn.addEventListener("click", function() {
+                modalFriend.classList.add("hidden");
+                modalAudience.classList.add("hidden");
+            });
+        });
+
+        // --- RETIRARSE ---
+        btnRetire.addEventListener("click", function() {
+            if (currentQuestionIndex === 0 || isAnswering) return;
+
+            const prizeAcquired = prizePyramid[15 - currentQuestionIndex].amount;
+            showGameOver(true, prizeAcquired, "Decidiste retirarte del juego con tu pozo acumulado.");
+        });
+
+        // --- PANTALLA FIN DE JUEGO ---
+        function showGameOver(isWin, prize, message) {
+            const titleEl = document.getElementById("gameover-title");
+            const prizeEl = document.getElementById("gameover-prize");
+            const msgEl = document.getElementById("gameover-message");
+            const iconEl = document.getElementById("gameover-icon");
+
+            if (isWin) {
+                titleEl.textContent = "¡FELICITACIONES!";
+                iconEl.textContent = "🏆";
+            } else {
+                titleEl.textContent = "FIN DEL JUEGO";
+                iconEl.textContent = "❌";
+            }
+
+            prizeEl.textContent = prize;
+            msgEl.textContent = message;
+
+            modalGameOver.classList.remove("hidden");
+        }
+
+        document.getElementById("restart-modal-btn").addEventListener("click", function() {
+            modalGameOver.classList.add("hidden");
+            initGame();
+        });
+
+        btnReset.addEventListener("click", initGame);
+
+        // Arrancar juego al cargar
+        window.onload = function() {
+            initGame();
+        };
+    </script>
+</body>
+</html>
