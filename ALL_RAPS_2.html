@@ -1,0 +1,1837 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-50">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f172a">
+  <title>VOIZ · Inglés Técnico para la Industria Automotriz</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter + Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <!-- html2pdf.js for PDF Generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac',
+              500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534',
+            },
+            accent: {
+              50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc',
+              500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 800: '#075985',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(#cbd5e1,#94a3b8); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+
+    .bg-canvas {
+      background:
+        radial-gradient(1100px 480px at 88% -8%, rgba(14,165,233,.10), transparent 60%),
+        radial-gradient(900px 460px at -8% 2%, rgba(34,197,94,.10), transparent 55%),
+        radial-gradient(700px 380px at 50% 112%, rgba(34,197,94,.07), transparent 60%);
+    }
+    .card {
+      background: #fff;
+      border: 1px solid rgba(226,232,240,.8);
+      border-radius: 1.5rem;
+      box-shadow: 0 1px 2px rgba(15,23,42,.04), 0 16px 40px -20px rgba(15,23,42,.12);
+    }
+    .card-hover { transition: transform .25s ease, box-shadow .25s ease; }
+    .card-hover:hover { transform: translateY(-3px); box-shadow: 0 2px 4px rgba(15,23,42,.05), 0 24px 48px -20px rgba(15,23,42,.18); }
+
+    /* Segmented controls */
+    .seg { background:#f1f5f9; border:1px solid #e2e8f0; border-radius:999px; padding:4px; display:inline-flex; gap:2px; flex-wrap:wrap; }
+    .seg-btn { border-radius:999px; padding:.4rem .9rem; font-size:.72rem; font-weight:700; color:#475569; transition:all .2s ease; white-space:nowrap; }
+    .seg-btn:hover { color:#0f172a; }
+    .seg-btn.on { background:#fff; color:#15803d; box-shadow:0 1px 4px rgba(15,23,42,.14); }
+    .seg-dark { background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.14); }
+    .seg-dark .seg-btn { color:#cbd5e1; }
+    .seg-dark .seg-btn:hover { color:#fff; }
+    .seg-dark .seg-btn.on { background:#fff; color:#0f172a; }
+
+    /* Karaoke word chips */
+    .kw { display:inline-flex; flex-direction:column; align-items:center; gap:2px; padding:.3rem .7rem; border-radius:999px; border:1.5px solid #e2e8f0; font-weight:600; font-size:.8rem; line-height:1.1; transition:all .25s ease; background:#fff; color:#64748b; margin:.15rem; }
+    .kw-sm { padding:.12rem .55rem; font-size:10px; }
+    .kw-live { background:#e0f2fe; border-color:#7dd3fc; color:#0369a1; animation: kwPulse 1.1s ease-in-out infinite; }
+    .kw-match { background:#dcfce7; border-color:#4ade80; color:#14532d; }
+    .kw-sub { background:#ffe4e6; border-color:#fda4af; color:#881337; }
+    .kw-miss { background:#fef9c3; border-color:#fde047; color:#713f12; border-style:dashed; text-decoration:line-through; text-decoration-thickness:1.5px; }
+    .kw-ins { background:#f0f9ff; border-color:#bae6fd; color:#075985; font-style:italic; }
+    .kw-heard { font-size:9px; font-weight:700; opacity:.72; line-height:1; max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    @keyframes kwPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.07)} }
+
+    /* Mic bars */
+    .mic-bars { display:flex; align-items:flex-end; gap:3px; height:36px; }
+    .mic-bar { width:4px; border-radius:999px; background:linear-gradient(to top,#22c55e,#38bdf8); height:5px; transition:height .09s ease; }
+    .mic-bars.idle .mic-bar { animation: idlebar 1.7s ease-in-out infinite; }
+    .mic-bars.idle .mic-bar:nth-child(2n) { animation-delay:.25s; }
+    .mic-bars.idle .mic-bar:nth-child(3n) { animation-delay:.5s; }
+    .mic-bars.idle .mic-bar:nth-child(5n) { animation-delay:.75s; }
+    @keyframes idlebar { 0%,100%{height:5px} 50%{height:15px} }
+
+    /* Record pulse rings */
+    .pulse-ring { position:absolute; inset:-4px; border-radius:9999px; border:3px solid rgba(34,197,94,.55); animation: ring 1.5s ease-out infinite; pointer-events:none; }
+    .pulse-ring.d2 { animation-delay:.5s; }
+    .pulse-ring.d3 { animation-delay:1s; }
+    @keyframes ring { 0%{transform:scale(1);opacity:.85} 100%{transform:scale(1.6);opacity:0} }
+
+    .animate-pulse-fast { animation: pulse 0.9s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.55} }
+
+    .fade-in { animation: fadeIn .35s ease both; }
+    @keyframes fadeIn { from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none} }
+  </style>
+</head>
+<body class="h-full flex flex-col font-sans text-slate-800 antialiased bg-slate-50 bg-canvas">
+
+  <!-- ══════════ TOP NAVIGATION ══════════ -->
+  <header class="bg-white/80 backdrop-blur-xl border-b border-slate-200/70 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 gap-3">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-500 flex items-center justify-center text-white shadow-lg shadow-brand-500/25">
+          <i class="fa-solid fa-car-side text-lg"></i>
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-xl font-display font-extrabold tracking-tight bg-gradient-to-r from-brand-700 via-accent-600 to-brand-600 bg-clip-text text-transparent">VOIZ</span>
+            <span class="hidden sm:inline text-[10px] font-bold px-2 py-0.5 bg-brand-100 text-brand-700 rounded-full border border-brand-200">SENA EdTech · Automotive v3.0</span>
+          </div>
+          <span class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider truncate">Inglés Técnico para la Industria Automotriz</span>
+        </div>
+      </div>
+
+      <!-- RAP Navigation Tabs -->
+      <nav class="hidden md:flex items-center seg" id="rap-nav"></nav>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <span id="api-status" class="hidden sm:flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-500">
+          <span class="dot bg-slate-400" id="api-dot"></span><span id="api-text">Verificando…</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Mobile RAP Switcher -->
+    <div class="md:hidden border-t border-slate-100 bg-white/70 px-4 py-2 flex overflow-x-auto gap-2" id="rap-nav-mobile"></div>
+  </header>
+
+  <!-- ══════════ MAIN ══════════ -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
+
+    <!-- RAP Header Banner -->
+    <section id="rap-header" class="card p-6 relative overflow-hidden">
+      <div class="absolute -right-8 -bottom-12 opacity-[.06] text-brand-700 pointer-events-none select-none">
+        <i class="fa-solid fa-car-side text-[190px]"></i>
+      </div>
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 text-[11px] font-extrabold uppercase tracking-widest text-accent-600 mb-1.5" id="rap-badge">RAP 1 • NIVEL A1.2</div>
+          <h1 class="font-display text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight" id="rap-title">…</h1>
+          <p class="text-sm text-slate-600 mt-1.5 max-w-3xl leading-relaxed" id="rap-desc">…</p>
+        </div>
+        <div class="seg self-start md:self-center" id="subnav">
+          <button onclick="switchSubsection('glossary')" id="subnav-glossary" class="seg-btn on"><i class="fa-solid fa-book mr-1.5"></i>Glosario (20)</button>
+          <button onclick="switchSubsection('grammar')" id="subnav-grammar" class="seg-btn"><i class="fa-solid fa-diagram-project mr-1.5"></i>Gramática</button>
+          <button onclick="switchSubsection('voiz')" id="subnav-voiz" class="seg-btn"><i class="fa-solid fa-microphone-lines mr-1.5"></i>VOIZ · Voz (30)</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SECTION 1: GLOSSARY ══ -->
+    <section id="sec-glossary" class="flex flex-col gap-4">
+      <div class="card p-4 sm:p-5 flex flex-col md:flex-row justify-between gap-4 items-center">
+        <div class="w-full md:w-1/2 relative">
+          <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+          <input type="text" id="glossary-search" oninput="filterGlossary()" placeholder="Busca términos, IPA o definiciones…"
+                 class="w-full pl-11 pr-4 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+        </div>
+        <div class="flex flex-wrap gap-2 w-full md:w-auto" id="glossary-category-filters"></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="glossary-grid"></div>
+    </section>
+
+    <!-- ══ SECTION 2: GRAMMAR ══ -->
+    <section id="sec-grammar" class="hidden flex-col gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2">
+          <div class="card p-6">
+            <h3 class="font-display font-bold text-slate-900 text-base mb-4 flex items-center gap-2">
+              <i class="fa-solid fa-screwdriver-wrench text-brand-600"></i><span id="grammar-title">…</span>
+            </h3>
+            <div id="grammar-breakdown"></div>
+          </div>
+        </div>
+        <div class="card p-6 flex flex-col">
+          <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+            <h3 class="font-display font-bold text-slate-900 flex items-center gap-2 text-sm">
+              <i class="fa-solid fa-vial-circle-check text-brand-600"></i> Quiz de Gramática
+            </h3>
+            <span class="text-[11px] font-extrabold bg-brand-100 text-brand-700 px-2.5 py-1 rounded-full border border-brand-200" id="quiz-score-badge">Aciertos: 0/4</span>
+          </div>
+          <div class="h-1.5 rounded-full bg-slate-100 overflow-hidden mb-4">
+            <div id="quiz-progress" class="h-full w-0 bg-gradient-to-r from-brand-500 to-accent-500 rounded-full transition-all duration-500"></div>
+          </div>
+          <div id="quiz-container" class="space-y-3 flex-1"></div>
+          <button onclick="renderQuiz()" class="mt-4 text-[11px] font-bold text-accent-600 hover:text-accent-700 transition-colors self-start">
+            <i class="fa-solid fa-rotate-right mr-1"></i>Reiniciar quiz
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ SECTION 3: VOIZ VOICE ENGINE ══ -->
+    <section id="sec-voiz" class="hidden flex-col gap-6">
+
+      <div id="voiz-unsupported" class="hidden card p-5 !border-amber-200 bg-amber-50/70 flex items-start gap-3">
+        <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-0.5"></i>
+        <div>
+          <p class="text-sm font-bold text-amber-900">Reconocimiento de voz no disponible en este navegador</p>
+          <p class="text-xs text-amber-800 mt-1 leading-relaxed">La grabación y el cálculo del WER usan la Web Speech API. Abre VOIZ en <strong>Google Chrome</strong> o <strong>Microsoft Edge</strong> de escritorio para ver en vivo lo que pronuncias y descargar tu reporte en PDF.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Prompt Catalog Sidebar -->
+        <div class="lg:col-span-4 card p-4 flex flex-col lg:max-h-[760px]">
+          <div class="flex items-center justify-between pb-3 mb-2 border-b border-slate-100">
+            <h3 class="font-display font-bold text-slate-800 text-sm flex items-center gap-2">
+              <i class="fa-solid fa-list-check text-accent-600"></i> Catálogo de Práctica Oral
+            </h3>
+            <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-brand-100 text-brand-700 border border-brand-200" id="prompt-total-badge">30</span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-semibold mb-2 px-1" id="prompt-counter-text">Práctica 1 de 30</p>
+          <div class="overflow-y-auto space-y-2 flex-1 pr-1" id="prompt-list-container"></div>
+        </div>
+
+        <!-- Sprint Engine & Assessment Workspace -->
+        <div class="lg:col-span-8 flex flex-col gap-5">
+
+          <!-- Active Prompt -->
+          <div class="card p-6">
+            <div class="flex items-center justify-between mb-3 gap-2">
+              <span class="text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-accent-50 text-accent-700 border border-accent-100" id="voiz-prompt-category">—</span>
+              <span class="text-[11px] font-bold text-slate-400 font-mono" id="voiz-prompt-id">PRÁCTICA #01</span>
+            </div>
+            <h2 class="font-display text-lg sm:text-xl font-bold text-slate-900 leading-snug" id="voiz-prompt-text">…</h2>
+            <p class="text-xs text-slate-500 mt-2 mb-4 leading-relaxed">Enfócate en la pronunciación clara, los términos clave y la estructura correcta. Mientras hablas, verás resaltarse las palabras de la respuesta modelo.</p>
+            <div id="voiz-vocab-block">
+              <span class="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider block mb-1.5">Términos clave</span>
+              <div class="flex flex-wrap gap-1.5" id="voiz-target-vocab"></div>
+            </div>
+          </div>
+
+          <!-- Benchmark + Live Karaoke -->
+          <div class="card p-6">
+            <div class="flex items-center justify-between mb-3 gap-2">
+              <h3 class="font-display font-bold text-slate-800 text-sm flex items-center gap-2">
+                <i class="fa-solid fa-award text-amber-500"></i> Respuesta Modelo
+              </h3>
+              <button id="btn-speak-model" class="text-xs font-extrabold text-brand-600 hover:text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-volume-high"></i> Escuchar modelo
+              </button>
+            </div>
+            <p class="text-sm text-slate-700 italic font-mono leading-relaxed" id="voiz-benchmark-text">…</p>
+
+            <div class="mt-5 pt-4 border-t border-slate-100">
+              <span class="text-[11px] font-extrabold text-slate-500 uppercase tracking-wider block mb-2">
+                <i class="fa-solid fa-wave-square text-brand-600 mr-1"></i> Sigue tu pronunciación en vivo
+              </span>
+              <div id="karaoke-chips" class="flex flex-wrap"></div>
+              <div id="extra-words-block" class="hidden mt-3">
+                <span class="text-[10px] font-extrabold text-sky-600 uppercase tracking-wider block mb-1">Palabras extra detectadas</span>
+                <div id="extra-words" class="flex flex-wrap"></div>
+              </div>
+              <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[10px] font-semibold text-slate-500">
+                <span class="kw kw-sm kw-match">Acertada</span>
+                <span class="kw kw-sm kw-sub">Sustituida</span>
+                <span class="kw kw-sm kw-miss">Omitida</span>
+                <span class="kw kw-sm kw-live">En curso</span>
+                <span class="kw kw-sm kw-ins">Extra</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recorder Panel -->
+          <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 p-6 shadow-xl">
+            <div class="absolute -top-24 -right-16 w-72 h-72 rounded-full bg-brand-500/15 blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-16 w-72 h-72 rounded-full bg-accent-500/15 blur-3xl pointer-events-none"></div>
+            <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6">
+
+              <!-- Timer -->
+              <div class="flex items-center gap-4">
+                <div class="relative w-20 h-20 flex items-center justify-center shrink-0">
+                  <svg class="w-full h-full -rotate-90">
+                    <circle cx="40" cy="40" r="34" stroke="rgba(255,255,255,.12)" stroke-width="7" fill="transparent"/>
+                    <circle id="timer-circle" cx="40" cy="40" r="34" stroke="#22c55e" stroke-width="7" fill="transparent" stroke-linecap="round" stroke-dasharray="213.6" stroke-dashoffset="0" class="transition-all duration-500"/>
+                  </svg>
+                  <span id="timer-number" class="absolute font-display text-xl font-extrabold text-white font-mono">10</span>
+                </div>
+                <div class="max-w-[200px]">
+                  <h4 id="timer-title" class="font-display font-bold text-white text-sm">Sprint de 10 segundos</h4>
+                  <p id="timer-sub" class="text-[11px] text-slate-400 mt-0.5 leading-snug">Graba tu respuesta antes de que el tiempo termine.</p>
+                  <div class="seg seg-dark mt-2.5" id="mode-seg">
+                    <button class="seg-btn on" data-mode="10">10 s</button>
+                    <button class="seg-btn" data-mode="20">20 s</button>
+                    <button class="seg-btn" data-mode="free">Libre</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mic Button -->
+              <div class="relative w-24 h-24 flex items-center justify-center shrink-0">
+                <div id="pulse-rings" class="hidden">
+                  <span class="pulse-ring"></span><span class="pulse-ring d2"></span><span class="pulse-ring d3"></span>
+                </div>
+                <button id="btn-record" aria-label="Grabar" class="relative w-20 h-20 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 text-white text-2xl shadow-lg shadow-brand-500/40 flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95">
+                  <i id="record-icon" class="fa-solid fa-microphone"></i>
+                </button>
+              </div>
+
+              <!-- Live bars + hint -->
+              <div class="flex flex-col items-center lg:items-end gap-2">
+                <div id="mic-bars" class="mic-bars idle"></div>
+                <p class="text-[11px] text-slate-400 max-w-[220px] text-center lg:text-right leading-snug">Lee con ritmo constante, a 20–30 cm del micrófono.</p>
+                <div class="text-[11px] font-extrabold text-brand-400 font-mono" id="rec-timer-text">&nbsp;</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Transcript -->
+          <div class="card p-5">
+            <div class="flex items-center justify-between mb-2 gap-2">
+              <h3 class="font-display font-bold text-slate-800 text-sm flex items-center gap-2">
+                <i class="fa-solid fa-microphone-lines text-brand-600"></i> Lo que estás pronunciando
+              </h3>
+              <span id="rec-status" class="text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600">Listo para grabar</span>
+            </div>
+            <div id="transcription-output" class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-sm font-mono text-slate-700 min-h-[68px] leading-relaxed">
+              <span class="text-slate-400">Presiona el micrófono y lee la respuesta modelo en voz alta. Aquí aparecerá, en tiempo real, lo que estás pronunciando…</span>
+            </div>
+            <div id="audio-player-container" class="hidden mt-3">
+              <div class="flex items-center gap-2 text-[11px] font-extrabold text-slate-500 mb-1 uppercase tracking-wider"><i class="fa-solid fa-play"></i> Tu grabación</div>
+              <audio id="recorded-audio" controls class="w-full h-9"></audio>
+            </div>
+          </div>
+
+          <!-- Results -->
+          <div class="card p-6">
+            <div class="flex items-center justify-between mb-4 gap-2">
+              <h3 class="font-display font-bold text-slate-800 text-sm flex items-center gap-2">
+                <i class="fa-solid fa-chart-simple text-brand-600"></i> Resultado del Sprint
+              </h3>
+              <span id="best-score-badge" class="hidden text-[11px] font-extrabold px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 border border-amber-200">★ Mejor: —</span>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              <div class="rounded-2xl bg-slate-50 border border-slate-200 p-3 text-center">
+                <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wide block">WER</span>
+                <span id="wer-score" class="font-display text-2xl font-extrabold text-slate-800 font-mono">—</span>
+              </div>
+              <div class="rounded-2xl bg-brand-50 border border-brand-200 p-3 text-center">
+                <span class="text-[10px] font-extrabold text-brand-700 uppercase tracking-wide block">Precisión</span>
+                <span id="accuracy-score" class="font-display text-2xl font-extrabold text-brand-600 font-mono">—</span>
+              </div>
+              <div class="rounded-2xl bg-rose-50 border border-rose-200 p-3 text-center">
+                <span class="text-[10px] font-extrabold text-rose-600 uppercase tracking-wide block">Sustit.</span>
+                <span id="tile-s" class="font-display text-xl font-extrabold text-rose-700 font-mono">0</span>
+              </div>
+              <div class="rounded-2xl bg-amber-50 border border-amber-200 p-3 text-center">
+                <span class="text-[10px] font-extrabold text-amber-600 uppercase tracking-wide block">Omis.</span>
+                <span id="tile-d" class="font-display text-xl font-extrabold text-amber-700 font-mono">0</span>
+              </div>
+              <div class="rounded-2xl bg-sky-50 border border-sky-200 p-3 text-center col-span-2 sm:col-span-1">
+                <span class="text-[10px] font-extrabold text-sky-600 uppercase tracking-wide block">Inser.</span>
+                <span id="tile-i" class="font-display text-xl font-extrabold text-sky-700 font-mono">0</span>
+              </div>
+            </div>
+            <p id="feedback-msg" class="hidden mt-4 text-xs font-semibold text-slate-600 bg-slate-50 border border-slate-200 rounded-2xl p-3.5 leading-relaxed"></p>
+            <div class="mt-4 flex flex-col sm:flex-row gap-3">
+              <input id="learner-name" type="text" placeholder="Nombre del aprendiz (para el PDF)" class="flex-1 px-4 py-2.5 rounded-2xl border border-slate-200 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+              <button id="btn-retry" class="px-5 py-2.5 rounded-2xl border border-slate-200 bg-white text-slate-700 font-bold text-sm hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
+                <i class="fa-solid fa-rotate-right"></i> Reintentar
+              </button>
+              <button id="btn-pdf" disabled class="px-5 py-2.5 rounded-2xl bg-slate-200 text-slate-400 font-bold text-sm flex items-center justify-center gap-2 cursor-not-allowed transition-all">
+                <i class="fa-solid fa-file-arrow-down"></i> Descargar PDF
+              </button>
+            </div>
+            <p class="mt-3 text-[11px] text-slate-400 leading-relaxed">
+              <i class="fa-solid fa-circle-info mr-1"></i> WER = (sustituciones + omisiones + inserciones) ÷ palabras de la respuesta modelo. El reconocimiento de voz usa la Web Speech API de tu navegador.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ══════════ PDF SCORECARD TEMPLATE ══════════ -->
+  <div id="pdf-wrapper" style="position: fixed; left: -9999px; top: 0; width: 800px; background: #ffffff; z-index: -1; opacity: 0; pointer-events: none;">
+    <div id="pdf-scorecard-template" style="width: 750px; padding: 30px 34px; background-color: #ffffff; font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #0f172a; box-sizing: border-box; line-height: 1.35;">
+
+      <div style="border-bottom: 3px solid #16a34a; padding-bottom: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: flex-end;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 40px; height: 40px; border-radius: 12px; background: linear-gradient(135deg, #16a34a, #0284c7); color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 17px;">V</div>
+          <div>
+            <div style="font-size: 9px; font-weight: 800; color: #16a34a; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 2px;">SENA EdTech · Industria Automotriz</div>
+            <h1 style="font-size: 18px; font-weight: 900; color: #0f172a; margin: 0; letter-spacing: -0.3px;">REPORTE DE PRONUNCIACIÓN · VOIZ</h1>
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <span id="pdf-rap" style="font-size: 11px; font-weight: 800; color: #0284c7; display: block; text-transform: uppercase;">RAP 1</span>
+          <span id="pdf-date" style="font-size: 9px; color: #64748b; display: block; margin-top: 2px;">Fecha: --/--/----</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-bottom: 14px;">
+        <div style="flex: 2; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 12px;">
+          <span style="font-size: 8.5px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: .5px; display: block;">Aprendiz</span>
+          <span id="pdf-learner" style="font-size: 12px; font-weight: 800; color: #0f172a;">—</span>
+        </div>
+        <div style="flex: 1; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 12px;">
+          <span style="font-size: 8.5px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: .5px; display: block;">Práctica</span>
+          <span id="pdf-prompt-id" style="font-size: 12px; font-weight: 800; color: #0f172a;">#01</span>
+        </div>
+        <div style="flex: 1; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 12px;">
+          <span style="font-size: 8.5px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: .5px; display: block;">Modo</span>
+          <span id="pdf-mode" style="font-size: 12px; font-weight: 800; color: #0f172a;">10 s</span>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 12px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 14px;">
+        <span style="font-size: 9px; font-weight: 800; color: #0284c7; text-transform: uppercase; letter-spacing: .5px; display: block; margin-bottom: 3px;">Consigna de práctica oral</span>
+        <p id="pdf-prompt-text" style="font-size: 12px; font-weight: 700; color: #1e293b; margin: 0 0 8px 0; line-height: 1.35;">—</p>
+        <div style="background-color: #ffffff; border: 1px dashed #f59e0b; border-radius: 8px; padding: 7px 10px;">
+          <span style="font-size: 8.5px; font-weight: 800; color: #b45309; display: block; margin-bottom: 2px;">Respuesta modelo (texto objetivo):</span>
+          <p id="pdf-benchmark" style="font-size: 10.5px; font-style: italic; font-family: monospace; color: #334155; margin: 0; line-height: 1.35;">—</p>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 12px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 14px;">
+        <span style="font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: .5px; display: block; margin-bottom: 3px;">Lo que pronunciaste (transcripción del reconocimiento)</span>
+        <div id="pdf-transcription" style="font-size: 10.5px; font-family: monospace; color: #0f172a; background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 10px; min-height: 38px; line-height: 1.4; white-space: pre-wrap; word-break: break-word;">—</div>
+      </div>
+
+      <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+        <div style="flex: 1.4; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 10px; text-align: center;">
+          <span style="font-size: 9px; font-weight: 800; color: #15803d; text-transform: uppercase; display: block; margin-bottom: 2px;">Precisión</span>
+          <span id="pdf-accuracy" style="font-size: 24px; font-weight: 900; color: #16a34a; font-family: monospace; display: block; line-height: 1;">—</span>
+        </div>
+        <div style="flex: 1.4; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; text-align: center;">
+          <span style="font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 2px;">WER</span>
+          <span id="pdf-wer" style="font-size: 24px; font-weight: 900; color: #334155; font-family: monospace; display: block; line-height: 1;">—</span>
+        </div>
+        <div style="flex: 1; background-color: #fff1f2; border: 1px solid #fecdd3; border-radius: 10px; padding: 10px; text-align: center;">
+          <span style="font-size: 8.5px; font-weight: 800; color: #be123c; text-transform: uppercase; display: block; margin-bottom: 2px;">Sustit.</span>
+          <span id="pdf-s" style="font-size: 18px; font-weight: 900; color: #be123c; font-family: monospace; display: block; line-height: 1.4;">0</span>
+        </div>
+        <div style="flex: 1; background-color: #fefce8; border: 1px solid #fde68a; border-radius: 10px; padding: 10px; text-align: center;">
+          <span style="font-size: 8.5px; font-weight: 800; color: #b45309; text-transform: uppercase; display: block; margin-bottom: 2px;">Omis.</span>
+          <span id="pdf-d" style="font-size: 18px; font-weight: 900; color: #b45309; font-family: monospace; display: block; line-height: 1.4;">0</span>
+        </div>
+        <div style="flex: 1; background-color: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px; padding: 10px; text-align: center;">
+          <span style="font-size: 8.5px; font-weight: 800; color: #0369a1; text-transform: uppercase; display: block; margin-bottom: 2px;">Inser.</span>
+          <span id="pdf-i" style="font-size: 18px; font-weight: 900; color: #0369a1; font-family: monospace; display: block; line-height: 1.4;">0</span>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 12px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px 14px;">
+        <span style="font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: .5px; display: block; margin-bottom: 4px;">Evaluación palabra por palabra</span>
+        <div id="pdf-diff" style="line-height: 1.9;"></div>
+        <div id="pdf-extra-block" style="display: none; margin-top: 6px;">
+          <span style="font-size: 8.5px; font-weight: 800; color: #0369a1; text-transform: uppercase; display: block; margin-bottom: 2px;">Palabras extra:</span>
+          <div id="pdf-extra" style="line-height: 1.9;"></div>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 12px; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 10px 14px;">
+        <span style="font-size: 9px; font-weight: 800; color: #15803d; text-transform: uppercase; letter-spacing: .5px; display: block; margin-bottom: 4px;">Recomendaciones del sistema</span>
+        <div id="pdf-recs" style="font-size: 10.5px; color: #166534; line-height: 1.55;"></div>
+      </div>
+
+      <div style="border-top: 1px solid #e2e8f0; padding-top: 8px; display: flex; justify-content: space-between; font-size: 8.5px; color: #94a3b8;">
+        <p style="margin: 0;">WER = (sustituciones + omisiones + inserciones) ÷ palabras del modelo · Web Speech API</p>
+        <p style="margin: 0; font-weight: 700;">VOIZ · Registro oficial de práctica</p>
+      </div>
+    </div>
+  </div>
+
+  <script id="voiz-app">
+    /* ==========================================================================
+       1. DATOS CURRICULARES · RAP 1 – RAP 6 · Industria Automotriz
+       ========================================================================== */
+    const rapData = {
+      1: {
+        code: "RAP 1",
+        level: "A1.2",
+        title: "Present Simple & Workshop Navigation",
+        desc: "Describir rutinas, herramientas y entornos del taller automotriz en inglés, empleando presente simple, preposiciones de lugar y movimiento y vocabulario técnico del vehículo.",
+        glossary: [
+          { term: "Engine", ipa: "/ˈen.dʒɪn/", def: "The machine that converts fuel into mechanical power.", context: "The engine converts fuel into motion.", cat: "Technical Vocabulary" },
+          { term: "Cylinder Head", ipa: "/ˈsɪl.ɪn.dər hed/", def: "The metal part that seals the top of the engine cylinders.", context: "Torque the cylinder head bolts in a cross pattern.", cat: "Technical Vocabulary" },
+          { term: "Torque Wrench", ipa: "/tɔːk rentʃ/", def: "A tool that applies a measured turning force to bolts.", context: "Use the torque wrench on the wheel bolts at 110 newton meters.", cat: "Technical Vocabulary" },
+          { term: "Oil Filter", ipa: "/ɔɪl ˈfɪl.tər/", def: "A cartridge that removes dirt from engine oil.", context: "Replace the oil filter during every oil change.", cat: "Technical Vocabulary" },
+          { term: "Brake Pads", ipa: "/breɪk pædz/", def: "Friction plates that press the discs to stop the vehicle.", context: "Worn brake pads reduce the stopping power.", cat: "Technical Vocabulary" },
+          { term: "Car Lift", ipa: "/kɑːr lɪft/", def: "A platform that raises the vehicle to work underneath.", context: "Raise the vehicle on the car lift before the inspection.", cat: "Technical Vocabulary" },
+          { term: "Battery", ipa: "/ˈbæt.ər.i/", def: "The component that stores the electrical energy of the car.", context: "Test the battery voltage with a multimeter.", cat: "Technical Vocabulary" },
+          { term: "Alternator", ipa: "/ˈɔːl.tə.neɪ.tər/", def: "The generator that charges the battery while the engine runs.", context: "A weak alternator does not charge the battery.", cat: "Technical Vocabulary" },
+          { term: "Radiator", ipa: "/ˈreɪ.di.eɪ.tər/", def: "The heat exchanger that cools the engine coolant.", context: "Check the coolant level in the radiator every morning.", cat: "Technical Vocabulary" },
+          { term: "Timing Belt", ipa: "/ˈtaɪ.mɪŋ belt/", def: "The belt that synchronizes the crankshaft and the camshaft.", context: "A broken timing belt can bend the valves.", cat: "Technical Vocabulary" },
+          { term: "Workshop", ipa: "/ˈwɜːk.ʃɒp/", def: "The building where vehicles are repaired and serviced.", context: "The workshop opens at seven o'clock.", cat: "Operational Terms" },
+          { term: "Service Bay", ipa: "/ˈsɜː.vɪs beɪ/", def: "A numbered work area where one vehicle is serviced.", context: "Vehicle twelve is in service bay three.", cat: "Operational Terms" },
+          { term: "Present Simple", ipa: "/ˈprez.ənt ˈsɪm.pəl/", def: "Grammar tense for habits, routines and general truths.", context: "The engine runs at nine hundred RPM when idle.", cat: "Grammar Terms" },
+          { term: "Preposition of Place", ipa: "/ˌprep.əˈzɪʃ.ən əv pleɪs/", def: "Word showing location (in, on, at, next to, under).", context: "The impact wrench is on the tool cart, next to the sockets.", cat: "Grammar Terms" },
+          { term: "Preposition of Movement", ipa: "/ˌprep.əˈzɪʃ.ən əv ˈmuːv.mənt/", def: "Word showing direction (into, through, across, towards).", context: "Drive the car into the service bay.", cat: "Grammar Terms" },
+          { term: "Cardinal Numbers", ipa: "/ˈkɑːr.dɪ.nəl ˈnʌm.bərz/", def: "Numbers used for counting quantity (1, 2, 100).", context: "The order lists four spark plugs and twelve bolts.", cat: "Grammar Terms" },
+          { term: "Ordinal Numbers", ipa: "/ˈɔːr.dɪ.nəl ˈnʌm.bərz/", def: "Numbers indicating order or floor level (1st, 2nd, 3rd).", context: "The training room is on the second floor.", cat: "Grammar Terms" },
+          { term: "Punctual", ipa: "/ˈpʌŋk.tʃu.əl/", def: "Doing something at the agreed or proper time.", context: "Mechanics must be punctual for the shift briefing.", cat: "Operational Terms" },
+          { term: "Protective Gear", ipa: "/prəˈtek.tɪv ɡɪər/", def: "Equipment worn to minimize workshop hazards (PPE).", context: "Always wear safety glasses and gloves in the workshop.", cat: "Operational Terms" },
+          { term: "Reliable", ipa: "/rɪˈlaɪ.ə.bəl/", def: "Consistently good in quality or performance; trustworthy.", context: "A reliable technician checks the work order twice.", cat: "Operational Terms" }
+        ],
+        grammar: {
+          title: "Present Simple & Spatial Navigation in the Workshop",
+          breakdown: `
+            <div class="space-y-4">
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-square-root-variable text-brand-600 mr-1"></i> Sentence Formulas</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
+                  <div class="bg-white p-2.5 rounded-xl border border-slate-200"><strong>Affirmative:</strong> Subject + Verb(-s) + Object<br><span class="text-slate-500">The technician inspects the brakes.</span></div>
+                  <div class="bg-white p-2.5 rounded-xl border border-slate-200"><strong>Negative:</strong> Subject + do/does not + Verb<br><span class="text-slate-500">The alternator does not charge the battery.</span></div>
+                </div>
+              </div>
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-arrows-up-down-left-right text-accent-600 mr-1"></i> Prepositions Contrast</h4>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                  <div class="bg-brand-50/60 p-2.5 rounded-xl border border-brand-100">
+                    <span class="font-bold text-brand-800 block mb-1">Place (Static):</span>
+                    <strong>IN:</strong> inside the workshop<br><strong>ON:</strong> on the tool cart<br><strong>AT:</strong> at the service bay
+                  </div>
+                  <div class="bg-accent-50/60 p-2.5 rounded-xl border border-accent-100">
+                    <span class="font-bold text-accent-800 block mb-1">Movement (Dynamic):</span>
+                    <strong>INTO:</strong> drive into the bay<br><strong>THROUGH:</strong> through the corridor<br><strong>ACROSS:</strong> across the shop
+                  </div>
+                </div>
+              </div>
+            </div>
+          `,
+          quiz: [
+            { q: "The mechanic _____ the engine oil every week.", options: ["change", "changes", "changing"], answer: 1 },
+            { q: "The impact wrench is _____ the tool cart, next to the sockets.", options: ["into", "on", "through"], answer: 1 },
+            { q: "Drive the vehicle _____ the service bay, please.", options: ["through", "at", "into"], answer: 2 },
+            { q: "The technician checks the brakes _____ Monday morning.", options: ["on", "in", "at"], answer: 0 }
+          ]
+        },
+        prompts: [
+          { cat: "Occupational Routine", text: "Describe your daily routine as an automotive technician using three present simple verbs.", vocab: ["inspect", "check", "operate"], benchmark: "I inspect the brakes, check the oil level, and operate the scanner every morning." },
+          { cat: "Navigation Instruction", text: "Give a direction to move a vehicle through the workshop to a service bay.", vocab: ["through", "into", "bay"], benchmark: "Drive the car through the corridor and move it into service bay two." },
+          { cat: "Equipment Location", text: "State where the torque wrench and the impact wrench are located in the workshop.", vocab: ["tool cart", "next to", "under"], benchmark: "The torque wrench is on the tool cart, and the impact wrench is under the bench." },
+          { cat: "Human Profile", text: "Describe the qualities and appearance of a reliable automotive quality inspector.", vocab: ["punctual", "reliable", "organized"], benchmark: "Our quality inspector is punctual, reliable, and very organized with the work orders." }
+        ],
+        drills: [
+          "The engine is cold, so the idle speed is high.",
+          "Check the tire pressure before the road test.",
+          "The battery has twelve volts.",
+          "Park the truck in bay four at eight o'clock.",
+          "The oil level is between the two marks.",
+          "This socket is on the tray, and that one is in the drawer."
+        ]
+      },
+      2: {
+        code: "RAP 2",
+        level: "A2.1",
+        title: "Past Events, Habits & Future Intentions",
+        desc: "Intercambiar información sobre fallas pasadas, hábitos de mantenimiento e intenciones futuras del taller automotriz, usando pasado simple, pasado continuo y fórmulas de futuro.",
+        glossary: [
+          { term: "Used to", ipa: "/juːst tuː/", def: "Expresses past habits or states that no longer occur.", context: "This workshop used to repair carburetor engines.", cat: "Grammar Terms" },
+          { term: "Past Continuous", ipa: "/pɑːst kənˈtɪn.ju.əs/", def: "Describes actions in progress at a specific past time (was/were + -ing).", context: "The mechanic was checking the brakes when the client arrived.", cat: "Grammar Terms" },
+          { term: "While", ipa: "/waɪl/", def: "Connector for two simultaneous long continuous actions.", context: "While the engine was running, the alternator failed.", cat: "Grammar Terms" },
+          { term: "When", ipa: "/wen/", def: "Connector introducing a short action that interrupts a process.", context: "We were testing the battery when the starter motor failed.", cat: "Grammar Terms" },
+          { term: "Be Going To", ipa: "/bi ˈɡəʊ.ɪŋ tuː/", def: "Future formula for structured plans and evidence-based predictions.", context: "We are going to replace the clutch tomorrow.", cat: "Grammar Terms" },
+          { term: "Will", ipa: "/wɪl/", def: "Modal verb for predictions, spontaneous decisions or promises.", context: "I think the balancing machine will need calibration soon.", cat: "Grammar Terms" },
+          { term: "Would like to", ipa: "/wʊd laɪk tuː/", def: "Polite formula to express desires or professional aspirations.", context: "I would like to buy a new diagnostic scanner for the shop.", cat: "Grammar Terms" },
+          { term: "Spare Parts", ipa: "/speər pɑːrts/", def: "Duplicate parts kept in reserve to replace worn ones.", context: "Order spare parts for the water pump.", cat: "Technical Vocabulary" },
+          { term: "Lubricant", ipa: "/ˈluː.brɪ.kənt/", def: "Substance applied to reduce friction between moving parts.", context: "Apply chassis lubricant to the suspension joints.", cat: "Technical Vocabulary" },
+          { term: "Work Order", ipa: "/wɜːk ˈɔːr.dər/", def: "The document that lists the services approved for a vehicle.", context: "Fill out the work order before starting the repair.", cat: "Operational Terms" },
+          { term: "Piston", ipa: "/ˈpɪs.tən/", def: "The cylinder part that moves up and down under combustion.", context: "The pistons compress the air and fuel mixture.", cat: "Technical Vocabulary" },
+          { term: "Spark Plug", ipa: "/ˈspɑːk plʌɡ/", def: "The component that ignites the air-fuel mixture.", context: "Worn spark plugs cause engine misfires.", cat: "Technical Vocabulary" },
+          { term: "Coolant", ipa: "/ˈkuː.lənt/", def: "The fluid that regulates the engine temperature.", context: "Low coolant level causes engine overheating.", cat: "Technical Vocabulary" },
+          { term: "Camshaft", ipa: "/ˈkæm.ʃɑːft/", def: "The rotating shaft that controls the opening of the valves.", context: "The camshaft controls the opening of the valves.", cat: "Technical Vocabulary" },
+          { term: "Transmission", ipa: "/trænzˈmɪʃ.ən/", def: "The gearbox that transfers engine power to the wheels.", context: "The transmission sends power to the wheels.", cat: "Technical Vocabulary" },
+          { term: "Diagnostic Scanner", ipa: "/ˌdaɪ.əɡˈnɒs.tɪk ˈskæn.ər/", def: "A device that reads fault codes from the vehicle computer.", context: "Connect the diagnostic scanner to read the fault codes.", cat: "Technical Vocabulary" },
+          { term: "Jumper Cables", ipa: "/ˈdʒʌm.pər ˈkeɪ.bəlz/", def: "Insulated cables used to start a car with a dead battery.", context: "Use jumper cables for a safe jump start.", cat: "Technical Vocabulary" },
+          { term: "Brake Fluid", ipa: "/breɪk fluːd/", def: "The hydraulic fluid that transmits force to the brakes.", context: "Replace the brake fluid every two years.", cat: "Technical Vocabulary" },
+          { term: "Repair Invoice", ipa: "/rɪˈpeər ˈɪn.vɔɪs/", def: "The document that details services and parts charged to the client.", context: "The advisor prints the repair invoice after the final check.", cat: "Operational Terms" },
+          { term: "In my opinion", ipa: "/ɪn maɪ əˈpɪn.jən/", def: "Formula used to introduce a personal or technical perspective.", context: "In my opinion, the suspension needs a full overhaul.", cat: "Operational Terms" }
+        ],
+        grammar: {
+          title: "Past Continuous, Interruptions & Future Formulas",
+          breakdown: `
+            <div class="space-y-4">
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-timeline text-brand-600 mr-1"></i> Simultaneous vs Interrupting Actions</h4>
+                <p class="text-xs text-slate-600 mb-2"><strong>WHILE + Past Continuous</strong> (long ongoing action) | <strong>WHEN + Past Simple</strong> (short interruption)</p>
+                <div class="p-2.5 bg-white rounded-xl border border-slate-200 text-xs font-mono">
+                  While the engine was running <span class="text-amber-600">(continuous)</span>, the alternator failed <span class="text-rose-600">(interruption)</span>.
+                </div>
+              </div>
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-wand-magic-sparkles text-accent-600 mr-1"></i> -ed Pronunciation Rules</h4>
+                <div class="grid grid-cols-3 gap-1.5 text-[11px] text-center font-mono">
+                  <div class="p-2 bg-brand-50 text-brand-800 rounded-xl"><strong>/t/</strong><br>checked, torqued</div>
+                  <div class="p-2 bg-accent-50 text-accent-800 rounded-xl"><strong>/d/</strong><br>repaired, cleaned</div>
+                  <div class="p-2 bg-purple-50 text-purple-800 rounded-xl"><strong>/ɪd/</strong><br>tested, inspected</div>
+                </div>
+              </div>
+            </div>
+          `,
+          quiz: [
+            { q: "While the mechanic _____ the brakes, the client arrived.", options: ["repaired", "was repairing", "is repairing"], answer: 1 },
+            { q: "This workshop _____ use carburetors before fuel injection.", options: ["used to", "use to", "was used"], answer: 0 },
+            { q: "Next Monday, we _____ install a new alignment machine.", options: ["will", "are going to", "would like"], answer: 1 },
+            { q: "The advisor says the parts _____ arrive tomorrow morning.", options: ["will", "was", "did"], answer: 0 }
+          ]
+        },
+        prompts: [
+          { cat: "Incident Description", text: "Explain a workshop incident using the past continuous and the past simple with 'when'.", vocab: ["was inspecting", "when", "failed"], benchmark: "I was inspecting the brakes when the water pump failed." },
+          { cat: "Former Habits", text: "Describe how maintenance used to be performed in your workshop in the past.", vocab: ["used to", "manual", "carburetor"], benchmark: "We used to do manual tune ups and stored parts in the old warehouse." },
+          { cat: "Future Proposal", text: "Propose a future upgrade for your workshop using 'would like to' and 'be going to'.", vocab: ["would like to", "going to", "install"], benchmark: "I would like to buy an alignment lift, and we are going to install it next month." },
+          { cat: "Simultaneous Operations", text: "State two workshop tasks happening at the same time using 'while'.", vocab: ["while", "was running", "was checking"], benchmark: "While the engine was running, the mechanic was checking the fluid levels." }
+        ],
+        drills: [
+          "The water pump was leaking, so we replaced it yesterday.",
+          "While the engine was running, we heard a strange noise.",
+          "The customer called when the clutch failed on the highway.",
+          "Last year, this shop used to service only compact cars.",
+          "We are going to rebuild the transmission next week.",
+          "I was torquing the head bolts when the wrench slipped."
+        ]
+      },
+      3: {
+        code: "RAP 3",
+        level: "A2.2",
+        title: "Problem-Solving, Conditionals & Modals",
+        desc: "Discutir posibles soluciones a fallas del vehículo mediante condicionales, verbos modales y vocabulario de diagnóstico automotriz en contextos laborales.",
+        glossary: [
+          { term: "Zero Conditional", ipa: "/ˈzɪə.rəʊ kənˈdɪʃ.ən.əl/", def: "Structure for universal truths or mechanical cause-effect (If + Present, Present).", context: "If the battery voltage drops, the starter does not engage.", cat: "Grammar Terms" },
+          { term: "Comparatives", ipa: "/kəmˈpær.ə.tɪv/", def: "Adjective form comparing two items (faster, more durable).", context: "The diesel engine is more durable than the gasoline one.", cat: "Grammar Terms" },
+          { term: "Superlatives", ipa: "/suːˈpɜː.lə.tɪv/", def: "Adjective form highlighting the highest degree in a group.", context: "The scanner is the most useful tool in the workshop.", cat: "Grammar Terms" },
+          { term: "Should", ipa: "/ʃʊd/", def: "Modal verb indicating mild advice or recommendation.", context: "We should replace the brake pads today.", cat: "Grammar Terms" },
+          { term: "Had better", ipa: "/hæd ˈbet.ər/", def: "Strong advice warning of negative consequences if ignored.", context: "You had better disconnect the battery before the repair.", cat: "Grammar Terms" },
+          { term: "Must", ipa: "/mʌst/", def: "Modal verb expressing obligation or safety rules.", context: "Mechanics must place jack stands under the vehicle.", cat: "Grammar Terms" },
+          { term: "Could", ipa: "/kʊd/", def: "Modal verb indicating possibility or alternative options.", context: "We could order the water pump from the dealer.", cat: "Grammar Terms" },
+          { term: "Troubleshooting", ipa: "/ˈtrʌb.əlˌʃuː.tɪŋ/", def: "Systematic procedure to isolate the cause of a vehicle fault.", context: "Follow the troubleshooting chart to isolate the misfire.", cat: "Operational Terms" },
+          { term: "Overheating", ipa: "/ˌəʊ.vəˈhiː.tɪŋ/", def: "Excessive engine temperature that can damage components.", context: "Low coolant causes engine overheating.", cat: "Technical Vocabulary" },
+          { term: "Misfire", ipa: "/ˈmɪs.faɪər/", def: "Failure of the fuel charge to ignite in a cylinder.", context: "A worn spark plug causes a cylinder misfire.", cat: "Technical Vocabulary" },
+          { term: "Stalling", ipa: "/ˈstɔː.lɪŋ/", def: "The engine stopping unexpectedly while running.", context: "A dirty throttle body causes stalling at traffic lights.", cat: "Technical Vocabulary" },
+          { term: "ABS Sensor", ipa: "/ˌeɪ.biːˈes ˈsen.sər/", def: "Wheel sensor that monitors rotation for the anti-lock brakes.", context: "A faulty ABS sensor disables the anti lock brakes.", cat: "Technical Vocabulary" },
+          { term: "Wheel Alignment", ipa: "/wiːl əˈlaɪn.mənt/", def: "Adjustment of suspension angles for straight driving.", context: "Poor wheel alignment causes uneven tire wear.", cat: "Technical Vocabulary" },
+          { term: "Water Pump", ipa: "/ˈwɔː.tər pʌmp/", def: "The pump that circulates coolant through the engine.", context: "A leaking water pump causes coolant loss.", cat: "Technical Vocabulary" },
+          { term: "Preposition of Time (In)", ipa: "/ɪn/", def: "Used for months, years and long periods (in July, in 2026).", context: "The preventive maintenance is scheduled in July.", cat: "Grammar Terms" },
+          { term: "Preposition of Time (On)", ipa: "/ɒn/", def: "Used for days and dates (on Monday, on May 5th).", context: "We are replacing the clutch on Monday.", cat: "Grammar Terms" },
+          { term: "Preposition of Time (At)", ipa: "/æt/", def: "Used for exact times and precise points (at 8:00 AM).", context: "The shift starts at seven o'clock.", cat: "Grammar Terms" },
+          { term: "Arrangements", ipa: "/əˈreɪndʒ.mənts/", def: "Fixed future plans using the present continuous.", context: "We are servicing the fleet vehicles tomorrow morning.", cat: "Grammar Terms" },
+          { term: "Courtesy Expression", ipa: "/ˈkɜː.tə.si ɪkˈspreʃ.ən/", def: "Polite discourse formula (Could you please...?, I agree, but...).", context: "Could you please describe the engine noise?", cat: "Operational Terms" },
+          { term: "Contingency", ipa: "/kənˈtɪn.dʒən.si/", def: "A possible future circumstance that cannot be predicted.", context: "We keep a loaner car as a contingency for long repairs.", cat: "Operational Terms" }
+        ],
+        grammar: {
+          title: "Zero Conditional & Modal Advice Logic",
+          breakdown: `
+            <div class="space-y-4">
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-bolt text-brand-600 mr-1"></i> Cause-Effect Zero Conditional</h4>
+                <div class="p-2.5 bg-white rounded-xl border border-slate-200 text-xs font-mono">
+                  <span class="text-brand-700">IF / WHEN</span> + Present Simple, <span class="text-accent-700">Present Simple</span><br>
+                  <em>If the coolant level drops, the engine overheats.</em>
+                </div>
+              </div>
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-shield-halved text-accent-600 mr-1"></i> Advice & Warning Modals</h4>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                  <div class="p-2.5 bg-amber-50 text-amber-900 rounded-xl border border-amber-200"><strong>SHOULD:</strong> Recommendation<br><em>We should check the brake fluid.</em></div>
+                  <div class="p-2.5 bg-rose-50 text-rose-900 rounded-xl border border-rose-200"><strong>HAD BETTER:</strong> Strong Warning<br><em>You had better wear safety glasses.</em></div>
+                </div>
+              </div>
+            </div>
+          `,
+          quiz: [
+            { q: "If you _____ the battery cable, the radio resets.", options: ["disconnect", "disconnects", "disconnected"], answer: 0 },
+            { q: "The turbo is _____ than the stock intake, but the V8 is the loudest.", options: ["louder", "loudest", "more loud"], answer: 0 },
+            { q: "We are replacing the timing belt _____ Friday _____ 9:00 AM.", options: ["in / at", "on / at", "at / on"], answer: 1 },
+            { q: "You _____ wear gloves when handling used oil.", options: ["must", "could", "would rather"], answer: 0 }
+          ]
+        },
+        prompts: [
+          { cat: "Troubleshooting", text: "State a cause-and-effect rule for the vehicle using the zero conditional.", vocab: ["if", "overheats", "drops"], benchmark: "If the coolant level drops, the engine overheats." },
+          { cat: "Vehicle Comparison", text: "Compare two vehicles using comparative and superlative adjectives.", vocab: ["more durable than", "the most reliable"], benchmark: "The sedan is more durable than the hatchback, but the van is the most reliable." },
+          { cat: "Safety Warning", text: "Give a strong safety warning using 'had better' or 'must'.", vocab: ["had better", "disconnect", "battery"], benchmark: "You had better disconnect the battery before replacing the alternator." },
+          { cat: "Scheduled Arrangement", text: "State a future repair arrangement using the present continuous and prepositions of time.", vocab: ["are repairing", "on", "at"], benchmark: "We are repairing the transmission on Tuesday at nine o'clock." }
+        ],
+        drills: [
+          "If the alternator fails, the battery discharges completely.",
+          "When the ABS light stays on, check the wheel sensors.",
+          "The turbo sounds louder than the stock intake, but the V8 is the loudest.",
+          "You should not overfill the engine oil.",
+          "We must secure the vehicle with jack stands before working underneath.",
+          "You had better replace both brake discs at the same time."
+        ]
+      },
+      4: {
+        code: "RAP 4",
+        level: "B1.1",
+        title: "Continuous Improvement & Workshop Technology",
+        desc: "Proponer acciones de mejora continua en el taller automotriz usando condicional primero, phrasal verbs, cláusulas relativas y tecnología de diagnóstico vehicular.",
+        glossary: [
+          { term: "First Conditional", ipa: "/fɜːst kənˈdɪʃ.ən.əl/", def: "Structure for probable future events (If + Present, Will + Verb).", context: "If we install an alignment system, we will reduce rework.", cat: "Grammar Terms" },
+          { term: "Would Rather", ipa: "/wʊd ˈrɑː.ðər/", def: "Modal formula expressing preference between alternatives.", context: "I would rather replace the compressor than repair it again.", cat: "Grammar Terms" },
+          { term: "Carry out", ipa: "/ˈkær.i aʊt/", def: "Phrasal verb: to perform, execute or conduct a task.", context: "The master technician carried out a full engine diagnosis.", cat: "Operational Terms" },
+          { term: "Set up", ipa: "/set ʌp/", def: "Phrasal verb: to assemble, configure or prepare equipment.", context: "Set up the tire balancing machine before opening.", cat: "Operational Terms" },
+          { term: "Figure out", ipa: "/ˈfɪɡ.ər aʊt/", def: "Phrasal verb: to solve, decipher or understand a problem.", context: "We need to figure out why the check engine light is on.", cat: "Operational Terms" },
+          { term: "Point out", ipa: "/pɔɪnt aʊt/", def: "Phrasal verb: to highlight or indicate an error or detail.", context: "The auditor pointed out a missing safety step.", cat: "Operational Terms" },
+          { term: "Relative Clause", ipa: "/ˈrel.ə.tɪv klɔːz/", def: "Clause modifying a noun using who, which, that or where.", context: "The technician who rebuilt the transmission is on shift.", cat: "Grammar Terms" },
+          { term: "Emphatic Stress", ipa: "/ɪmˈfæt.ɪk stres/", def: "Special vocal stress placed on a word to highlight critical info.", context: "We MUST torque the wheel nuts to specification!", cat: "Grammar Terms" },
+          { term: "Bottleneck", ipa: "/ˈbɒt.əl.nek/", def: "A point of congestion or delay in a workshop process.", context: "The single inspection lane is a workshop bottleneck.", cat: "Operational Terms" },
+          { term: "Kaizen", ipa: "/kaɪˈzen/", def: "Philosophy of continuous incremental improvement applied to bays.", context: "We applied Kaizen to organize the tool carts.", cat: "Operational Terms" },
+          { term: "Telematics", ipa: "/ˌtel.ɪˈmæt.ɪks/", def: "Connected systems that transmit vehicle data in real time.", context: "Telematics report each vehicle's fuel use in real time.", cat: "Technical Vocabulary" },
+          { term: "OBD-II Port", ipa: "/ˌəʊ.biːˈdiː tuː pɔːt/", def: "The standard connector for vehicle diagnostic scanners.", context: "Connect the scanner to the OBD two port under the dashboard.", cat: "Technical Vocabulary" },
+          { term: "ECU", ipa: "/ˌiː.siːˈjuː/", def: "Electronic Control Unit: the computer that manages the engine.", context: "The ECU controls fuel injection and ignition timing.", cat: "Technical Vocabulary" },
+          { term: "Back to the drawing board", ipa: "/ˌdrɔː.ɪŋ bɔːd/", def: "Idiom: starting over after an idea or repair fails.", context: "If the repair fails the road test, it is back to the drawing board.", cat: "Operational Terms" },
+          { term: "Sequence Connector", ipa: "/ˈsiː.kwəns kəˈnek.tər/", def: "Discourse markers (First of all, subsequently, eventually).", context: "First of all, update the ECU software.", cat: "Grammar Terms" },
+          { term: "Optimization", ipa: "/ˌɒp.tɪ.maɪˈzeɪ.ʃən/", def: "The action of making the best use of a process or bay.", context: "Process optimization cut the service time in half.", cat: "Operational Terms" },
+          { term: "Workshop Software", ipa: "/ˈwɜːk.ʃɒp ˈsɒft.weər/", def: "Digital platform that schedules bays, orders and invoices.", context: "The workshop software schedules every service bay.", cat: "Technical Vocabulary" },
+          { term: "Calibration", ipa: "/ˌkæl.ɪˈbreɪ.ʃən/", def: "Fine adjustment of an instrument for accurate measurement.", context: "Schedule monthly calibration for the torque wrenches.", cat: "Technical Vocabulary" },
+          { term: "Preventive Maintenance", ipa: "/prɪˌven.tɪv ˈmeɪn.tə.nəns/", def: "Planned servicing that prevents unexpected breakdowns.", context: "Preventive maintenance reduces unexpected breakdowns.", cat: "Operational Terms" },
+          { term: "Hit the nail on the head", ipa: "/ˌhɪt ðə neɪl ɒn ðə hed/", def: "Idiom: describing precisely what is causing a situation.", context: "The master mechanic hit the nail on the head about the oil leak.", cat: "Operational Terms" }
+        ],
+        grammar: {
+          title: "First Conditional & Phrasal Verbs in Kaizen",
+          breakdown: `
+            <div class="space-y-4">
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-chart-line text-brand-600 mr-1"></i> First Conditional (Predictive Improvement)</h4>
+                <div class="p-2.5 bg-white rounded-xl border border-slate-200 text-xs font-mono">
+                  <span class="text-brand-700">IF</span> + Present Simple, <span class="text-accent-700">WILL</span> + Base Verb<br>
+                  <em>If we implement telematics, we will detect faults early.</em>
+                </div>
+              </div>
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-sliders text-accent-600 mr-1"></i> Preference & Relative Clauses</h4>
+                <p class="text-xs text-slate-600"><strong>Would rather... than:</strong> <em>I would rather upgrade the lift than repair it.</em><br><strong>Relative Pronouns:</strong> <em>who (technician), which/that (scanner), where (bay).</em></p>
+              </div>
+            </div>
+          `,
+          quiz: [
+            { q: "If we upgrade the diagnostic software, we _____ repair times.", options: ["will reduce", "reduced", "would reduce"], answer: 0 },
+            { q: "The master technician carried _____ a full engine diagnosis.", options: ["out", "up", "off"], answer: 0 },
+            { q: "I would rather replace the turbocharger _____ repair it again.", options: ["than", "that", "then"], answer: 0 },
+            { q: "The technician _____ set up the scanner is in bay one.", options: ["who", "which", "where"], answer: 0 }
+          ]
+        },
+        prompts: [
+          { cat: "Continuous Improvement", text: "Propose a Kaizen action for the workshop using the first conditional.", vocab: ["if we implement", "we will reduce", "waiting time"], benchmark: "If we implement digital work orders, we will reduce waiting time by thirty percent." },
+          { cat: "Technical Preference", text: "Express a technical preference using 'would rather... than'.", vocab: ["would rather", "replace", "than repair"], benchmark: "I would rather replace the worn brake discs than repair them again." },
+          { cat: "Operational Execution", text: "Describe a workshop task using 'carry out' and 'set up'.", vocab: ["carried out", "set up", "scanner"], benchmark: "The team carried out the road test and set up the new diagnostic scanner." },
+          { cat: "Relative Definition", text: "Define a tool or a technician using a relative clause with 'who' or 'which'.", vocab: ["technician who", "scanner which"], benchmark: "The technician who leads bay two installed a scanner which reads ABS codes." }
+        ],
+        drills: [
+          "If we digitize the work orders, the bays will rotate faster.",
+          "The scanner which reads live data costs less than a new ECU.",
+          "We carried out three hundred services last quarter.",
+          "First of all, connect the battery charger at fifteen amps.",
+          "I would rather calibrate the alignment system than send the car out.",
+          "The bottleneck at the washing station delays every delivery."
+        ]
+      },
+      5: {
+        code: "RAP 5",
+        level: "B1.2",
+        title: "Standard Operating Procedures & Passive Voice",
+        desc: "Presentar procedimientos estandarizados de servicio automotriz empleando la voz pasiva, participios pasados y adverbios de precisión.",
+        glossary: [
+          { term: "Present Passive", ipa: "/ˈprez.ənt ˈpæs.ɪv/", def: "Structure focusing on the action (Subject + am/is/are + Past Participle).", context: "The oil is drained before the filter is replaced.", cat: "Grammar Terms" },
+          { term: "Past Participle", ipa: "/pɑːst ˈpɑː.tɪ.sɪ.pəl/", def: "Verb form used in passive voice and perfect tenses.", context: "The brake pads are inspected at every service.", cat: "Grammar Terms" },
+          { term: "Adverb of Manner", ipa: "/ˈæd.vɜːb əv ˈmæn.ər/", def: "Modifies a verb indicating how the action is executed.", context: "Tighten the wheel bolts securely with the torque wrench.", cat: "Grammar Terms" },
+          { term: "Already", ipa: "/ɔːlˈred.i/", def: "Adverb showing an action occurred earlier than expected.", context: "We have already replaced the air filter.", cat: "Grammar Terms" },
+          { term: "Yet", ipa: "/jet/", def: "Adverb used in negatives/questions for expected actions.", context: "The spare parts have not arrived yet.", cat: "Grammar Terms" },
+          { term: "Since", ipa: "/sɪns/", def: "Preposition indicating the specific starting point in time.", context: "The workshop has been open since seven o'clock.", cat: "Grammar Terms" },
+          { term: "For", ipa: "/fɔːr/", def: "Preposition indicating a duration or period of time.", context: "The engine has been running for twenty minutes.", cat: "Grammar Terms" },
+          { term: "Standard Operating Procedure", ipa: "/ˌstæn.dəd ˈɒp.ər.eɪ.tɪŋ prəˈsiː.dʒər/", def: "Formal written step-by-step instructions for routine service.", context: "Follow the SOP manual during the oil change.", cat: "Operational Terms" },
+          { term: "IPA Phonetics", ipa: "/ˌaɪ.piːˈeɪ/", def: "International Phonetic Alphabet representing speech sounds.", context: "Check the IPA symbols in the automotive glossary.", cat: "Grammar Terms" },
+          { term: "Rising Intonation", ipa: "/ˈraɪ.zɪŋ ˌɪn.təˈneɪ.ʃən/", def: "Tonal rise at sentence end, typical in yes/no questions.", context: "Is the tire pressure correct? Rising intonation.", cat: "Grammar Terms" },
+          { term: "Falling Intonation", ipa: "/ˈfɔː.lɪŋ ˌɪn.təˈneɪ.ʃən/", def: "Tonal drop at sentence end, typical in direct commands.", context: "Lower the vehicle lift slowly. Falling intonation.", cat: "Grammar Terms" },
+          { term: "Road Test", ipa: "/ˈrəʊd test/", def: "A test drive that verifies the repair before delivery.", context: "A road test verifies the repair before delivery.", cat: "Operational Terms" },
+          { term: "Tire Rotation", ipa: "/ˈtaɪər rəʊˈteɪ.ʃən/", def: "Moving tires between positions for even wear.", context: "The tires are rotated every ten thousand kilometers.", cat: "Technical Vocabulary" },
+          { term: "Underbody", ipa: "/ˈʌn.dəˌbɒd.i/", def: "The underside of the vehicle inspected on the lift.", context: "The underbody is inspected for leaks on the lift.", cat: "Technical Vocabulary" },
+          { term: "Oil Drain Plug", ipa: "/ɔɪl dreɪn plʌɡ/", def: "The plug removed to drain the engine oil.", context: "The oil drain plug is removed with a box wrench.", cat: "Technical Vocabulary" },
+          { term: "Gasket", ipa: "/ˈɡæs.kɪt/", def: "A shaped seal between two engine surfaces.", context: "The damaged valve cover gasket is replaced immediately.", cat: "Technical Vocabulary" },
+          { term: "ECU Firmware", ipa: "/ˈfɜːm.weər/", def: "The permanent software programmed into the ECU.", context: "The ECU firmware is updated with the dealer software.", cat: "Technical Vocabulary" },
+          { term: "Switch off", ipa: "/swɪtʃ ɒf/", def: "Phrasal verb: to turn off a machine or the engine.", context: "Switch off the engine before opening the hood.", cat: "Operational Terms" },
+          { term: "Disposal", ipa: "/dɪˈspəʊ.zəl/", def: "The controlled elimination of used oil and waste.", context: "Used oil disposal follows strict environmental rules.", cat: "Operational Terms" },
+          { term: "Audit", ipa: "/ˈɔː.dɪt/", def: "An official inspection of procedures and quality.", context: "Our workshop passed the annual quality audit.", cat: "Operational Terms" }
+        ],
+        grammar: {
+          title: "Present Passive SOPs & Time Adverbs",
+          breakdown: `
+            <div class="space-y-4">
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-industry text-brand-600 mr-1"></i> Present Passive Formula (Service Standard)</h4>
+                <div class="p-2.5 bg-white rounded-xl border border-slate-200 text-xs font-mono">
+                  <span class="text-brand-700">OBJECT</span> + IS / ARE + <span class="text-accent-700">PAST PARTICIPLE</span><br>
+                  <em>The oil is drained. The bolts are tightened securely.</em>
+                </div>
+              </div>
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-clock text-accent-600 mr-1"></i> Since vs For Duration</h4>
+                <p class="text-xs text-slate-600 font-mono"><strong>SINCE + Starting Point:</strong> <em>since 7:00 AM / since Monday</em><br><strong>FOR + Duration:</strong> <em>for 20 minutes / for three days</em></p>
+              </div>
+            </div>
+          `,
+          quiz: [
+            { q: "The used oil _____ recycled by an authorized plant.", options: ["is", "are", "be"], answer: 0 },
+            { q: "Tighten the wheel bolts _____ with the torque wrench.", options: ["securely", "secure", "security"], answer: 0 },
+            { q: "The vehicle has been on the lift _____ forty minutes.", options: ["for", "since", "ago"], answer: 0 },
+            { q: "The new filter _____ installed after the oil is drained.", options: ["is", "are", "been"], answer: 0 }
+          ]
+        },
+        prompts: [
+          { cat: "SOP Process Step", text: "Describe a service step using the present passive voice.", vocab: ["is drained", "is replaced", "first"], benchmark: "First, the oil is drained, and the filter is replaced." },
+          { cat: "Precise Execution", text: "Give an instructional command using an adverb of manner.", vocab: ["securely", "slowly", "carefully"], benchmark: "Tighten the wheel bolts securely and lower the lift slowly." },
+          { cat: "Maintenance Status", text: "Report the service status using 'already' or 'yet'.", vocab: ["already replaced", "not arrived yet"], benchmark: "We have already replaced the pads, but the discs have not arrived yet." },
+          { cat: "Duration Report", text: "State how long the engine has run using 'since' or 'for'.", vocab: ["has run for", "since seven"], benchmark: "The engine has run continuously for two hours since seven o'clock." }
+        ],
+        drills: [
+          "The coolant is flushed and the system is refilled with fresh fluid.",
+          "The brake pads are worn, so they are replaced in pairs.",
+          "The vehicle has been serviced every ten thousand kilometers since 2020.",
+          "The wheel nuts are torqued to one hundred and ten newton meters.",
+          "The parts have not arrived yet, so the bay is still free.",
+          "The underbody is inspected carefully before the final road test."
+        ]
+      },
+      6: {
+        code: "RAP 6",
+        level: "B2.1",
+        title: "Occupational Profiles, Functions & Technical Travel",
+        desc: "Explicar funciones del puesto automotriz, trayectoria profesional y gestión de imprevistos en misiones técnicas, usando presente perfecto y fonética avanzada.",
+        glossary: [
+          { term: "Present Perfect", ipa: "/ˈprez.ənt pəˈfekt/", def: "Tense connecting past experiences to the present.", context: "I have maintained fleet vehicles for five years.", cat: "Grammar Terms" },
+          { term: "Past Simple vs Perfect", ipa: "/pɑːst ˈsɪm.pəl/", def: "Contrast between closed past time and indefinite experience.", context: "I completed the hybrid certification in 2024.", cat: "Grammar Terms" },
+          { term: "Take over", ipa: "/teɪk ˈəʊ.vər/", def: "Phrasal verb: to assume control or responsibility.", context: "The master technician will take over the night shift.", cat: "Operational Terms" },
+          { term: "Deal with", ipa: "/diːl wɪð/", def: "Phrasal verb: to handle, manage or resolve a situation.", context: "My job requires dealing with insurance adjusters.", cat: "Operational Terms" },
+          { term: "Check on", ipa: "/tʃek ɒn/", def: "Phrasal verb: to inspect or verify a condition.", context: "Check on the paint booth temperature every two hours.", cat: "Operational Terms" },
+          { term: "Voiced TH /ð/", ipa: "/ð/", def: "Fricative sound with vocal cord vibration (this, breathe).", context: "Articulate the voiced TH in this and breathe.", cat: "Grammar Terms" },
+          { term: "Voiceless TH /θ/", ipa: "/θ/", def: "Fricative sound without vibration (throttle, depth).", context: "Articulate the voiceless TH in throttle and depth.", cat: "Grammar Terms" },
+          { term: "Pitch Prominence", ipa: "/pɪtʃ ˈprɒm.ɪ.nəns/", def: "Vocal pitch rise on key information to guide listeners.", context: "We replaced the belt, but installed a NEW ALTERNATOR.", cat: "Grammar Terms" },
+          { term: "Per diem", ipa: "/ˌpɜː ˈdiː.em/", def: "Daily allowance granted for travel and living expenses.", context: "Travel expenses and per diem are covered for the training.", cat: "Operational Terms" },
+          { term: "Occupational Role", ipa: "/ˌɒk.jəˈpeɪ.ʃən.əl rəʊl/", def: "The specific set of duties and position in a company.", context: "My occupational role is lead brake specialist.", cat: "Operational Terms" },
+          { term: "Itinerary", ipa: "/aɪˈtɪn.ər.ər.i/", def: "A planned route or journey schedule for technical travel.", context: "Review the itinerary for the technical mission.", cat: "Operational Terms" },
+          { term: "Warranty Claim", ipa: "/ˈwɒr.ən.ti kleɪm/", def: "A request for free repair covered by the manufacturer.", context: "The dealer approved the warranty claim for the gearbox.", cat: "Operational Terms" },
+          { term: "Assembly Line", ipa: "/əˈsem.bli laɪn/", def: "The production line where vehicle bodies are built.", context: "Robots weld the body along the assembly line.", cat: "Technical Vocabulary" },
+          { term: "Recall Campaign", ipa: "/rɪˈkɔːl kæmˈpeɪn/", def: "Manufacturer call to repair a safety defect in vehicles.", context: "The manufacturer issued a recall campaign for the airbags.", cat: "Technical Vocabulary" },
+          { term: "Dealership", ipa: "/ˈdiː.lə.ʃɪp/", def: "An authorized business that sells and services vehicles.", context: "The dealership services new and used vehicles.", cat: "Operational Terms" },
+          { term: "Body Control Module", ipa: "/ˈbɒd.i kənˈtrəʊl ˈmɒdʒ.uːl/", def: "The ECU that manages lights, locks and comfort systems.", context: "The body control module runs the lighting system.", cat: "Technical Vocabulary" },
+          { term: "Field Service", ipa: "/fiːld ˈsɜː.vɪs/", def: "Repairs performed at the client's location or on route.", context: "Field service technicians repair fleet trucks on site.", cat: "Operational Terms" },
+          { term: "Supervisor", ipa: "/ˈsuː.pə.vaɪ.zər/", def: "A person who observes and directs work in the shop.", context: "Report safety incidents directly to your supervisor.", cat: "Operational Terms" },
+          { term: "Trajectory", ipa: "/trəˈdʒek.tər.i/", def: "The career path or professional progression.", context: "His trajectory includes a specialization in EV systems.", cat: "Operational Terms" },
+          { term: "Emergency Stop", ipa: "/iˈmɜː.dʒən.si stɒp/", def: "Immediate halt of the lift or equipment during hazards.", context: "Press the red button for the lift emergency stop.", cat: "Operational Terms" }
+        ],
+        grammar: {
+          title: "Present Perfect vs Past Simple & Pitch Prominence",
+          breakdown: `
+            <div class="space-y-4">
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-code-compare text-brand-600 mr-1"></i> Present Perfect vs Past Simple</h4>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                  <div class="p-2.5 bg-brand-50 text-brand-800 rounded-xl border border-brand-200 font-mono">
+                    <strong>Present Perfect (Experience):</strong><br>
+                    I have rebuilt engines for 5 years.
+                  </div>
+                  <div class="p-2.5 bg-accent-50 text-accent-800 rounded-xl border border-accent-200 font-mono">
+                    <strong>Past Simple (Closed Time):</strong><br>
+                    I completed the certification in 2024.
+                  </div>
+                </div>
+              </div>
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                <h4 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-wave-square text-accent-600 mr-1"></i> Phonetics: TH Sounds Contrast</h4>
+                <p class="text-xs text-slate-600 font-mono">
+                  <strong>Voiceless /θ/:</strong> think, throttle, depth (no vibration)<br>
+                  <strong>Voiced /ð/:</strong> this, breathe, together (vocal vibration)
+                </p>
+              </div>
+            </div>
+          `,
+          quiz: [
+            { q: "I _____ in this dealership for five years.", options: ["have worked", "worked", "am working"], answer: 0 },
+            { q: "The lead technician _____ the certification two days ago.", options: ["completed", "has completed", "is completing"], answer: 0 },
+            { q: "The word 'throttle' contains the _____ TH sound.", options: ["voiceless /θ/", "voiced /ð/", "silent"], answer: 0 },
+            { q: "The team _____ working on EV systems since 2022.", options: ["has been", "have being", "is been"], answer: 0 }
+          ]
+        },
+        prompts: [
+          { cat: "Occupational Summary", text: "Summarize your role and experience using the present perfect.", vocab: ["have maintained", "for five years", "responsible for"], benchmark: "I have maintained fleet vehicles for five years, and I am responsible for the bays." },
+          { cat: "Past Milestone vs Present", text: "Contrast a closed past milestone with your present duties.", vocab: ["completed in 2024", "currently supervising"], benchmark: "I completed my certification in 2024, and I currently supervise bay three." },
+          { cat: "Management Phrasal Verb", text: "Describe handling suppliers or clients using 'deal with' or 'take over'.", vocab: ["deal with", "take over", "suppliers"], benchmark: "I deal with parts suppliers and take over the shift when needed." },
+          { cat: "Technical Travel & Emergency", text: "Report technical travel status during weather delays.", vocab: ["itinerary", "delay", "tropical storm"], benchmark: "Our training itinerary suffered delays due to a severe tropical storm." }
+        ],
+        drills: [
+          "I have rebuilt more than fifty engines during my career.",
+          "We have used this brand of brake fluid since 2018.",
+          "The engineer who designed this lift works at the main plant.",
+          "My supervisor deals with the warranty claims every morning.",
+          "The training itinerary includes three factories and two dealerships.",
+          "Think of the third throttle position on this model."
+        ]
+      }
+    };
+
+    /* ==========================================================================
+       1.b CATÁLOGO DE 30 PRÁCTICAS POR RAP (4 declaraciones + 6 drills + 20 glosario)
+       ========================================================================== */
+    for (let r = 1; r <= 6; r++) {
+      const d = rapData[r];
+      const drills = d.drills.map(s => ({
+        cat: "Sentence Drill",
+        text: "Read the workshop sentence aloud, focusing on rhythm, stress and clear pronunciation.",
+        vocab: [],
+        benchmark: s
+      }));
+      const contexts = d.glossary.map(g => ({
+        cat: "Glossary · " + g.cat,
+        text: `Read the technical sentence for “${g.term}” aloud, pronouncing the term clearly.`,
+        vocab: [g.term],
+        benchmark: g.context
+      }));
+      d.prompts = [...d.prompts, ...drills, ...contexts].map((p, i) => ({ ...p, id: i + 1 }));
+    }
+
+    /* ==========================================================================
+       2. ESTADO GLOBAL & NAVEGACIÓN
+       ========================================================================== */
+    let currentRAP = 1;
+    let currentSubsection = 'glossary';
+    let currentPromptIndex = 0;
+    let currentQuizScore = 0;
+    let quizAnswered = [];
+    let currentCategoryFilter = 'ALL';
+
+    // Speech & Recording State
+    let speechSupported = false;
+    let mediaStream = null, mediaRecorder = null, audioChunks = [];
+    let micCtx = null, micAnalyser = null, rafId = null;
+    let speechRecognition = null;
+    let sessionParts = [], finalMap = {}, interimText = "";
+    let isRecording = false, manualStop = false;
+    let sprintInterval = null, sprintTimeLeft = 10, sprintMode = '10';
+    let lastEval = null;
+
+    window.onload = function () {
+      renderRAPTabs();
+      loadRAP(1);
+      initSpeechSupport();
+      initMicBars();
+      document.getElementById('btn-speak-model').addEventListener('click', speakModel);
+      document.getElementById('btn-record').addEventListener('click', toggleRecord);
+      document.getElementById('btn-retry').addEventListener('click', resetSprintEngine);
+      document.getElementById('btn-pdf').addEventListener('click', downloadPDFReport);
+      document.querySelectorAll('#mode-seg .seg-btn').forEach(b => {
+        b.addEventListener('click', () => { if (!isRecording) setSprintMode(b.dataset.mode); });
+      });
+      document.getElementById('glossary-grid').addEventListener('click', e => {
+        const btn = e.target.closest('[data-tts]');
+        if (btn) playTTS(btn.dataset.tts);
+      });
+      const nameInput = document.getElementById('learner-name');
+      nameInput.value = localStorage.getItem('voiz:name') || '';
+      nameInput.addEventListener('input', () => localStorage.setItem('voiz:name', nameInput.value.trim()));
+    };
+
+    function renderRAPTabs() {
+      const desktopNav = document.getElementById('rap-nav');
+      const mobileNav = document.getElementById('rap-nav-mobile');
+      desktopNav.innerHTML = '';
+      mobileNav.innerHTML = '';
+      for (let i = 1; i <= 6; i++) {
+        const btn = document.createElement('button');
+        btn.onclick = () => loadRAP(i);
+        btn.className = `rap-btn-${i} seg-btn ${i === 1 ? 'on' : ''}`;
+        btn.innerHTML = `<span class="opacity-70 font-semibold">RAP</span>&nbsp;${i}`;
+        desktopNav.appendChild(btn);
+
+        const mBtn = document.createElement('button');
+        mBtn.onclick = () => loadRAP(i);
+        mBtn.className = `rap-mbtn-${i} px-3 py-1 text-xs font-bold rounded-full whitespace-nowrap transition-all ${i === 1 ? 'bg-brand-600 text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200'}`;
+        mBtn.innerText = `RAP ${i}`;
+        mobileNav.appendChild(mBtn);
+      }
+    }
+
+    function updateRAPTabs(active) {
+      for (let i = 1; i <= 6; i++) {
+        const dBtn = document.querySelector(`.rap-btn-${i}`);
+        const mBtn = document.querySelector(`.rap-mbtn-${i}`);
+        if (dBtn) dBtn.className = `rap-btn-${i} seg-btn ${i === active ? 'on' : ''}`;
+        if (mBtn) mBtn.className = `rap-mbtn-${i} px-3 py-1 text-xs font-bold rounded-full whitespace-nowrap transition-all ${i === active ? 'bg-brand-600 text-white shadow-sm' : 'bg-white text-slate-600 border border-slate-200'}`;
+      }
+    }
+
+    function loadRAP(rapNum) {
+      currentRAP = rapNum;
+      const data = rapData[rapNum];
+      if (isRecording) hardStopRecording(false);
+
+      updateRAPTabs(rapNum);
+      document.getElementById('rap-badge').innerText = `${data.code} • NIVEL ${data.level}`;
+      document.getElementById('rap-title').innerText = data.title;
+      document.getElementById('rap-desc').innerText = data.desc;
+
+      document.getElementById('glossary-search').value = '';
+      currentCategoryFilter = 'ALL';
+      renderGlossaryFilters();
+      renderGlossary();
+
+      document.getElementById('grammar-title').innerText = data.grammar.title;
+      document.getElementById('grammar-breakdown').innerHTML = data.grammar.breakdown;
+      renderQuiz();
+
+      currentPromptIndex = 0;
+      renderPromptList();
+      loadPromptDetail(0);
+      switchSubsection(currentSubsection);
+    }
+
+    function switchSubsection(sub) {
+      currentSubsection = sub;
+      const secs = ['glossary', 'grammar', 'voiz'];
+      secs.forEach(s => {
+        const el = document.getElementById(`sec-${s}`);
+        const btn = document.getElementById(`subnav-${s}`);
+        const on = (s === sub);
+        el.classList.toggle('hidden', !on);
+        el.classList.toggle('flex', on);
+        btn.className = `seg-btn ${on ? 'on' : ''}`;
+      });
+    }
+
+    /* ==========================================================================
+       3. GLOSARIO & TTS
+       ========================================================================== */
+    function renderGlossaryFilters() {
+      const container = document.getElementById('glossary-category-filters');
+      const categories = ["ALL", "Technical Vocabulary", "Grammar Terms", "Operational Terms"];
+      container.innerHTML = '';
+      categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.onclick = () => { currentCategoryFilter = cat; renderGlossaryFilters(); renderGlossary(); };
+        btn.className = `px-3 py-1.5 text-xs font-semibold rounded-full border transition-all ${currentCategoryFilter === cat ? 'bg-brand-600 text-white border-brand-600 font-bold shadow-sm' : 'bg-white text-slate-600 border-slate-200 hover:border-brand-300'}`;
+        btn.innerText = cat === 'ALL' ? 'Todos' : cat;
+        container.appendChild(btn);
+      });
+    }
+
+    function renderGlossary() {
+      const grid = document.getElementById('glossary-grid');
+      const search = document.getElementById('glossary-search').value.toLowerCase();
+      const terms = rapData[currentRAP].glossary;
+      grid.innerHTML = '';
+
+      const filtered = terms.filter(item => {
+        const matchesSearch = item.term.toLowerCase().includes(search) ||
+                              item.def.toLowerCase().includes(search) ||
+                              item.ipa.toLowerCase().includes(search);
+        const matchesCat = (currentCategoryFilter === 'ALL' || item.cat === currentCategoryFilter);
+        return matchesSearch && matchesCat;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-full card p-8 text-center text-slate-400 text-sm">No se encontraron términos para “${search}”.</div>`;
+        return;
+      }
+
+      filtered.forEach(item => {
+        const card = document.createElement('div');
+        card.className = "card card-hover p-5 flex flex-col justify-between gap-3 group";
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-1.5 gap-2">
+              <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">${item.cat}</span>
+              <button data-tts="${item.term.replace(/"/g, '&quot;')}" class="w-8 h-8 rounded-full bg-brand-50 text-brand-600 group-hover:bg-brand-500 group-hover:text-white flex items-center justify-center transition-all" title="Escuchar pronunciación">
+                <i class="fa-solid fa-volume-high text-xs"></i>
+              </button>
+            </div>
+            <h4 class="font-display text-base font-extrabold text-slate-900 flex items-center gap-2 flex-wrap">
+              ${item.term}
+              <span class="text-xs font-normal font-mono text-slate-400">${item.ipa}</span>
+            </h4>
+            <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">${item.def}</p>
+          </div>
+          <div class="p-2.5 bg-slate-50 rounded-xl border border-slate-100 text-xs font-mono text-slate-700 italic">
+            "${item.context}"
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function filterGlossary() { renderGlossary(); }
+
+    function playTTS(text) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    /* ==========================================================================
+       4. QUIZ DE GRAMÁTICA
+       ========================================================================== */
+    function renderQuiz() {
+      const container = document.getElementById('quiz-container');
+      const questions = rapData[currentRAP].grammar.quiz;
+      currentQuizScore = 0;
+      quizAnswered = new Array(questions.length).fill(false);
+      updateQuizScoreBadge(questions.length);
+      updateQuizProgress();
+
+      container.innerHTML = '';
+      questions.forEach((q, qIdx) => {
+        const qBox = document.createElement('div');
+        qBox.className = "p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2 text-xs fade-in";
+
+        let optionsHTML = '';
+        q.options.forEach((opt, oIdx) => {
+          optionsHTML += `
+            <button onclick="checkQuizAnswer(${qIdx}, ${oIdx}, this)" class="w-full text-left px-3 py-2 rounded-xl bg-white border border-slate-200 hover:border-brand-500 transition-all font-medium text-slate-700">
+              ${opt}
+            </button>`;
+        });
+
+        qBox.innerHTML = `
+          <p class="font-bold text-slate-900 leading-snug">${qIdx + 1}. ${q.q}</p>
+          <div class="space-y-1.5 quiz-options-${qIdx}">${optionsHTML}</div>
+          <div class="quiz-feedback-${qIdx} text-[11px] font-bold hidden"></div>`;
+        container.appendChild(qBox);
+      });
+    }
+
+    function checkQuizAnswer(qIdx, selectedOpt, btnEl) {
+      if (quizAnswered[qIdx]) return;
+      quizAnswered[qIdx] = true;
+      const questions = rapData[currentRAP].grammar.quiz;
+      const correctOpt = questions[qIdx].answer;
+      const optContainer = document.querySelector(`.quiz-options-${qIdx}`);
+      const feedbackEl = document.querySelector(`.quiz-feedback-${qIdx}`);
+      const buttons = optContainer.querySelectorAll('button');
+      buttons.forEach(b => b.onclick = null);
+
+      if (selectedOpt === correctOpt) {
+        currentQuizScore++;
+        btnEl.className = "w-full text-left px-3 py-2 rounded-xl bg-brand-100 border border-brand-500 font-bold text-brand-800";
+        feedbackEl.className = "quiz-feedback-" + qIdx + " text-[11px] font-bold text-brand-600 block mt-1";
+        feedbackEl.innerText = "✓ ¡Correcto!";
+      } else {
+        btnEl.className = "w-full text-left px-3 py-2 rounded-xl bg-rose-100 border border-rose-400 font-bold text-rose-900";
+        buttons[correctOpt].className = "w-full text-left px-3 py-2 rounded-xl bg-brand-50 border border-brand-400 font-bold text-brand-800";
+        feedbackEl.className = "quiz-feedback-" + qIdx + " text-[11px] font-bold text-rose-600 block mt-1";
+        feedbackEl.innerText = `✕ Incorrecto. Respuesta: ${questions[qIdx].options[correctOpt]}`;
+      }
+      updateQuizScoreBadge(questions.length);
+      updateQuizProgress();
+    }
+
+    function updateQuizScoreBadge(total) {
+      document.getElementById('quiz-score-badge').innerText = `Aciertos: ${currentQuizScore}/${total}`;
+    }
+
+    function updateQuizProgress() {
+      const answered = quizAnswered.filter(Boolean).length;
+      const pct = quizAnswered.length ? (answered / quizAnswered.length) * 100 : 0;
+      document.getElementById('quiz-progress').style.width = pct + '%';
+    }
+
+    /* ==========================================================================
+       5. CATÁLOGO DE PRÁCTICAS VOIZ (30 POR RAP)
+       ========================================================================== */
+    function getBest(rap, idx) {
+      const v = localStorage.getItem(`voiz:best:r${rap}p${idx}`);
+      return v === null ? null : Number(v);
+    }
+
+    function renderPromptList() {
+      const container = document.getElementById('prompt-list-container');
+      const prompts = rapData[currentRAP].prompts;
+      document.getElementById('prompt-total-badge').innerText = prompts.length;
+      container.innerHTML = '';
+
+      prompts.forEach((p, idx) => {
+        const best = getBest(currentRAP, idx);
+        const btn = document.createElement('button');
+        btn.onclick = () => loadPromptDetail(idx);
+        btn.id = `prompt-item-${idx}`;
+        btn.className = `w-full text-left p-3 rounded-2xl border transition-all flex items-center justify-between gap-2 ${idx === currentPromptIndex ? 'bg-brand-50 border-brand-500 shadow-sm' : 'bg-slate-50/60 border-slate-200 hover:bg-white hover:border-brand-300'}`;
+        btn.innerHTML = `
+          <div class="min-w-0">
+            <span class="text-[10px] font-extrabold uppercase block text-slate-400 font-mono">PRÁCTICA ${String(p.id).padStart(2, '0')}</span>
+            <span class="text-xs font-bold text-slate-800 truncate block">${p.cat}</span>
+          </div>
+          ${best !== null
+            ? `<span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200 shrink-0">★ ${best}%</span>`
+            : `<i class="fa-solid fa-chevron-right text-xs text-slate-300 shrink-0"></i>`}
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    function loadPromptDetail(idx) {
+      if (isRecording) hardStopRecording(false);
+      currentPromptIndex = idx;
+      const prompts = rapData[currentRAP].prompts;
+      const p = prompts[idx];
+
+      prompts.forEach((_, i) => {
+        const item = document.getElementById(`prompt-item-${i}`);
+        if (item) {
+          item.className = `w-full text-left p-3 rounded-2xl border transition-all flex items-center justify-between gap-2 ${i === idx ? 'bg-brand-50 border-brand-500 shadow-sm' : 'bg-slate-50/60 border-slate-200 hover:bg-white hover:border-brand-300'}`;
+        }
+      });
+
+      document.getElementById('prompt-counter-text').innerText = `Práctica ${idx + 1} de ${prompts.length}`;
+      document.getElementById('voiz-prompt-category').innerText = p.cat;
+      document.getElementById('voiz-prompt-id').innerText = `PRÁCTICA #${String(p.id).padStart(2, '0')}`;
+      document.getElementById('voiz-prompt-text').innerText = p.text;
+      document.getElementById('voiz-benchmark-text').innerText = `“${p.benchmark}”`;
+
+      const vocabBlock = document.getElementById('voiz-vocab-block');
+      const targetContainer = document.getElementById('voiz-target-vocab');
+      targetContainer.innerHTML = '';
+      if (p.vocab && p.vocab.length) {
+        vocabBlock.classList.remove('hidden');
+        p.vocab.forEach(v => {
+          const pill = document.createElement('span');
+          pill.className = "text-[11px] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200";
+          pill.innerText = v;
+          targetContainer.appendChild(pill);
+        });
+      } else {
+        vocabBlock.classList.add('hidden');
+      }
+
+      buildKaraoke(p.benchmark);
+      resetSprintEngine();
+      updateBestBadge();
+    }
+
+    function speakModel() {
+      playTTS(rapData[currentRAP].prompts[currentPromptIndex].benchmark);
+    }
+
+    /* ==========================================================================
+       6. KARAOKE EN VIVO · LA PALABRA PRONUNCIADA SE ILUMINA
+       ========================================================================== */
+    let karaokeWords = [];
+
+    function normTokens(s) {
+      return (s || '').toLowerCase()
+        .replace(/[’'`]/g, '')
+        .replace(/[^a-z0-9áéíóúñü\s]/gi, ' ')
+        .split(/\s+/).filter(Boolean);
+    }
+
+    function buildKaraoke(benchmark) {
+      const box = document.getElementById('karaoke-chips');
+      box.innerHTML = '';
+      karaokeWords = benchmark.split(/\s+/).filter(Boolean);
+      karaokeWords.forEach((w, i) => {
+        const chip = document.createElement('span');
+        chip.className = 'kw kw-pending';
+        chip.id = `kw-${i}`;
+        chip.innerHTML = `<b>${w}</b>`;
+        box.appendChild(chip);
+      });
+      document.getElementById('extra-words-block').classList.add('hidden');
+      document.getElementById('extra-words').innerHTML = '';
+    }
+
+    function setChip(i, cls, heard) {
+      const chip = document.getElementById(`kw-${i}`);
+      if (!chip) return;
+      chip.className = `kw ${cls}`;
+      chip.innerHTML = `<b>${karaokeWords[i]}</b>` + (heard ? `<i class="kw-heard">${heard}</i>` : '');
+    }
+
+    function alignTokens(ref, hyp) {
+      const m = ref.length, n = hyp.length;
+      const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+      for (let i = 0; i <= m; i++) dp[i][0] = i;
+      for (let j = 0; j <= n; j++) dp[0][j] = j;
+      for (let i = 1; i <= m; i++) {
+        for (let j = 1; j <= n; j++) {
+          const cost = ref[i - 1] === hyp[j - 1] ? 0 : 1;
+          dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+        }
+      }
+      const ops = [];
+      let i = m, j = n;
+      while (i > 0 || j > 0) {
+        if (i > 0 && j > 0 && dp[i][j] === dp[i - 1][j - 1] + (ref[i - 1] === hyp[j - 1] ? 0 : 1)) {
+          ops.push({ op: ref[i - 1] === hyp[j - 1] ? 'ok' : 'sub', refIdx: i - 1, heard: hyp[j - 1] });
+          i--; j--;
+        } else if (i > 0 && dp[i][j] === dp[i - 1][j] + 1) {
+          ops.push({ op: 'del', refIdx: i - 1 });
+          i--;
+        } else {
+          ops.push({ op: 'ins', heard: hyp[j - 1] });
+          j--;
+        }
+      }
+      ops.reverse();
+      const s = ops.filter(o => o.op === 'sub').length;
+      const d = ops.filter(o => o.op === 'del').length;
+      const ins = ops.filter(o => o.op === 'ins').length;
+      return { ops, s, d, ins, wer: (s + d + ins) / Math.max(1, m), refLen: m };
+    }
+
+    function liveKaraoke() {
+      const hypTokens = normTokens(currentHypothesis());
+      const refTokens = normTokens(karaokeWords.join(' '));
+      const { ops } = alignTokens(refTokens, hypTokens);
+      ops.forEach(o => {
+        if (o.op === 'ok') setChip(o.refIdx, 'kw-match');
+        else if (o.op === 'sub') setChip(o.refIdx, 'kw-live', o.heard);
+        else if (o.op === 'del') setChip(o.refIdx, 'kw-pending');
+      });
+    }
+
+    function finalKaraoke(alignment) {
+      const extras = [];
+      alignment.ops.forEach(o => {
+        if (o.op === 'ok') setChip(o.refIdx, 'kw-match');
+        else if (o.op === 'sub') setChip(o.refIdx, 'kw-sub', o.heard);
+        else if (o.op === 'del') setChip(o.refIdx, 'kw-miss');
+        else extras.push(o.heard);
+      });
+      const block = document.getElementById('extra-words-block');
+      const box = document.getElementById('extra-words');
+      box.innerHTML = '';
+      if (extras.length) {
+        block.classList.remove('hidden');
+        extras.slice(0, 24).forEach(w => {
+          const chip = document.createElement('span');
+          chip.className = 'kw kw-sm kw-ins';
+          chip.innerHTML = `<b>${w}</b>`;
+          box.appendChild(chip);
+        });
+      } else {
+        block.classList.add('hidden');
+      }
+    }
+
+    /* ==========================================================================
+       7. GRABACIÓN · TEMPORIZADOR · RECONOCIMIENTO
+       ========================================================================== */
+    function initMicBars() {
+      const barBox = document.getElementById('mic-bars');
+      for (let i = 0; i < 24; i++) {
+        const bar = document.createElement('span');
+        bar.className = 'mic-bar';
+        barBox.appendChild(bar);
+      }
+    }
+
+    function setSprintMode(mode) {
+      sprintMode = mode;
+      document.querySelectorAll('#mode-seg .seg-btn').forEach(b => {
+        b.classList.toggle('on', b.dataset.mode === mode);
+      });
+      const title = document.getElementById('timer-title');
+      const sub = document.getElementById('timer-sub');
+      if (mode === 'free') {
+        title.innerText = 'Modo Libre';
+        sub.innerText = 'Graba sin límite de tiempo y detén cuando termines la lectura.';
+      } else {
+        const secs = Number(mode);
+        title.innerText = `Sprint de ${secs} segundos`;
+        sub.innerText = 'Graba tu respuesta antes de que el tiempo termine.';
+      }
+      resetSprintEngine();
+    }
+
+    function resetSprintEngine() {
+      clearInterval(sprintInterval);
+      sprintInterval = null;
+      isRecording = false;
+      manualStop = false;
+      sprintTimeLeft = sprintMode === 'free' ? 0 : Number(sprintMode);
+      cancelAnimationFrame(rafId);
+      document.getElementById('mic-bars').classList.add('idle');
+      document.getElementById('pulse-rings').classList.add('hidden');
+
+      document.getElementById('timer-number').innerText = sprintMode === 'free' ? '0' : sprintMode;
+      const circle = document.getElementById('timer-circle');
+      circle.setAttribute('stroke-dashoffset', '0');
+      circle.setAttribute('stroke', '#22c55e');
+      document.getElementById('rec-timer-text').innerHTML = '&nbsp;';
+      setRecordButton('idle');
+
+      document.getElementById('transcription-output').innerHTML =
+        '<span class="text-slate-400">Presiona el micrófono y lee la respuesta modelo en voz alta. Aquí aparecerá, en tiempo real, lo que estás pronunciando…</span>';
+      document.getElementById('audio-player-container').classList.add('hidden');
+
+      document.getElementById('wer-score').innerText = '—';
+      document.getElementById('accuracy-score').innerText = '—';
+      document.getElementById('tile-s').innerText = '0';
+      document.getElementById('tile-d').innerText = '0';
+      document.getElementById('tile-i').innerText = '0';
+      const fb = document.getElementById('feedback-msg');
+      fb.classList.add('hidden');
+      setRecStatus('ready', 'Listo para grabar');
+
+      const pdfBtn = document.getElementById('btn-pdf');
+      pdfBtn.disabled = true;
+      pdfBtn.className = "px-5 py-2.5 rounded-2xl bg-slate-200 text-slate-400 font-bold text-sm flex items-center justify-center gap-2 cursor-not-allowed transition-all";
+
+      lastEval = null;
+      sessionParts = []; finalMap = {}; interimText = "";
+      const p = rapData[currentRAP].prompts[currentPromptIndex];
+      if (p) buildKaraoke(p.benchmark);
+    }
+
+    function setRecordButton(state) {
+      const btn = document.getElementById('btn-record');
+      const icon = document.getElementById('record-icon');
+      if (state === 'recording') {
+        btn.className = "relative w-20 h-20 rounded-full bg-rose-500 text-white text-2xl shadow-lg shadow-rose-500/40 flex items-center justify-center transition-all duration-200 active:scale-95";
+        icon.className = "fa-solid fa-stop";
+      } else if (state === 'done') {
+        btn.className = "relative w-20 h-20 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 text-white text-2xl shadow-lg shadow-brand-500/40 flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95";
+        icon.className = "fa-solid fa-rotate-right";
+      } else {
+        btn.className = "relative w-20 h-20 rounded-full bg-gradient-to-br from-brand-500 to-accent-500 text-white text-2xl shadow-lg shadow-brand-500/40 flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95";
+        icon.className = "fa-solid fa-microphone";
+      }
+    }
+
+    function setRecStatus(kind, text) {
+      const el = document.getElementById('rec-status');
+      const map = {
+        ready: 'bg-slate-100 text-slate-600',
+        listening: 'bg-amber-100 text-amber-800',
+        processing: 'bg-accent-100 text-accent-800',
+        done: 'bg-brand-100 text-brand-800',
+        error: 'bg-rose-100 text-rose-700'
+      };
+      el.className = `text-[11px] font-extrabold px-2.5 py-1 rounded-full ${map[kind] || map.ready}`;
+      el.innerText = text;
+    }
+
+    function currentHypothesis() {
+      const parts = [...sessionParts];
+      const finals = Object.keys(finalMap).sort((a, b) => a - b).map(k => finalMap[k]).join(' ');
+      if (finals.trim()) parts.push(finals.trim());
+      if (interimText.trim()) parts.push(interimText.trim());
+      return parts.join(' ').replace(/\s+/g, ' ').trim();
+    }
+
+    function updateLiveTranscript() {
+      const out = document.getElementById('transcription-output');
+      const finals = Object.keys(finalMap).sort((a, b) => a - b).map(k => finalMap[k]).join(' ');
+      let html = '';
+      if (finals.trim()) html += `<span class="text-slate-800">${finals.trim()}</span> `;
+      if (interimText.trim()) html += `<span class="text-accent-600 italic">${interimText.trim()}</span>`;
+      out.innerHTML = html || '<span class="text-slate-400">Escuchando… comienza a leer la respuesta modelo.</span>';
+    }
+
+    function toggleRecord() {
+      if (isRecording) stopRecording();
+      else startRecording();
+    }
+
+    async function startRecording() {
+      if (!speechSupported) {
+        setRecStatus('error', 'Navegador sin Web Speech API');
+        return;
+      }
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (err) {
+        setRecStatus('error', 'Permiso de micrófono denegado');
+        return;
+      }
+
+      // Audio meter (Analyser)
+      try {
+        micCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const source = micCtx.createMediaStreamSource(mediaStream);
+        micAnalyser = micCtx.createAnalyser();
+        micAnalyser.fftSize = 128;
+        source.connect(micAnalyser);
+        drawMicBars();
+      } catch (e) { micAnalyser = null; }
+
+      // MediaRecorder (audio playback)
+      try {
+        audioChunks = [];
+        mediaRecorder = new MediaRecorder(mediaStream);
+        mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+        mediaRecorder.onstop = () => {
+          const blob = new Blob(audioChunks, { type: 'audio/webm' });
+          document.getElementById('recorded-audio').src = URL.createObjectURL(blob);
+          document.getElementById('audio-player-container').classList.remove('hidden');
+        };
+        mediaRecorder.start();
+      } catch (e) { mediaRecorder = null; }
+
+      // Speech recognition
+      sessionParts = []; finalMap = {}; interimText = ""; manualStop = false;
+      if (speechRecognition) {
+        try { speechRecognition.start(); } catch (e) { }
+      }
+
+      isRecording = true;
+      playAudioBeep(880, 0.18);
+      setRecordButton('recording');
+      setRecStatus('listening', 'Escuchando…');
+      document.getElementById('pulse-rings').classList.remove('hidden');
+      document.getElementById('mic-bars').classList.remove('idle');
+      updateLiveTranscript();
+
+      // Timer
+      clearInterval(sprintInterval);
+      const circle = document.getElementById('timer-circle');
+      const totalDash = 213.6;
+      if (sprintMode === 'free') {
+        let elapsed = 0;
+        circle.setAttribute('stroke', '#0ea5e9');
+        sprintInterval = setInterval(() => {
+          elapsed++;
+          document.getElementById('timer-number').innerText = elapsed;
+          document.getElementById('rec-timer-text').innerText = `● REC ${elapsed}s`;
+        }, 1000);
+      } else {
+        const total = Number(sprintMode);
+        sprintTimeLeft = total;
+        circle.setAttribute('stroke', '#22c55e');
+        document.getElementById('timer-number').innerText = total;
+        document.getElementById('rec-timer-text').innerText = `● REC ${total}s restantes`;
+        sprintInterval = setInterval(() => {
+          sprintTimeLeft--;
+          document.getElementById('timer-number').innerText = Math.max(0, sprintTimeLeft);
+          document.getElementById('rec-timer-text').innerText = `● REC ${sprintTimeLeft}s restantes`;
+          const offset = totalDash - (Math.max(0, sprintTimeLeft) / total) * totalDash;
+          circle.setAttribute('stroke-dashoffset', offset);
+          if (sprintTimeLeft <= 3 && sprintTimeLeft > 0) {
+            circle.setAttribute('stroke', '#f59e0b');
+            playAudioBeep(440, 0.1);
+          }
+          if (sprintTimeLeft <= 0) {
+            playAudioBeep(220, 0.35);
+            stopRecording();
+          }
+        }, 1000);
+      }
+    }
+
+    function stopRecording() {
+      if (!isRecording) return;
+      isRecording = false;
+      manualStop = true;
+      clearInterval(sprintInterval);
+      clearInterval(sprintInterval);
+
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        try { mediaRecorder.stop(); } catch (e) { }
+      }
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(t => t.stop());
+        mediaStream = null;
+      }
+      if (speechRecognition) {
+        try { speechRecognition.stop(); } catch (e) { }
+      }
+      cancelAnimationFrame(rafId);
+      document.getElementById('pulse-rings').classList.add('hidden');
+      document.getElementById('mic-bars').classList.add('idle');
+      setRecordButton('done');
+      setRecStatus('processing', 'Procesando…');
+      setTimeout(evaluateSpeechPerformance, 650);
+    }
+
+    function hardStopRecording(showStatus) {
+      isRecording = false;
+      manualStop = true;
+      clearInterval(sprintInterval);
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        try { mediaRecorder.stop(); } catch (e) { }
+      }
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(t => t.stop());
+        mediaStream = null;
+      }
+      if (speechRecognition) {
+        try { speechRecognition.abort(); } catch (e) { }
+      }
+      cancelAnimationFrame(rafId);
+      if (showStatus) setRecStatus('ready', 'Listo para grabar');
+    }
+
+    function drawMicBars() {
+      if (!micAnalyser) return;
+      const bars = document.querySelectorAll('.mic-bar');
+      const data = new Uint8Array(micAnalyser.frequencyBinCount);
+      const loop = () => {
+        micAnalyser.getByteFrequencyData(data);
+        bars.forEach((bar, i) => {
+          const v = data[Math.min(data.length - 1, i * 2)] || 0;
+          bar.style.height = (4 + (v / 255) * 30) + 'px';
+        });
+        rafId = requestAnimationFrame(loop);
+      };
+      rafId = requestAnimationFrame(loop);
+    }
+
+    function initSpeechSupport() {
+      const dot = document.getElementById('api-dot');
+      const text = document.getElementById('api-text');
+      const SpeechReg = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!window.isSecureContext) {
+        dot.className = 'dot bg-amber-500';
+        text.innerText = 'Abre con HTTPS o localhost';
+        return;
+      }
+      if (!SpeechReg) {
+        dot.className = 'dot bg-rose-500';
+        text.innerText = 'Sin soporte de voz';
+        document.getElementById('voiz-unsupported').classList.remove('hidden');
+        return;
+      }
+      speechSupported = true;
+      dot.className = 'dot bg-brand-500';
+      text.innerText = 'Web Speech listo';
+
+      speechRecognition = new SpeechReg();
+      speechRecognition.continuous = true;
+      speechRecognition.interimResults = true;
+      speechRecognition.lang = 'en-US';
+      speechRecognition.maxAlternatives = 1;
+
+      speechRecognition.onresult = event => {
+        let interim = "";
+        for (let i = 0; i < event.results.length; i++) {
+          const res = event.results[i];
+          if (res.isFinal) finalMap[i] = res[0].transcript;
+          else interim += res[0].transcript;
+        }
+        interimText = interim;
+        updateLiveTranscript();
+        liveKaraoke();
+      };
+
+      speechRecognition.onerror = event => {
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          setRecStatus('error', 'Permiso de micrófono denegado');
+          hardStopRecording(false);
+        } else if (event.error === 'no-speech') {
+          setRecStatus('listening', 'Escuchando… (sin voz detectada)');
+        }
+      };
+
+      // Chrome may end the session after silence: restart while still recording.
+      speechRecognition.onend = () => {
+        const finals = Object.keys(finalMap).sort((a, b) => a - b).map(k => finalMap[k]).join(' ');
+        if (finals.trim()) sessionParts.push(finals.trim());
+        finalMap = {}; interimText = "";
+        if (isRecording && !manualStop) {
+          setTimeout(() => { try { speechRecognition.start(); } catch (e) { } }, 250);
+        }
+      };
+    }
+
+    function playAudioBeep(freq = 440, duration = 0.15) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) { }
+    }
+
+    /* ==========================================================================
+       8. WER · EVALUACIÓN CON ALINEACIÓN PALABRA POR PALABRA
+       ========================================================================== */
+    function evaluateSpeechPerformance() {
+      const prompt = rapData[currentRAP].prompts[currentPromptIndex];
+      const hypothesis = currentHypothesis();
+
+      if (!speechSupported) {
+        setRecStatus('error', 'Reconocimiento no disponible');
+        return;
+      }
+      if (!hypothesis) {
+        document.getElementById('transcription-output').innerHTML =
+          '<span class="text-rose-500 font-semibold">No se detectó ninguna voz durante la grabación.</span> <span class="text-slate-400">Verifica el micrófono y reintenta.</span>';
+        setRecStatus('error', 'Sin voz detectada');
+        return;
+      }
+
+      const alignment = alignTokens(normTokens(prompt.benchmark), normTokens(hypothesis));
+      const werPct = alignment.wer * 100;
+      const accuracy = Math.max(0, 100 - werPct);
+      const fmt = x => (Math.round(x * 10) / 10).toString();
+
+      document.getElementById('wer-score').innerText = fmt(werPct) + '%';
+      document.getElementById('accuracy-score').innerText = fmt(accuracy) + '%';
+      document.getElementById('tile-s').innerText = alignment.s;
+      document.getElementById('tile-d').innerText = alignment.d;
+      document.getElementById('tile-i').innerText = alignment.ins;
+
+      finalKaraoke(alignment);
+      setRecStatus('done', 'Evaluación completa');
+
+      const fb = document.getElementById('feedback-msg');
+      fb.classList.remove('hidden');
+      let msg;
+      if (accuracy >= 90) msg = 'Excelente pronunciación técnica. Mantén este desempeño y practica términos nuevos cada semana.';
+      else if (accuracy >= 75) msg = 'Muy buen resultado. Repite las palabras marcadas en rojo y ámbar, y escucha el modelo antes de reintentar.';
+      else if (accuracy >= 60) msg = 'Buen intento. Practica los términos clave del glosario y usa “Escuchar modelo” para imitar el ritmo.';
+      else msg = 'Repasa el glosario del RAP, escucha el modelo varias veces y vuelve a intentarlo con calma.';
+      fb.innerHTML = `<i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> ${msg} <span class="text-slate-400">(WER = ${fmt(werPct)}% · ${alignment.s} sustituciones, ${alignment.d} omisiones, ${alignment.ins} inserciones sobre ${alignment.refLen} palabras)</span>`;
+
+      const best = getBest(currentRAP, currentPromptIndex);
+      const accRound = Math.round(accuracy);
+      if (best === null || accRound > best) {
+        localStorage.setItem(`voiz:best:r${currentRAP}p${currentPromptIndex}`, String(accRound));
+        renderPromptList();
+        updateBestBadge();
+      } else {
+        updateBestBadge();
+      }
+
+      const pdfBtn = document.getElementById('btn-pdf');
+      pdfBtn.disabled = false;
+      pdfBtn.className = "px-5 py-2.5 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-brand-500/30 transition-all";
+
+      lastEval = { prompt, hypothesis, alignment, werPct, accuracy };
+    }
+
+    function updateBestBadge() {
+      const best = getBest(currentRAP, currentPromptIndex);
+      const badge = document.getElementById('best-score-badge');
+      if (best !== null) {
+        badge.classList.remove('hidden');
+        badge.innerText = `★ Mejor: ${best}%`;
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    /* ==========================================================================
+       9. GENERADOR DE PDF (html2pdf.js)
+       ========================================================================== */
+    function downloadPDFReport() {
+      if (!lastEval) return;
+      const data = rapData[currentRAP];
+      const { prompt, hypothesis, alignment, werPct, accuracy } = lastEval;
+      const fmt = x => (Math.round(x * 10) / 10).toString();
+      const now = new Date();
+
+      document.getElementById('pdf-rap').innerText = `${data.code} · ${data.title}`;
+      document.getElementById('pdf-date').innerText = `Fecha: ${now.toLocaleDateString('es-CO')} ${now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}`;
+      document.getElementById('pdf-learner').innerText = document.getElementById('learner-name').value.trim() || 'Aprendiz SENA';
+      document.getElementById('pdf-prompt-id').innerText = `#${String(prompt.id).padStart(2, '0')} · ${prompt.cat}`;
+      document.getElementById('pdf-mode').innerText = sprintMode === 'free' ? 'Libre' : `${sprintMode} s`;
+      document.getElementById('pdf-prompt-text').innerText = prompt.text;
+      document.getElementById('pdf-benchmark').innerText = `"${prompt.benchmark}"`;
+      document.getElementById('pdf-transcription').innerText = hypothesis || 'Sin voz detectada.';
+      document.getElementById('pdf-accuracy').innerText = fmt(accuracy) + '%';
+      document.getElementById('pdf-wer').innerText = fmt(werPct) + '%';
+      document.getElementById('pdf-s').innerText = alignment.s;
+      document.getElementById('pdf-d').innerText = alignment.d;
+      document.getElementById('pdf-i').innerText = alignment.ins;
+
+      // Word-by-word chips (inline styles for html2canvas fidelity)
+      const chipStyle = 'display:inline-block; padding:2px 9px; margin:2px; border-radius:999px; font-size:10px; font-weight:700; border:1.5px solid;';
+      const styles = {
+        ok: 'background:#dcfce7; border-color:#4ade80; color:#14532d;',
+        sub: 'background:#ffe4e6; border-color:#fda4af; color:#881337;',
+        del: 'background:#fef9c3; border-color:#fde047; color:#713f12; text-decoration:line-through;',
+      };
+      const rawWords = prompt.benchmark.split(/\s+/).filter(Boolean);
+      let diffHTML = '';
+      alignment.ops.forEach(o => {
+        if (o.op === 'ins') return;
+        const w = rawWords[o.refIdx] || '';
+        const heard = o.op === 'sub' ? ` <span style="font-weight:600; opacity:.75;">→ ${o.heard}</span>` : '';
+        diffHTML += `<span style="${chipStyle} ${styles[o.op]}">${w}${heard}</span>`;
+      });
+      document.getElementById('pdf-diff').innerHTML = diffHTML;
+
+      const extras = alignment.ops.filter(o => o.op === 'ins').map(o => o.heard);
+      const extraBlock = document.getElementById('pdf-extra-block');
+      if (extras.length) {
+        extraBlock.style.display = 'block';
+        document.getElementById('pdf-extra').innerHTML = extras.slice(0, 30).map(w =>
+          `<span style="${chipStyle} background:#f0f9ff; border-color:#bae6fd; color:#075985; font-style:italic;">${w}</span>`).join('');
+      } else {
+        extraBlock.style.display = 'none';
+      }
+
+      let recs;
+      if (accuracy >= 90) recs = 'Excelente pronunciación técnica. Mantén este desempeño, amplía vocabulario y practica con frases más largas del catálogo.';
+      else if (accuracy >= 75) recs = 'Muy buen resultado. Refuerza las palabras marcadas en rojo (sustituidas) y ámbar (omitidas), escucha el modelo con el botón de audio y reintenta el sprint.';
+      else if (accuracy >= 60) recs = 'Buen intento. Estudia los términos clave del glosario del RAP, escucha el modelo varias veces y lee a ritmo constante antes de repetir el sprint.';
+      else recs = 'Refuerza el vocabulario del módulo: repasa el glosario, usa la reproducción del modelo como referencia y realiza el sprint de nuevo en modo Libre para mayor control.';
+      document.getElementById('pdf-recs').innerHTML = `• ${recs}<br>• Consejo técnico: mantén el micrófono a 20–30 cm y pronuncia los términos automotrices con calma, marcando el acento de cada palabra.`;
+
+      const wrapper = document.getElementById('pdf-wrapper');
+      const element = document.getElementById('pdf-scorecard-template');
+      wrapper.style.left = '0';
+      wrapper.style.top = '0';
+      wrapper.style.opacity = '1';
+      wrapper.style.zIndex = '99999';
+
+      const nameSlug = (document.getElementById('learner-name').value.trim() || 'aprendiz').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      const opt = {
+        margin: 0,
+        filename: `VOIZ_Reporte_RAP${currentRAP}_Practica${prompt.id}_${nameSlug}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false, width: 750, windowWidth: 750 },
+        jsPDF: { unit: 'pt', format: 'letter', orientation: 'portrait' },
+        pagebreak: { mode: 'avoid-all' }
+      };
+
+      html2pdf().set(opt).from(element).save().then(() => {
+        wrapper.style.left = '-9999px'; wrapper.style.opacity = '0'; wrapper.style.zIndex = '-1';
+      }).catch(() => {
+        wrapper.style.left = '-9999px'; wrapper.style.opacity = '0'; wrapper.style.zIndex = '-1';
+      });
+    }
+  </script>
+</body>
+</html>
