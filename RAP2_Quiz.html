@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
+<meta http-equiv="Content-Language" content="en">
+<meta name="robots" content="noindex,nofollow">
+<title>VOIZ Mechanics · RAP2 Grammar Quiz</title>
+<style>
+:root{
+  --bg:#0f172a; --card:#1e293b; --card2:#141f36; --border:#334155;
+  --accent:#06b6d4; --emerald:#10b981; --rose:#f43f5e; --amber:#f59e0b;
+  --text:#f8fafc; --muted:#94a3b8; --deep:#0b1222;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  background:var(--bg);color:var(--text);
+  -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+  touch-action:manipulation;
+  background-image:
+    linear-gradient(rgba(6,182,212,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(6,182,212,.04) 1px,transparent 1px);
+  background-size:28px 28px;
+}
+input{-webkit-user-select:text;user-select:text}
+.wrap{max-width:780px;margin:0 auto;padding:16px 14px 90px}
+/* ---------- header ---------- */
+.topbar{display:flex;align-items:center;gap:12px;border:1px solid var(--border);
+  background:linear-gradient(180deg,#16223c,#111a30);border-radius:10px;padding:12px 14px;margin-bottom:14px}
+.logo{width:44px;height:44px;border:2px solid var(--accent);border-radius:8px;display:flex;
+  align-items:center;justify-content:center;font-family:var(--mono);font-weight:700;font-size:15px;
+  color:var(--accent);background:rgba(6,182,212,.08);flex-shrink:0}
+.brand b{display:block;font-size:15px;letter-spacing:.14em}
+.brand span{display:block;font-size:10.5px;color:var(--muted);letter-spacing:.22em;font-family:var(--mono)}
+.examid{margin-left:auto;text-align:right;font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.5}
+.examid b{color:var(--accent)}
+/* ---------- cards ---------- */
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 16px;
+  position:relative;box-shadow:0 0 22px rgba(6,182,212,.07)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--accent),transparent 70%);border-radius:10px 10px 0 0}
+h1{font-size:22px;letter-spacing:.06em;margin-bottom:4px}
+.sub{color:var(--muted);font-size:13px;margin-bottom:16px}
+/* ---------- spec table ---------- */
+.spec{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin:14px 0}
+.spec-row{display:flex;justify-content:space-between;gap:10px;padding:9px 12px;font-size:13px;
+  border-bottom:1px dashed var(--border);background:var(--card2)}
+.spec-row:last-child{border-bottom:none}
+.spec-row .k{color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.1em;align-self:center}
+.spec-row .v{font-weight:600;text-align:right}
+.tag{display:inline-block;border:1px solid var(--accent);color:var(--accent);font-size:11px;
+  font-family:var(--mono);padding:2px 8px;border-radius:5px;letter-spacing:.08em}
+.notice{border:1px dashed var(--rose);background:rgba(244,63,94,.07);border-radius:8px;
+  padding:12px 14px;font-size:12.5px;color:#fecdd3;margin:14px 0;line-height:1.55}
+.notice b{color:var(--rose)}
+.notice .es{color:#b9b9c9;font-style:italic}
+/* ---------- form ---------- */
+.field{margin:18px 0 6px}
+.field label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+  color:var(--muted);margin-bottom:8px}
+.field input{width:100%;background:var(--deep);border:1px solid var(--border);border-radius:8px;
+  color:var(--text);font-size:17px;padding:14px;outline:none;font-family:inherit}
+.field input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(6,182,212,.18)}
+.err{color:var(--rose);font-size:12.5px;margin-top:8px;display:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--border);
+  background:var(--deep);color:var(--text);border-radius:8px;padding:14px 22px;font-size:15px;
+  font-weight:700;letter-spacing:.06em;cursor:pointer;font-family:inherit;min-height:50px}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:linear-gradient(180deg,#0891b2,#0e7490);border-color:var(--accent);
+  box-shadow:0 0 18px rgba(6,182,212,.3)}
+.btn.danger{background:linear-gradient(180deg,#e11d48,#be123c);border-color:var(--rose);
+  box-shadow:0 0 18px rgba(244,63,94,.25)}
+.btn.ghost{background:transparent}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+/* ---------- quiz header ---------- */
+.qmeta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.chipstat{border:1px solid var(--border);background:var(--card2);border-radius:6px;padding:5px 10px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--muted)}
+.chipstat b{color:var(--text)}
+.chipstat.cat{border-color:var(--accent);color:var(--accent)}
+.chipstat.pts{border-color:var(--amber);color:var(--amber)}
+.timerbox{margin-left:auto;border:1px solid var(--border);background:var(--deep);border-radius:8px;
+  padding:7px 14px;text-align:center;min-width:110px}
+.timerbox .t{font-family:var(--mono);font-size:21px;font-weight:700;color:var(--accent);line-height:1.1}
+.timerbox .lbl{font-size:9px;letter-spacing:.2em;color:var(--muted);font-family:var(--mono)}
+.timerbox.warn .t{color:var(--amber)}
+.timerbox.warn{border-color:var(--amber)}
+.timerbox.danger .t{color:var(--rose)}
+.timerbox.danger{border-color:var(--rose);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(244,63,94,.4)}50%{box-shadow:0 0 0 6px rgba(244,63,94,0)}}
+.dots{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+.dot{width:32px;height:32px;border:1px solid var(--border);border-radius:6px;background:var(--deep);
+  color:var(--muted);font-family:var(--mono);font-size:11.5px;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;padding:0}
+.dot.cur{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.dot.done{background:rgba(6,182,212,.16);border-color:#0e7490;color:#67e8f9}
+.progress{height:4px;background:var(--deep);border-radius:2px;overflow:hidden;margin-bottom:16px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--emerald));
+  transition:width .3s}
+/* ---------- question ---------- */
+.typebar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.typebar .t1{font-family:var(--mono);font-size:12px;letter-spacing:.16em;color:var(--accent);
+  border:1px solid var(--accent);padding:4px 10px;border-radius:5px;background:rgba(6,182,212,.08)}
+.instr{font-size:13px;color:var(--muted);margin-bottom:4px}
+.instr .es{font-style:italic;color:#7c8db0;font-size:12px}
+.sentence{font-size:19px;line-height:2.15;margin:16px 0 6px;font-weight:500}
+.blank{display:inline-flex;align-items:center;justify-content:center;min-width:140px;min-height:40px;
+  padding:0 14px;margin:0 4px;border:none;border-bottom:2.5px dashed var(--accent);border-radius:6px 6px 0 0;
+  background:rgba(6,182,212,.07);color:var(--accent);font:inherit;font-weight:700;cursor:pointer;
+  vertical-align:middle;letter-spacing:.02em}
+.blank.filled{border-bottom-style:solid;background:rgba(6,182,212,.15)}
+.banklabel{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;color:var(--muted);margin:16px 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:9px}
+.chip{background:var(--deep);border:1px solid var(--border);color:var(--text);border-radius:8px;
+  padding:11px 16px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;min-height:48px}
+.chip:active{transform:scale(.96)}
+.chip.used{opacity:.22;border-style:dashed;pointer-events:none}
+.slots{min-height:132px;border:1.5px dashed var(--border);border-radius:8px;background:var(--deep);
+  padding:12px;margin-bottom:4px;display:flex;flex-wrap:wrap;gap:9px;align-content:flex-start}
+.slots .ph{color:#51617f;font-size:13px;font-style:italic;align-self:center;padding:6px}
+.slotchip{position:relative;background:rgba(6,182,212,.13);border:1px solid var(--accent);color:#a5f3fc;
+  border-radius:8px;padding:10px 14px 10px 28px;font-size:16px;font-weight:600;cursor:pointer;min-height:46px}
+.slotchip .idx{position:absolute;left:8px;top:50%;transform:translateY(-50%);font-family:var(--mono);
+  font-size:10px;color:var(--accent);background:rgba(6,182,212,.14);border-radius:4px;padding:1px 4px}
+.minibtn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;
+  padding:8px 14px;font-size:12px;font-family:var(--mono);letter-spacing:.1em;cursor:pointer;margin-top:12px}
+.minibtn:active{color:var(--rose);border-color:var(--rose)}
+/* ---------- nav ---------- */
+.navrow{display:flex;gap:10px;margin-top:16px}
+.navrow .btn{flex:1}
+/* ---------- overlay / modal / toast ---------- */
+.overlay{position:fixed;inset:0;background:rgba(2,6,23,.97);z-index:9998;display:flex;
+  align-items:center;justify-content:center;padding:24px;text-align:center}
+.overlay.hidden,.modal.hidden,.toast.hidden{display:none}
+.overlay .box{max-width:520px}
+.overlay .box .big{font-size:21px;font-weight:800;letter-spacing:.04em;color:var(--rose);margin:14px 0 8px}
+.overlay .box p{color:var(--muted);font-size:14px;line-height:1.6}
+.shieldicon{width:64px;height:64px;margin:0 auto;border:2px solid var(--rose);border-radius:50%;
+  display:flex;align-items:center;justify-content:center}
+.modal{position:fixed;inset:0;background:rgba(2,6,23,.8);z-index:9997;display:flex;
+  align-items:center;justify-content:center;padding:20px}
+.modal .box{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:22px;
+  max-width:420px;width:100%}
+.modal h3{font-size:17px;margin-bottom:10px}
+.modal p{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:18px}
+.modal .row{display:flex;gap:10px}
+.modal .row .btn{flex:1;padding:12px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#7f1d1d;color:#ffe4e6;
+  border:1px solid var(--rose);padding:12px 20px;border-radius:8px;font-size:13.5px;z-index:10000;
+  max-width:90vw;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+/* ---------- results ---------- */
+.score-big{font-family:var(--mono);font-size:52px;font-weight:800;color:var(--accent);text-align:center;
+  letter-spacing:.02em;margin:6px 0 2px}
+.score-big span{font-size:22px;color:var(--muted)}
+.score-name{text-align:center;font-size:21px;font-weight:800;letter-spacing:.03em;margin-top:4px}
+.score-sub{text-align:center;color:var(--muted);font-size:12px;font-family:var(--mono);letter-spacing:.14em}
+.pbar{height:10px;background:var(--deep);border:1px solid var(--border);border-radius:5px;overflow:hidden;margin:16px 0}
+.pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--emerald))}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{flex:1;min-width:110px;border:1px solid var(--border);background:var(--card2);border-radius:8px;
+  padding:12px;text-align:center}
+.stat .v{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--accent)}
+.stat.ok .v{color:var(--emerald)} .stat.bad .v{color:var(--rose)}
+.stat .k{font-size:9.5px;letter-spacing:.16em;color:var(--muted);font-family:var(--mono);margin-top:4px}
+.msg{text-align:center;font-size:16px;font-weight:800;letter-spacing:.1em;margin:16px 0 6px;color:var(--emerald)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:7px;margin-top:12px}
+.tile{border:1px solid var(--border);border-radius:7px;min-height:46px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;gap:1px;background:var(--deep)}
+.tile .n{font-size:9px;color:var(--muted)}
+.tile.ok{border-color:var(--emerald);color:var(--emerald)}
+.tile.bad{border-color:var(--rose);color:var(--rose)}
+.legend{display:flex;gap:16px;justify-content:center;margin-top:10px;font-size:11.5px;color:var(--muted);
+  font-family:var(--mono);letter-spacing:.08em;flex-wrap:wrap}
+.secnote{margin-top:16px;font-size:11.5px;color:#7c8db0;font-family:var(--mono);text-align:center;line-height:1.7}
+.autonote{text-align:center;color:var(--rose);font-size:13px;font-weight:700;margin-top:8px;letter-spacing:.04em}
+@media print{body>*{display:none!important}body::after{content:'PRINTING IS NOT ALLOWED — IMPRESION BLOQUEADA';
+  display:block!important;font-family:monospace;padding:40px;text-align:center}}
+@media (max-width:520px){
+  .topbar{padding:10px 12px;gap:9px}
+  .logo{width:38px;height:38px;font-size:13px}
+  .brand b{font-size:13px;letter-spacing:.1em}
+  .brand span{font-size:9px;letter-spacing:.16em}
+  .examid{font-size:9px}
+  .wrap{padding:10px 10px 80px}
+  .card{padding:15px 13px}
+  h1{font-size:19px}
+  .sentence{font-size:17.5px}
+  .score-big{font-size:42px}
+  .dot{width:29px;height:29px;font-size:10.5px}
+}
+</style>
+</head>
+<body class="notranslate">
+
+<div class="wrap">
+
+  <!-- ===================== HEADER ===================== -->
+  <div class="topbar">
+    <div class="logo">VZ</div>
+    <div class="brand"><b>VOIZ MECHANICS</b><span>TECHNICAL ENGLISH A1</span></div>
+    <div class="examid">RAP2 · GRAMMAR QUIZ<br>EXAM-ID: <b id="examId">—</b></div>
+  </div>
+
+  <!-- ===================== SCREEN: REGISTRATION ===================== -->
+  <section id="screen-reg">
+    <div class="card">
+      <h1>STUDENT REGISTRATION</h1>
+      <div class="sub">Registro del estudiante · escribe tu nombre para comenzar</div>
+
+      <div class="spec">
+        <div class="spec-row"><span class="k">DURATION / TIEMPO</span><span class="v">20 MINUTES</span></div>
+        <div class="spec-row"><span class="k">QUESTIONS</span><span class="v">25 × 2 POINTS</span></div>
+        <div class="spec-row"><span class="k">TOTAL SCORE</span><span class="v">50 POINTS</span></div>
+        <div class="spec-row"><span class="k">TYPES</span><span class="v">COMPLETE · WORD ORDER</span></div>
+        <div class="spec-row"><span class="k">TOPICS</span><span class="v">PRESENT · PAST · FUTURE · USED TO</span></div>
+      </div>
+
+      <div class="notice">
+        <b>SECURITY NOTICE:</b> copy, paste, screenshots and translators are blocked.
+        Leaving this window is recorded.<br>
+        <span class="es">Este examen está protegido: copiar, pegar, capturas de pantalla y el traductor están bloqueados. Salir de la ventana queda registrado.</span>
+      </div>
+
+      <div class="field">
+        <label for="nameInput">FULL NAME / NOMBRE COMPLETO</label>
+        <input id="nameInput" type="text" autocomplete="off" spellcheck="false" maxlength="45" placeholder="Write your name here…">
+        <div class="err" id="nameErr">Please write your full name (minimum 3 letters). / Escribe tu nombre completo (mínimo 3 letras).</div>
+      </div>
+
+      <button class="btn primary wide" id="startBtn" style="margin-top:18px">START EXAM ▸ &nbsp;·&nbsp; INICIAR EXAMEN</button>
+      <div class="sub" style="text-align:center;margin-top:10px;font-size:11.5px">The 20-minute timer starts when you press the button.</div>
+    </div>
+  </section>
+
+  <!-- ===================== SCREEN: QUIZ ===================== -->
+  <section id="screen-quiz" style="display:none">
+    <div class="card" id="qcard" style="margin-bottom:14px"></div>
+    <div class="dots" id="dots"></div>
+    <div class="progress"><i id="pbar" style="width:0%"></i></div>
+    <div class="navrow">
+      <button class="btn ghost" id="prevBtn">◂ PREVIOUS</button>
+      <button class="btn primary" id="nextBtn">NEXT ▸</button>
+    </div>
+  </section>
+
+  <!-- ===================== SCREEN: RESULTS ===================== -->
+  <section id="screen-results" style="display:none">
+    <div class="card">
+      <div class="sub" style="text-align:center;letter-spacing:.24em;font-family:var(--mono)">EXAM COMPLETED · EXAMEN FINALIZADO</div>
+      <div class="score-name" id="resName"></div>
+      <div class="score-sub" id="resId"></div>
+      <div class="score-big" id="resScore"></div>
+      <div class="score-sub" id="resPct"></div>
+      <div class="pbar"><i id="resBar" style="width:0%"></i></div>
+      <div class="autonote" id="resAuto" style="display:none">TIME EXPIRED — EXAM SUBMITTED AUTOMATICALLY / TIEMPO AGOTADO</div>
+      <div class="msg" id="resMsg"></div>
+      <div class="stats" style="margin-top:14px">
+        <div class="stat ok"><div class="v" id="stOk">0</div><div class="k">CORRECT</div></div>
+        <div class="stat bad"><div class="v" id="stBad">0</div><div class="k">WRONG / BLANK</div></div>
+        <div class="stat"><div class="v" id="stTime">0:00</div><div class="k">TIME USED</div></div>
+        <div class="stat"><div class="v" id="stDate">—</div><div class="k">DATE</div></div>
+      </div>
+      <div class="banklabel" style="margin-top:20px">QUESTION MAP / MAPA DE PREGUNTAS</div>
+      <div class="tiles" id="tiles"></div>
+      <div class="legend"><span>■ CORRECT (2 PTS)</span><span style="color:var(--rose)">■ WRONG / BLANK (0 PTS)</span></div>
+      <div class="secnote" id="secNote"></div>
+      <button class="btn wide" id="restartBtn" style="margin-top:18px">START NEW EXAM · NUEVO EXAMEN</button>
+    </div>
+  </section>
+</div>
+
+<!-- ===================== SHIELD OVERLAY ===================== -->
+<div class="overlay hidden" id="shield">
+  <div class="box">
+    <div class="shieldicon">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><line x1="4" y1="4" x2="20" y2="20"/></svg>
+    </div>
+    <div class="big" id="shieldTitle">SCREEN HIDDEN</div>
+    <p id="shieldMsg"></p>
+    <button class="btn primary" id="shieldBtn" style="display:none;margin-top:16px">I TURNED IT OFF — CONTINUE</button>
+  </div>
+</div>
+
+<!-- ===================== CONFIRM MODAL ===================== -->
+<div class="modal hidden" id="confirm">
+  <div class="box">
+    <h3>SUBMIT FINAL ANSWERS?</h3>
+    <p id="confirmMsg"></p>
+    <div class="row">
+      <button class="btn ghost" id="cancelBtn">KEEP WORKING</button>
+      <button class="btn danger" id="confirmBtn">SUBMIT EXAM</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   DATA — 25 questions. Sentences are EXACT model answers from RAP2
+   prompts (no word changed). Vocabulary = prompt target vocabulary.
+   ===================================================================== */
+var QUESTIONS=[
+ {cat:'Present Simple',type:'complete',before:'The radiator',after:'the liquid in the engine to prevent overheating.',answer:'cools',chips:['charges','sprays','generates','replaced','broke','cools']},
+ {cat:'Past Simple',type:'order',sentence:'Yesterday I replaced the old spark plug and tested the battery.'},
+ {cat:'Used to',type:'order',sentence:'Cars used to use carburetors, but now every engine has a fuel injector.'},
+ {cat:'Future Simple',type:'complete',before:'Tomorrow I am going to',after:'the front brake pads.',answer:'replace',chips:['inspect','check','test','install','repair','replace']},
+ {cat:'Present Simple',type:'complete',before:'The alternator',after:'the car battery when the engine is running.',answer:'charges',chips:['cools','sprays','generates','controls','turns','charges']},
+ {cat:'Past Simple',type:'order',sentence:'Last week I inspected the suspension and fixed the shock absorbers.'},
+ {cat:'Used to',type:'complete',before:'I used to',after:'every tire manually with a simple lug wrench.',answer:'change',chips:['repair','check','replace','install','inspect','change']},
+ {cat:'Future Simple',type:'complete',before:'If the engine light comes on, I',after:'check the error codes with a scanner.',answer:'will',chips:['am','is','are','do','did','will']},
+ {cat:'Present Simple',type:'order',sentence:'The pistons move up and down and turn the crankshaft.'},
+ {cat:'Past Simple',type:'order',sentence:'The timing belt broke during the test and the engine stopped immediately.'},
+ {cat:'Used to',type:'order',sentence:'Most drivers used to prefer manual transmission with a clutch pedal.'},
+ {cat:'Future Simple',type:'order',sentence:'We will inspect the turbocharger during the next maintenance appointment.'},
+ {cat:'Present Simple',type:'complete',before:'The driver uses the steering wheel to',after:'the direction of the vehicle.',answer:'control',chips:['change','check','stop','find','follow','control']},
+ {cat:'Past Simple',type:'order',sentence:'This morning I removed the cylinder head and checked the camshaft.'},
+ {cat:'Used to',type:'order',sentence:'Mechanics used to listen to the engine, but today we use digital scanners.'},
+ {cat:'Future Simple',type:'complete',before:'I am going to replace and',after:'those worn brake pads.',answer:'recycle',chips:['remove','clean','sell','wash','repair','recycle']},
+ {cat:'Present Simple',type:'complete',before:'A cold engine produces clean water',after:'from the exhaust pipe.',answer:'vapor',chips:['fuel','mist','smoke','oil','gas','vapor']},
+ {cat:'Past Simple',type:'order',sentence:'I installed four new shock absorbers on the customer suspension on Tuesday.'},
+ {cat:'Used to',type:'order',sentence:'I used to find automatic transmission systems very difficult to repair.'},
+ {cat:'Future Simple',type:'complete',before:'Electric battery systems will replace',after:'combustion engines in many cities.',answer:'internal',chips:['external','modern','old','new','fast','internal']},
+ {cat:'Present Simple',type:'order',sentence:'The fuel injector sprays fine mist, so it requires clean fuel.'},
+ {cat:'Past Simple',type:'complete',before:'The alternator failed yesterday, so the battery',after:'all charge.',answer:'lost',chips:['found','kept','gave','won','put','lost']},
+ {cat:'Used to',type:'complete',before:'We used to keep all spare pistons and belts in the old workshop',after:'.',answer:'cabinet',chips:['shelf','box','table','room','garage','cabinet']},
+ {cat:'Future Simple',type:'complete',before:'We are going to test the camshaft performance at 3 PM',after:'.',answer:'today',chips:['yesterday','tomorrow','tonight','now','later','today']},
+ {cat:'Present Simple',type:'order',sentence:'The engine generates power, turning the crankshaft and sending energy to the transmission.'}
+];
+
+var DURATION_MIN=20, PTS=2, TOTAL=QUESTIONS.length*PTS, KEY='RAP2QZ_V1';
+var st=null, ticker=null, activeScreen='reg';
+
+/* ================= helpers ================= */
+function $(id){return document.getElementById(id);}
+function norm(w){return String(w).toLowerCase().replace(/[^a-z0-9']/g,'');}
+function stripWord(w){return w.replace(/^[^A-Za-z0-9']+|[^A-Za-z0-9']+$/g,'');}
+function wordsOf(s){return s.split(/\s+/).map(stripWord).filter(Boolean);}
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function mmss(ms){var s=Math.max(0,Math.round(ms/1000));var m=Math.floor(s/60);s=s%60;return m+':'+(s<10?'0':'')+s;}
+function save(){try{sessionStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+function load(){try{var s=sessionStorage.getItem(KEY);return s?JSON.parse(s):null;}catch(e){return null;}}
+function clear(){try{sessionStorage.removeItem(KEY);}catch(e){}}
+
+function freshState(){return{name:'',startedTs:0,endTs:0,cur:0,finished:false,auto:false,
+  answers:new Array(QUESTIONS.length).fill(null),chips:{},sec:{copy:0,paste:0,tab:0,shot:0,print:0,translate:0},result:null};}
+
+/* ================= screens ================= */
+function showScreen(name){
+  activeScreen=name;
+  $('screen-reg').style.display   = name==='reg'?'block':'none';
+  $('screen-quiz').style.display  = name==='quiz'?'block':'none';
+  $('screen-results').style.display = name==='results'?'block':'none';
+  window.scrollTo(0,0);
+}
+
+/* ================= registration ================= */
+function initReg(){
+  showScreen('reg');
+  $('examId').textContent='—';
+  var input=$('nameInput'),err=$('nameErr');
+  input.value='';
+  err.style.display='none';
+  $('startBtn').onclick=function(){
+    var v=input.value.trim().replace(/\s+/g,' ');
+    if(v.length<3||!/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/.test(v)){err.style.display='block';input.focus();return;}
+    err.style.display='none';
+    startExam(v);
+  };
+  input.addEventListener('keydown',function(e){if(e.key==='Enter'){$('startBtn').click();}});
+}
+
+function startExam(name){
+  st=freshState();
+  st.name=name;
+  st.startedTs=Date.now();
+  st.endTs=st.startedTs+DURATION_MIN*60*1000;
+  $('examId').textContent='RAP2-'+String(st.startedTs).slice(-6);
+  save();
+  enterQuiz();
+}
+
+/* ================= quiz ================= */
+function enterQuiz(){
+  showScreen('quiz');
+  buildDots();
+  renderQuestion();
+  startTicker();
+}
+
+function buildDots(){
+  var d=$('dots');d.innerHTML='';
+  QUESTIONS.forEach(function(q,i){
+    var b=document.createElement('button');
+    b.className='dot';b.textContent=i+1;
+    b.addEventListener('click',function(){if(st&&!st.finished){st.cur=i;save();renderQuestion();}});
+    d.appendChild(b);
+  });
+}
+
+function ensureChips(i){
+  var q=QUESTIONS[i];
+  if(!st.chips[i]){
+    if(q.type==='complete'){st.chips[i]=shuffle(q.chips.slice());}
+    else{
+      var ws=wordsOf(q.sentence);
+      var arr=ws.map(function(t,idx){return{id:i+'_'+idx,text:t};});
+      var sc=shuffle(arr.slice());
+      var same=function(a){return a.map(function(c){return norm(c.text);}).join('|');};
+      var tries=0;
+      while(same(sc)===same(arr)&&tries<9){sc=shuffle(arr.slice());tries++;}
+      if(same(sc)===same(arr)){sc=arr.slice(1).concat([arr[0]]);}
+      st.chips[i]=sc;
+    }
+    save();
+  }
+}
+
+function isAnswered(i){
+  var a=st.answers[i];
+  if(!a)return false;
+  return a.t==='c'?!!a.v:(a.v&&a.v.length===wordsOf(QUESTIONS[i].sentence).length);
+}
+
+function renderQuestion(){
+  var i=st.cur,q=QUESTIONS[i],card=$('qcard');
+  ensureChips(i);
+  var typeLabel=q.type==='complete'?'TYPE A · COMPLETE THE SENTENCE':'TYPE B · PUT THE WORDS IN ORDER';
+  var instrEn=q.type==='complete'?'Tap the correct word to complete the sentence.':'Tap the words in the correct order to build the sentence.';
+  var instrEs=q.type==='complete'?'Toca la palabra correcta para completar la oración.':'Toca las palabras en el orden correcto para formar la oración.';
+  var html='';
+  html+='<div class="typebar">';
+  html+='<span class="t1">'+typeLabel+'</span>';
+  html+='<span class="chipstat cat">'+q.cat.toUpperCase()+'</span>';
+  html+='<span class="chipstat pts">'+PTS+' PTS</span>';
+  html+='<span class="chipstat">Q'+String(i+1).padStart(2,'0')+' / '+QUESTIONS.length+'</span>';
+  html+='</div>';
+  html+='<div class="instr">'+instrEn+' <span class="es">· '+instrEs+'</span></div>';
+
+  if(q.type==='complete'){
+    var ans=st.answers[i]&&st.answers[i].t==='c'?st.answers[i].v:null;
+    html+='<div class="sentence"><span>'+q.before+' </span>';
+    html+='<button class="blank'+(ans?' filled':'')+'" id="blankBtn">'+(ans||'____')+'</button>';
+    html+='<span>'+(q.after.charAt(0)==='.'?'':' ')+q.after+'</span></div>';
+    html+='<div class="banklabel">WORD BANK · BANCO DE PALABRAS</div><div class="chips" id="chipsC"></div>';
+    card.innerHTML=html;
+    var bank=$('chipsC');
+    st.chips[i].forEach(function(txt){
+      var b=document.createElement('button');
+      b.className='chip'+(ans?' used':'');
+      b.textContent=txt;
+      b.addEventListener('click',function(){
+        st.answers[i]={t:'c',v:txt};save();renderQuestion();
+      });
+      bank.appendChild(b);
+    });
+    $('blankBtn').addEventListener('click',function(){
+      if(st.answers[i]){st.answers[i]=null;save();renderQuestion();}
+    });
+  }else{
+    var order=st.answers[i]&&st.answers[i].t==='o'?st.answers[i].v:[];
+    html+='<div class="banklabel" style="margin-top:14px">YOUR SENTENCE · TU ORACIÓN</div>';
+    html+='<div class="slots" id="slots">';
+    if(!order.length){html+='<div class="ph">Tap words below to build the sentence here… / Toca las palabras de abajo…</div>';}
+    order.forEach(function(id,pos){
+      var chip=st.chips[i].find(function(c){return c.id===id;});
+      if(chip){html+='<button class="slotchip" data-id="'+id+'"><span class="idx">'+(pos+1)+'</span>'+chip.text+'</button>';}
+    });
+    html+='</div>';
+    html+='<div class="banklabel">WORD BANK · BANCO DE PALABRAS</div><div class="chips" id="chipsO"></div>';
+    html+='<button class="minibtn" id="clearBtn">↺ CLEAR / LIMPIAR</button>';
+    card.innerHTML=html;
+    var bankO=$('chipsO');
+    var remaining=st.chips[i].filter(function(c){return order.indexOf(c.id)===-1;});
+    remaining.forEach(function(c){
+      var b=document.createElement('button');
+      b.className='chip';b.textContent=c.text;
+      b.addEventListener('click',function(){
+        if(!st.answers[i])st.answers[i]={t:'o',v:[]};
+        st.answers[i].v.push(c.id);save();renderQuestion();
+      });
+      bankO.appendChild(b);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.slotchip'),function(el){
+      el.addEventListener('click',function(){
+        var id=el.getAttribute('data-id');
+        var arr=st.answers[i]?st.answers[i].v:[];
+        var p=arr.indexOf(id);if(p>-1)arr.splice(p,1);
+        if(!arr.length)st.answers[i]=null;
+        save();renderQuestion();
+      });
+    });
+    $('clearBtn').addEventListener('click',function(){
+      st.answers[i]=null;save();renderQuestion();
+    });
+  }
+
+  insertTimer();
+
+  /* dots + progress + nav */
+  Array.prototype.forEach.call($('dots').children,function(d,idx){
+    d.className='dot'+(idx===st.cur?' cur':'')+(isAnswered(idx)?' done':'');
+  });
+  var done=0;QUESTIONS.forEach(function(_,idx){if(isAnswered(idx))done++;});
+  $('pbar').style.width=Math.round(done/QUESTIONS.length*100)+'%';
+  $('prevBtn').disabled=st.cur===0;
+  $('nextBtn').textContent=st.cur===QUESTIONS.length-1?'FINISH EXAM ✓ · TERMINAR':'NEXT ▸';
+}
+
+$('prevBtn').addEventListener('click',function(){
+  if(st&&!st.finished&&st.cur>0){st.cur--;save();renderQuestion();}
+});
+$('nextBtn').addEventListener('click',function(){
+  if(!st||st.finished)return;
+  if(st.cur<QUESTIONS.length-1){st.cur++;save();renderQuestion();}
+  else{openConfirm();}
+});
+
+/* ================= confirm modal ================= */
+function openConfirm(){
+  var unanswered=0;QUESTIONS.forEach(function(_,i){if(!isAnswered(i))unanswered++;});
+  $('confirmMsg').innerHTML=unanswered===0
+    ?'All 25 questions are answered. Each question is worth 2 points. You cannot return after submitting.'
+    :'<b style="color:var(--amber)">'+unanswered+'</b> question(s) without answer will score 0 points. You cannot return after submitting.';
+  $('confirm').classList.remove('hidden');
+}
+$('cancelBtn').addEventListener('click',function(){$('confirm').classList.add('hidden');});
+$('confirmBtn').addEventListener('click',function(){
+  $('confirm').classList.add('hidden');
+  doFinish(false);
+});
+
+/* ================= timer ================= */
+function startTicker(){
+  if(ticker)clearInterval(ticker);
+  updateTimer();
+  ticker=setInterval(updateTimer,500);
+}
+function updateTimer(){
+  if(!st||st.finished)return;
+  var rem=st.endTs-Date.now();
+  var tEl=$('timerT'),host=$('timerHost');
+  if(tEl&&host){
+    tEl.textContent=mmss(rem);
+    host.className='timerbox'+(rem<60000?' danger':(rem<300000?' warn':''));
+  }
+  if(rem<=0){doFinish(true);}
+}
+function insertTimer(){
+  var tb=document.querySelector('.timerbox');
+  if(tb)tb.remove();
+  var host=document.createElement('div');
+  host.id='timerHost';host.className='timerbox';
+  host.innerHTML='<div class="lbl">TIME LEFT</div><div class="t" id="timerT">20:00</div>';
+  var meta=$('qcard').querySelector('.typebar');
+  if(meta)meta.appendChild(host);
+  updateTimer();
+}
+
+/* ================= grading & results ================= */
+function grade(){
+  var ok=0,details=[];
+  QUESTIONS.forEach(function(q,i){
+    var a=st.answers[i],good=false;
+    if(a){
+      if(q.type==='complete'){
+        good=a.t==='c'&&norm(a.v||'')===norm(q.answer);
+      }else{
+        if(a.t==='o'&&a.v&&a.v.length){
+          var built=a.v.map(function(id){
+            var c=(st.chips[i]||[]).find(function(x){return x.id===id;});
+            return c?norm(c.text):'';
+          }).join(' ');
+          good=built===wordsOf(q.sentence).map(norm).join(' ');
+        }
+      }
+    }
+    if(good)ok++;
+    details.push(good);
+  });
+  return{score:ok*PTS,correct:ok,details:details};
+}
+
+function doFinish(auto){
+  if(!st||st.finished)return;
+  st.finished=true;st.auto=!!auto;
+  if(ticker)clearInterval(ticker);
+  var g=grade();
+  var used=Date.now()-st.startedTs;
+  if(auto)used=DURATION_MIN*60*1000;
+  var d=new Date();
+  var dateStr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')
+    +' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  st.result={score:g.score,correct:g.correct,details:g.details,used:used,date:dateStr,sec:st.sec};
+  save();
+  renderResults();
+  showScreen('results');
+}
+
+function renderResults(){
+  var r=st.result;
+  $('resName').textContent=st.name;
+  $('resId').textContent='EXAM-ID: RAP2-'+String(st.startedTs).slice(-6)+' · RAP2 GRAMMAR ASSESSMENT';
+  $('resScore').innerHTML=r.score+'<span> / '+TOTAL+' POINTS</span>';
+  var pct=Math.round(r.score/TOTAL*100);
+  $('resPct').textContent=pct+'% · '+r.correct+'/'+QUESTIONS.length+' QUESTIONS CORRECT';
+  $('resBar').style.width=pct+'%';
+  $('resAuto').style.display=st.auto?'block':'none';
+  var m=r.score>=45?'OUTSTANDING WORK!':r.score>=36?'GREAT JOB!':r.score>=26?'GOOD EFFORT!':r.score>=14?'KEEP PRACTICING!':'NEEDS REVIEW — SEE YOUR TEACHER';
+  $('resMsg').textContent=m;
+  $('resMsg').style.color=r.score>=26?'var(--emerald)':(r.score>=14?'var(--amber)':'var(--rose)');
+  $('stOk').textContent=r.correct;
+  $('stBad').textContent=QUESTIONS.length-r.correct;
+  $('stTime').textContent=mmss(r.used);
+  $('stDate').textContent=r.date;
+  var tiles=$('tiles');tiles.innerHTML='';
+  r.details.forEach(function(good,i){
+    var t=document.createElement('div');
+    t.className='tile '+(good?'ok':'bad');
+    t.innerHTML='<div class="n">Q'+(i+1)+'</div><div>'+(good?'✓':'✗')+'</div>';
+    tiles.appendChild(t);
+  });
+  var s=r.sec,totalSec=s.copy+s.paste+s.tab+s.shot+s.print+s.translate;
+  $('secNote').innerHTML='SECURITY LOG · REGISTRO DE SEGURIDAD<br>copy/paste attempts: '+s.copy
+    +' · window left: '+s.tab+' · screenshot keys: '+s.shot+' · print: '+s.print+' · translator: '+s.translate
+    +(totalSec>0?'<br><b style="color:var(--rose)">⚠ '+totalSec+' security event(s) recorded — for teacher review</b>':'<br>No security incidents recorded.');
+}
+
+$('restartBtn').addEventListener('click',function(){clear();location.reload();});
+
+/* ================= anti-copy / anti-shot / anti-translate ================= */
+function toast(msg){
+  var t=$('toast');t.textContent=msg;t.classList.remove('hidden');
+  clearTimeout(t._h);t._h=setTimeout(function(){t.classList.add('hidden');},2600);
+}
+function quizActive(){return st&&!st.finished&&activeScreen==='quiz';}
+function shieldShow(title,msg,sticky){
+  $('shieldTitle').textContent=title;
+  $('shieldMsg').textContent=msg;
+  $('shieldBtn').style.display=sticky?'inline-flex':'none';
+  $('shield').classList.remove('hidden');
+  $('shield')._sticky=!!sticky;
+}
+function shieldHide(){if(!$('shield')._sticky){$('shield').classList.add('hidden');}}
+function shieldHideForce(){$('shield')._sticky=false;$('shield').classList.add('hidden');}
+function shotAttempt(){
+  if(!quizActive())return;
+  st.sec.shot++;save();
+  shieldShow('SCREEN HIDDEN','A screenshot attempt was detected and logged. / Un intento de captura fue registrado.');
+  setTimeout(shieldHide,2400);
+  try{if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(' ');}catch(e){}
+}
+function translateDetected(){
+  if(!quizActive())return;
+  st.sec.translate++;save();
+  shieldShow('TRANSLATOR DETECTED','Turn OFF the page translator to continue. / Desactiva el traductor de la página para continuar.',true);
+}
+$('shieldBtn').addEventListener('click',function(){
+  var bad=document.documentElement.className.indexOf('translated-')>-1;
+  if(!bad){shieldHideForce();}
+  else{toast('Translator is still active. / El traductor sigue activo.');}
+});
+
+document.addEventListener('contextmenu',function(e){e.preventDefault();if(quizActive())toast('Right-click is disabled / Clic derecho bloqueado');});
+['copy','cut','paste'].forEach(function(ev){
+  document.addEventListener(ev,function(e){
+    if(quizActive()){
+      e.preventDefault();
+      if(ev==='paste')st.sec.paste++;else st.sec.copy++;
+      save();toast('Copy & paste are disabled in this exam / Copiar y pegar están bloqueados');
+    }
+  });
+});
+document.addEventListener('selectstart',function(e){if(!e.target.closest('input'))e.preventDefault();});
+document.addEventListener('dragstart',function(e){e.preventDefault();});
+
+document.addEventListener('keydown',function(e){
+  if(e.key==='PrintScreen'){shotAttempt();return;}
+  if(e.key==='F12'){e.preventDefault();return;}
+  if((e.ctrlKey||e.metaKey)&&e.shiftKey&&['I','J','C','K','S'].indexOf(e.key.toUpperCase())>-1){e.preventDefault();if(quizActive())toast('DevTools is disabled');return;}
+  if(e.metaKey&&e.shiftKey&&['3','4','5'].indexOf(e.key)>-1){shotAttempt();return;}
+  if((e.ctrlKey||e.metaKey)&&['C','X','V','A','S','P','U'].indexOf(e.key.toUpperCase())>-1){
+    e.preventDefault();
+    if(quizActive()){
+      var k=e.key.toUpperCase();
+      if(k==='V')st.sec.paste++;else if(k==='P')st.sec.print++;else st.sec.copy++;
+      save();toast('This shortcut is disabled / Atajo bloqueado');
+    }
+  }
+});
+document.addEventListener('keyup',function(e){if(e.key==='PrintScreen')shotAttempt();});
+
+document.addEventListener('visibilitychange',function(){
+  if(quizActive()&&document.hidden){st.sec.tab++;save();}
+  else if(quizActive()&&!document.hidden){toast('⚠ You left the exam window — this was logged / Saliste de la ventana (registrado)');}
+});
+window.addEventListener('blur',function(){if(quizActive())shieldShow('WINDOW INACTIVE','The exam content is hidden while this window is not active. / El contenido se oculta cuando la ventana no está activa.');});
+window.addEventListener('focus',function(){if(!$('shield')._sticky)$('shield').classList.add('hidden');});
+window.addEventListener('beforeprint',function(){if(quizActive()){st.sec.print++;save();shieldShow('PRINTING BLOCKED','Printing the exam is not allowed. / Imprimir el examen no está permitido.',true);}});
+window.addEventListener('afterprint',function(){shieldHideForce();});
+window.addEventListener('beforeunload',function(e){
+  if(st&&!st.finished&&activeScreen!=='reg'){e.preventDefault();e.returnValue='';}
+});
+/* Google Translate detection */
+new MutationObserver(function(){
+  if(document.documentElement.className.indexOf('translated-')>-1){translateDetected();}
+}).observe(document.documentElement,{attributes:true,attributeFilter:['class','lang']});
+
+/* ================= boot ================= */
+(function boot(){
+  var saved=load();
+  if(saved){
+    st=saved;
+    if(st.finished&&st.result){renderResults();showScreen('results');}
+    else if(st.endTs>Date.now()){
+      $('examId').textContent='RAP2-'+String(st.startedTs).slice(-6);
+      enterQuiz();
+    }else{doFinish(true);}
+  }else{initReg();}
+})();
+</script>
+</body>
+</html>
