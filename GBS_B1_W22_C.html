@@ -1,0 +1,2027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0284c7">
+    <title>GBS Language Training - Voiz System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            200: '#bae0fd',
+                            500: '#0284c7',
+                            600: '#0265d2',
+                            700: '#034ea2',
+                            800: '#073b7a',
+                            900: '#0c3161',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Tabs */
+        .tab-btn.active {
+            color: #0284c7;
+            border-bottom: 3px solid #0284c7;
+            font-weight: 700;
+        }
+        .dark .tab-btn.active {
+            color: #38bdf8;
+            border-bottom-color: #38bdf8;
+        }
+        .tab-btn-m.tab-active { color: #0284c7; }
+        .dark .tab-btn-m.tab-active { color: #38bdf8; }
+        /* Custom Circular Progress */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.1s linear;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+        /* Micro-interactions */
+        .card-hover {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.15);
+        }
+        /* Section fade-in */
+        .fade-in { animation: fadeIn 0.35s ease both; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: none; }
+        }
+        /* Flashcard flip */
+        .flip-scene { perspective: 1400px; }
+        .flip-card {
+            position: relative;
+            width: 100%;
+            height: 340px;
+            transform-style: preserve-3d;
+            transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+            cursor: pointer;
+        }
+        .flip-card.flipped { transform: rotateY(180deg); }
+        .flip-face {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.75rem;
+            text-align: center;
+        }
+        .flip-back { transform: rotateY(180deg); }
+        /* Toasts */
+        .toast-item { animation: toastIn 0.3s cubic-bezier(0.2, 0.8, 0.3, 1) both; }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(14px) scale(0.95); }
+            to { opacity: 1; transform: none; }
+        }
+        .toast-item.out { animation: toastOut 0.25s ease both; }
+        @keyframes toastOut {
+            to { opacity: 0; transform: translateY(10px) scale(0.95); }
+        }
+        /* Stars & chips */
+        .star-btn { color: #cbd5e1; transition: color 0.15s, transform 0.15s; }
+        .dark .star-btn { color: #475569; }
+        .star-btn.on { color: #f59e0b !important; }
+        .star-btn:hover { transform: scale(1.15); }
+        /* Sprint pulse ring */
+        .sprint-pulse { animation: pulseRing 1.2s ease-out infinite; }
+        @keyframes pulseRing {
+            0% { box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.35); }
+            100% { box-shadow: 0 0 0 18px rgba(2, 132, 199, 0); }
+        }
+        /* Prep countdown zoom */
+        .prep-zoom { animation: prepZoom 0.9s ease both; }
+        @keyframes prepZoom {
+            0% { transform: scale(1.6); opacity: 0; }
+            35% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        /* Keyboard hints */
+        kbd {
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-bottom-width: 2px;
+            border-radius: 4px;
+            padding: 1px 5px;
+            font-size: 10px;
+            font-family: inherit;
+        }
+        .dark kbd {
+            background: #334155;
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+    </style>
+</head>
+<body class="text-slate-800 dark:text-slate-200 bg-slate-50 dark:bg-slate-950 min-h-screen flex flex-col justify-between transition-colors duration-300">
+
+    <!-- Header Navigation -->
+    <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo & Branding -->
+                <div class="flex items-center space-x-3">
+                    <div class="bg-gradient-to-br from-brand-600 to-brand-800 text-white p-2.5 rounded-xl shadow-md">
+                        <i class="fa-solid fa-microphone-lines text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">GBS <span class="text-brand-600 dark:text-sky-400">Language Training</span></h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Technical English & VOIZ Sprint System</p>
+                    </div>
+                    <span class="hidden lg:inline-flex text-[10px] font-bold uppercase tracking-wider bg-brand-50 text-brand-700 border border-brand-200 px-2 py-0.5 rounded-full dark:bg-sky-500/10 dark:text-sky-300 dark:border-sky-500/30">B1 &middot; Week 2</span>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="flex items-center space-x-2 sm:space-x-6">
+                    <nav class="hidden md:flex space-x-8 h-full">
+                        <button data-tab="glossary" onclick="switchTab('glossary')" id="tab-glossary" class="tab-btn active px-2 flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-sky-400 text-sm font-medium transition-colors">
+                            <i class="fa-solid fa-book-bookmark"></i>
+                            <span>Glossary</span>
+                        </button>
+                        <button data-tab="grammar" onclick="switchTab('grammar')" id="tab-grammar" class="tab-btn px-2 flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-sky-400 text-sm font-medium transition-colors">
+                            <i class="fa-solid fa-diagram-project"></i>
+                            <span>Grammar in Practice</span>
+                        </button>
+                        <button data-tab="voiz" onclick="switchTab('voiz')" id="tab-voiz" class="tab-btn px-2 flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:text-brand-600 dark:hover:text-sky-400 text-sm font-medium transition-colors">
+                            <i class="fa-solid fa-bolt text-amber-500"></i>
+                            <span>VOIZ (30 Prompts)</span>
+                        </button>
+                    </nav>
+                    <!-- Dark Mode Toggle -->
+                    <button onclick="toggleDark()" id="btn-dark" class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-amber-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors flex items-center justify-center" title="Toggle dark mode" aria-label="Toggle dark mode">
+                        <i id="dark-icon" class="fa-solid fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8 flex-grow w-full">
+
+        <!-- ================= PROGRESS DASHBOARD (all tabs) ================= -->
+        <div id="stats-bar" class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+            <div class="bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
+                <div class="w-10 h-10 rounded-xl bg-brand-50 dark:bg-sky-500/10 text-brand-600 dark:text-sky-400 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-book-bookmark"></i>
+                </div>
+                <div class="min-w-0">
+                    <p id="stat-glossary" class="text-lg font-extrabold text-slate-900 dark:text-white leading-none">0/40</p>
+                    <p class="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide mt-1">Terms Learned</p>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
+                <div class="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-clipboard-check"></i>
+                </div>
+                <div class="min-w-0">
+                    <p id="stat-quiz" class="text-lg font-extrabold text-slate-900 dark:text-white leading-none">0/10</p>
+                    <p class="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide mt-1">Quiz Best Score</p>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
+                <div class="w-10 h-10 rounded-xl bg-brand-50 dark:bg-sky-500/10 text-brand-600 dark:text-sky-400 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <div class="min-w-0">
+                    <p id="stat-sprints" class="text-lg font-extrabold text-slate-900 dark:text-white leading-none">0</p>
+                    <p class="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide mt-1">Sprints Completed</p>
+                </div>
+            </div>
+            <div class="bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
+                <div class="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-fire"></i>
+                </div>
+                <div class="min-w-0">
+                    <p id="stat-streak" class="text-lg font-extrabold text-slate-900 dark:text-white leading-none">0</p>
+                    <p class="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wide mt-1">Day Streak</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= SECTION 1: GLOSSARY ================= -->
+        <section id="section-glossary" class="space-y-6">
+            <!-- Section Title, Search, Filters & View Switch -->
+            <div class="bg-white dark:bg-slate-800 p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm space-y-5">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Technical Glossary</h2>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Key terminology from your course modules: Film &amp; Studio Production and Supply Chains ("Are we running out of things?").</p>
+                    </div>
+                    <!-- Search & Filters -->
+                    <div class="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+                        <div class="relative w-full sm:w-64">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="glossary-search" oninput="filterGlossary()" placeholder="Search terms or IPA..." class="w-full pl-9 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                        </div>
+                        <select id="glossary-filter" onchange="filterGlossary()" class="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700 dark:text-slate-200">
+                            <option value="all">All Categories</option>
+                            <option value="Vocabulary">Film & Studio Terminology</option>
+                            <option value="Grammar">Grammar Structures</option>
+                            <option value="Supply Chain">Supply Chain &amp; Business</option>
+                        </select>
+                        <button id="btn-fav-only" onclick="toggleFavOnly()" class="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-amber-500 hover:border-amber-300 transition-colors" title="Show favorite terms only" aria-label="Show favorite terms only">
+                            <i class="fa-solid fa-star"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- View Toggle + Learned Progress -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pt-4 border-t border-slate-100 dark:border-slate-700">
+                    <div class="flex bg-slate-100 dark:bg-slate-700 rounded-xl p-1" role="group" aria-label="View mode">
+                        <button id="vm-cards" onclick="setViewMode('cards')" class="px-3.5 py-1.5 text-xs font-bold rounded-lg flex items-center gap-1.5 transition-all">
+                            <i class="fa-solid fa-table-cells-large"></i> Cards
+                        </button>
+                        <button id="vm-flash" onclick="setViewMode('flashcards')" class="px-3.5 py-1.5 text-xs font-bold rounded-lg flex items-center gap-1.5 transition-all">
+                            <i class="fa-solid fa-clone"></i> Flashcards
+                        </button>
+                    </div>
+                    <div class="w-full sm:w-52">
+                        <div class="flex justify-between text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+                            <span>Learned</span>
+                            <span id="learned-count">0/40</span>
+                        </div>
+                        <div class="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div id="learned-bar" class="h-full bg-emerald-500 rounded-full transition-all duration-300" style="width:0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Glossary Grid -->
+            <div id="glossary-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cards will be populated by JS -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="glossary-empty" class="hidden text-center py-14 bg-white dark:bg-slate-800 rounded-2xl border border-dashed border-slate-300 dark:border-slate-600">
+                <i class="fa-solid fa-magnifying-glass-minus text-4xl text-slate-300 dark:text-slate-600"></i>
+                <p class="mt-3 text-sm font-semibold text-slate-500 dark:text-slate-400">No terms match your search.</p>
+                <button onclick="clearGlossaryFilters()" class="mt-4 text-xs font-bold text-brand-600 dark:text-sky-400 hover:underline">Clear filters</button>
+            </div>
+
+            <!-- Flashcard Study Mode -->
+            <div id="flashcard-view" class="hidden max-w-xl mx-auto space-y-5">
+                <div class="flip-scene">
+                    <div id="flash-card" class="flip-card" onclick="fcFlip()" role="button" aria-label="Flashcard. Click to flip.">
+                        <!-- Front -->
+                        <div class="flip-face bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
+                            <span id="fc-category" class="absolute top-4 left-4 text-xs font-bold px-2.5 py-1 rounded-full border"></span>
+                            <i class="fa-solid fa-graduation-cap text-4xl text-brand-200 dark:text-sky-800 mb-4"></i>
+                            <h3 id="fc-term" class="text-2xl font-extrabold text-slate-900 dark:text-white"></h3>
+                            <p id="fc-ipa" class="text-sm font-mono text-brand-600 dark:text-sky-400 mt-3"></p>
+                            <p class="text-[11px] uppercase tracking-wider text-slate-400 dark:text-slate-500 font-bold mt-8"><i class="fa-solid fa-hand-pointer mr-1.5"></i>Tap card to flip</p>
+                        </div>
+                        <!-- Back -->
+                        <div class="flip-face flip-back bg-gradient-to-br from-brand-600 to-brand-800 text-white shadow-xl">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-brand-200 mb-3">Definition &amp; Example</span>
+                            <p id="fc-def" class="text-base leading-relaxed"></p>
+                            <p id="fc-ex" class="text-sm italic text-brand-100 mt-4"></p>
+                            <button onclick="event.stopPropagation(); fcSpeak();" class="mt-6 bg-white/15 hover:bg-white/25 text-white text-xs font-bold px-4 py-2 rounded-xl transition-colors">
+                                <i class="fa-solid fa-volume-high mr-1.5"></i>Listen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Flashcard Controls -->
+                <div class="flex items-center justify-between gap-3">
+                    <button onclick="fcMove(-1)" class="px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" aria-label="Previous card">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <button onclick="fcSpeak()" class="px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" title="Pronounce term" aria-label="Pronounce term">
+                            <i class="fa-solid fa-volume-high"></i>
+                        </button>
+                        <button id="fc-learn" onclick="fcToggleLearn()" class="px-4 py-2.5 rounded-xl text-xs font-bold border transition-colors"></button>
+                        <button onclick="fcShuffle()" class="px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" title="Shuffle deck" aria-label="Shuffle deck">
+                            <i class="fa-solid fa-shuffle"></i>
+                        </button>
+                    </div>
+                    <button onclick="fcMove(1)" class="px-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors" aria-label="Next card">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+                <p id="fc-counter" class="text-center text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider"></p>
+            </div>
+
+            <!-- Word Partners Challenge (collocations from the Supply Chain lesson) -->
+            <div class="bg-white dark:bg-slate-800 p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm space-y-4">
+                <div class="flex justify-between items-center flex-wrap gap-3">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Word Partners Challenge</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Match the halves to create collocations from "Are we running out of things?"</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="match-score" class="text-xs font-bold bg-brand-100 text-brand-700 px-3 py-1 rounded-full dark:bg-sky-500/10 dark:text-sky-300">0 / 6 matched</span>
+                        <button onclick="resetMatch()" class="text-xs font-bold px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-300 hover:text-brand-600 dark:hover:text-sky-400 hover:border-brand-300 transition-colors">
+                            <i class="fa-solid fa-rotate-left mr-1"></i>Restart
+                        </button>
+                    </div>
+                </div>
+                <div id="match-board" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+            </div>
+        </section>
+
+
+        <!-- ================= SECTION 2: GRAMMAR IN PRACTICE ================= -->
+        <section id="section-grammar" class="hidden space-y-8">
+            <!-- Header -->
+            <div class="bg-white dark:bg-slate-800 p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm">
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Grammar in Practice</h2>
+                <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Passive Voice &amp; Temporal Framing · Zero &amp; First Conditionals — Supply Chain contexts from "Are we running out of things?".</p>
+            </div>
+
+            <!-- Visual Breakdown (Timeline + Formulas) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Formula Card -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm space-y-4">
+                    <div class="flex items-center space-x-3 text-brand-600 dark:text-sky-400">
+                        <i class="fa-solid fa-calculator text-xl"></i>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Structural Formulas</h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="bg-brand-50 dark:bg-sky-500/10 p-4 rounded-xl border border-brand-100 dark:border-sky-500/30">
+                            <span class="text-xs font-bold text-brand-700 dark:text-sky-300 uppercase tracking-wide">Passive Voice Formula</span>
+                            <p class="text-base font-semibold text-brand-900 dark:text-sky-200 mt-1">Subject + [To Be] + Past Participle (+ by Agent)</p>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1"><em>Example: "The film was shot in 1997."</em></p>
+                        </div>
+                        <div class="bg-slate-100 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">Active Contrast</span>
+                            <p class="text-base font-semibold text-slate-800 dark:text-slate-200 mt-1">Subject + Action Verb + Direct Object</p>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1"><em>Example: "The director shot the film in 1997."</em></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline Diagram Card -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm space-y-4">
+                    <div class="flex items-center space-x-3 text-brand-600 dark:text-sky-400">
+                        <i class="fa-solid fa-timeline text-xl"></i>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Temporal Framing Timeline</h3>
+                    </div>
+                    <!-- Diagram -->
+                    <div class="relative pl-6 border-l-2 border-brand-300 dark:border-sky-700 space-y-6 my-2">
+                        <div class="relative">
+                            <span class="absolute -left-[31px] top-0 bg-brand-500 w-4 h-4 rounded-full ring-4 ring-white dark:ring-slate-800"></span>
+                            <p class="text-xs font-bold text-brand-600 dark:text-sky-400">PAST ACTION (Completed)</p>
+                            <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">"The movie was filmed in New Zealand."</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Focus on the production process that finished in the past.</p>
+                        </div>
+                        <div class="relative">
+                            <span class="absolute -left-[31px] top-0 bg-emerald-500 w-4 h-4 rounded-full ring-4 ring-white dark:ring-slate-800"></span>
+                            <p class="text-xs font-bold text-emerald-600 dark:text-emerald-400">PRESENT STATE (Permanent/Continuous)</p>
+                            <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">"The movie is set in a fictional universe."</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Focus on narrative background, state, or setting today.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conditional Module (Lesson: Are we running out of things?) -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Conditional Formulas Card -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm space-y-4">
+                    <div class="flex items-center space-x-3 text-emerald-600 dark:text-emerald-400">
+                        <i class="fa-solid fa-link text-xl"></i>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Conditional Formulas <span class="text-xs font-semibold text-slate-400 dark:text-slate-500">(Supply Chain Lesson)</span></h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="bg-emerald-50 dark:bg-emerald-500/10 p-4 rounded-xl border border-emerald-100 dark:border-emerald-500/30">
+                            <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase tracking-wide">Zero Conditional — How Systems Work</span>
+                            <p class="text-base font-semibold text-emerald-900 dark:text-emerald-200 mt-1">If + Present Simple, Present Simple</p>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1"><em>Example: "If a problem occurs anywhere in the supply chain, production stops."</em></p>
+                        </div>
+                        <div class="bg-slate-100 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">First Conditional — Real Future Possibility</span>
+                            <p class="text-base font-semibold text-slate-800 dark:text-slate-200 mt-1">If + Present Simple, will + Base Verb</p>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-1"><em>Example: "If there is a spike in demand, shops will run out of stock."</em></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cause & Effect Chain Card -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm space-y-4">
+                    <div class="flex items-center space-x-3 text-emerald-600 dark:text-emerald-400">
+                        <i class="fa-solid fa-arrow-trend-up text-xl"></i>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Cause &amp; Effect Chain</h3>
+                    </div>
+                    <div class="relative pl-6 border-l-2 border-emerald-300 dark:border-emerald-700 space-y-6 my-2">
+                        <div class="relative">
+                            <span class="absolute -left-[31px] top-0 bg-amber-500 w-4 h-4 rounded-full ring-4 ring-white dark:ring-slate-800"></span>
+                            <p class="text-xs font-bold text-amber-600 dark:text-amber-400">CONDITION (IF / WHEN)</p>
+                            <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">"If there is a spike in demand…"</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">The 'if' clause never uses 'will' — keep it in the present simple.</p>
+                        </div>
+                        <div class="relative">
+                            <span class="absolute -left-[31px] top-0 bg-rose-500 w-4 h-4 rounded-full ring-4 ring-white dark:ring-slate-800"></span>
+                            <p class="text-xs font-bold text-rose-600 dark:text-rose-400">RESULT</p>
+                            <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">"…shops run out of stock quickly." / "…shops will run out of stock."</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Zero conditional for facts and routines; first conditional for predictions. Result first → drop the comma: "Production stops if a problem occurs."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Grammar Quiz / Practice -->
+            <div class="bg-white dark:bg-slate-800 p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm space-y-5">
+                <div class="flex justify-between items-center flex-wrap gap-3">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Grammar Verification Challenge</h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Choose the correct form based on context: passive voice, temporal framing and conditionals.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span id="quiz-score" class="text-xs font-bold bg-brand-100 text-brand-700 px-3 py-1 rounded-full dark:bg-sky-500/10 dark:text-sky-300">Score: 0 / 10</span>
+                        <span id="quiz-best" class="text-xs font-bold bg-amber-100 text-amber-700 px-3 py-1 rounded-full dark:bg-amber-500/10 dark:text-amber-300">Best: 0</span>
+                        <button id="btn-quiz-retry" onclick="resetQuiz(true)" class="hidden text-xs font-bold px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-600 text-slate-500 dark:text-slate-300 hover:text-brand-600 dark:hover:text-sky-400 hover:border-brand-300 transition-colors">
+                            <i class="fa-solid fa-rotate-left mr-1"></i>Retry
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz Progress -->
+                <div class="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div id="quiz-progress" class="h-full bg-brand-500 rounded-full transition-all duration-300" style="width:0%"></div>
+                </div>
+
+                <!-- Result Box -->
+                <div id="quiz-result" class="hidden"></div>
+
+                <div id="grammar-quiz-container" class="space-y-4">
+                    <!-- Dynamic Grammar Questions -->
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= SECTION 3: VOIZ 30 SPEAKING PROMPTS ================= -->
+        <section id="section-voiz" class="hidden space-y-8">
+            <!-- Header & Controls -->
+            <div class="bg-white dark:bg-slate-800 p-5 md:p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">VOIZ Engine (30 Speaking Prompts)</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm mt-1">High-intensity vocalization sprint for rapid fluency acquisition &mdash; lesson theme: <strong>&ldquo;Are we running out of things?&rdquo;</strong> (Supply chains &amp; business).</p>
+                </div>
+                <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full lg:w-auto">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Prompt Selector:</span>
+                        <button onclick="jumpToPending()" class="px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl text-xs font-semibold text-slate-500 dark:text-slate-300 hover:text-brand-600 dark:hover:text-sky-400 hover:border-brand-300 transition-colors" title="Go to first uncompleted prompt">
+                            <i class="fa-solid fa-flag-checkered mr-1"></i>Pending
+                        </button>
+                    </div>
+                    <select id="prompt-select" onchange="loadPrompt(parseInt(this.value))" class="w-full sm:w-72 px-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl text-sm bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500 text-slate-700 dark:text-slate-200">
+                        <!-- 30 Options filled via JS -->
+                    </select>
+                    <!-- Completion Progress -->
+                    <div class="w-full lg:w-56">
+                        <div class="flex justify-between text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+                            <span>Completed</span>
+                            <span id="voiz-progress-text">0/30</span>
+                        </div>
+                        <div class="h-1.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                            <div id="voiz-progress-bar" class="h-full bg-brand-500 dark:bg-sky-500 rounded-full transition-all duration-300" style="width:0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive VOIZ Workspace -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+                <!-- Left: Sprint Controls & Audio Recorder (5 cols) -->
+                <div class="lg:col-span-5 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm flex flex-col items-center text-center space-y-6">
+                    <div class="w-full flex justify-between items-center text-xs text-slate-400 dark:text-slate-500 font-semibold uppercase tracking-wider">
+                        <span>Sprint Motor</span>
+                        <span id="prompt-badge" class="bg-brand-50 text-brand-700 px-2.5 py-1 rounded-full border border-brand-200 dark:bg-sky-500/10 dark:text-sky-300 dark:border-sky-500/30">Prompt 1 of 30</span>
+                    </div>
+
+                    <!-- Duration & Live Transcription Controls -->
+                    <div class="w-full flex items-center justify-center gap-1.5 flex-wrap">
+                        <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mr-1">Duration</span>
+                        <button onclick="setDuration(10)" data-dur="10" class="dur-btn px-2.5 py-1 rounded-lg text-xs font-bold transition-all">10s</button>
+                        <button onclick="setDuration(20)" data-dur="20" class="dur-btn px-2.5 py-1 rounded-lg text-xs font-bold transition-all">20s</button>
+                        <button onclick="setDuration(30)" data-dur="30" class="dur-btn px-2.5 py-1 rounded-lg text-xs font-bold transition-all">30s</button>
+                        <button id="btn-cc" onclick="toggleVoiceAssist()" class="hidden px-2.5 py-1 rounded-lg text-xs font-bold transition-all" title="Live speech-to-text (beta)"></button>
+                    </div>
+
+                    <!-- Circular Progress Timer -->
+                    <div id="timer-wrap" class="relative w-48 h-48 flex items-center justify-center">
+                        <svg class="w-full h-full" viewBox="0 0 120 120">
+                            <circle class="text-slate-100 dark:text-slate-700" stroke-width="8" stroke="currentColor" fill="transparent" r="50" cx="60" cy="60"/>
+                            <circle id="timer-circle" class="text-brand-600 progress-ring__circle" stroke-width="8" stroke-dasharray="314.16" stroke-dashoffset="0" stroke-linecap="round" stroke="currentColor" fill="transparent" r="50" cx="60" cy="60"/>
+                        </svg>
+                        <div class="absolute flex flex-col items-center">
+                            <span id="timer-display" class="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">10.0</span>
+                            <span class="text-xs text-slate-400 dark:text-slate-500 uppercase font-bold mt-1">Seconds</span>
+                        </div>
+                    </div>
+
+                    <!-- Recording Status -->
+                    <div id="recording-status" class="text-xs font-medium text-slate-500 dark:text-slate-400 h-5">
+                        Press Start Sprint to speak
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="flex gap-3 w-full">
+                        <button id="btn-start-sprint" onclick="startSprint()" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md transition-all flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-play"></i>
+                            <span>Start Sprint</span>
+                        </button>
+                        <button onclick="resetSprint()" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold py-3 px-4 rounded-xl transition-all" title="Reset sprint" aria-label="Reset sprint">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                        <button onclick="randomPrompt()" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold py-3 px-4 rounded-xl transition-all" title="Random prompt" aria-label="Random prompt">
+                            <i class="fa-solid fa-dice"></i>
+                        </button>
+                    </div>
+
+                    <!-- Self-Assessment Panel -->
+                    <div id="assessment-panel" class="w-full hidden pt-4 border-t border-slate-100 dark:border-slate-700 space-y-4 text-left">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-brand-600 dark:text-sky-400 uppercase tracking-wider">Self-Assessment</span>
+                            <span id="assessment-prompt" class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase"></span>
+                        </div>
+                        <div id="transcript-box" class="hidden">
+                            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Live transcript (beta)</span>
+                            <p id="transcript-text" class="text-xs bg-slate-50 dark:bg-slate-900/60 border border-slate-100 dark:border-slate-700 rounded-lg p-2.5 mt-1 max-h-24 overflow-y-auto text-slate-700 dark:text-slate-300"></p>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5">Target words you used (tap to toggle):</span>
+                            <div id="assessment-vocab" class="flex flex-wrap gap-1.5"></div>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1.5">Fluency self-rating:</span>
+                            <div id="rating-stars" class="flex gap-1"></div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="saveAssessment()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl shadow transition-colors">
+                                <i class="fa-solid fa-flag-checkered mr-1"></i>Save Sprint
+                            </button>
+                            <button onclick="discardAssessment()" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 text-xs font-bold py-2.5 px-4 rounded-xl transition-colors">Dismiss</button>
+                        </div>
+                    </div>
+
+                    <!-- Audio Playback Area -->
+                    <div id="playback-area" class="w-full pt-4 border-t border-slate-100 dark:border-slate-700 hidden space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Recorded Feedback</span>
+                            <a id="btn-download-rec" href="#" class="text-xs font-semibold text-brand-600 dark:text-sky-400 hover:text-brand-800 dark:hover:text-sky-300 flex items-center gap-1" title="Download your recording">
+                                <i class="fa-solid fa-download"></i> Save audio
+                            </a>
+                        </div>
+                        <audio id="audio-playback" controls class="w-full h-10 rounded-lg"></audio>
+                    </div>
+                </div>
+
+                <!-- Right: Prompt Details, Target Vocab & Benchmark (7 cols) -->
+                <div class="lg:col-span-7 space-y-6">
+                    <!-- Current Prompt Box -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm space-y-4">
+                        <span class="text-xs font-bold text-brand-600 dark:text-sky-400 uppercase tracking-wider">Speaking Task</span>
+                        <h3 id="prompt-title" class="text-xl font-bold text-slate-900 dark:text-white leading-snug">
+                            <!-- Prompt Question -->
+                        </h3>
+
+                        <!-- Target Vocabulary Chips -->
+                        <div>
+                            <span class="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase block mb-2">Required Target Vocabulary:</span>
+                            <div id="prompt-target-vocab" class="flex flex-wrap gap-2">
+                                <!-- Target Words -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reference Answer (Benchmark) -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-700 shadow-sm space-y-3">
+                        <div class="flex justify-between items-center flex-wrap gap-2">
+                            <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-circle-check"></i>
+                                Benchmark Answer (Reference)
+                            </span>
+                            <div class="flex items-center gap-3">
+                                <button onclick="speakBenchmark(0.65)" class="text-xs text-brand-600 dark:text-sky-400 hover:text-brand-800 dark:hover:text-sky-300 font-semibold flex items-center gap-1" title="Listen at slow speed">
+                                    <i class="fa-solid fa-snail"></i> Slow
+                                </button>
+                                <button onclick="speakBenchmark(0.95)" class="text-xs text-brand-600 dark:text-sky-400 hover:text-brand-800 dark:hover:text-sky-300 font-semibold flex items-center gap-1" title="Listen at normal speed">
+                                    <i class="fa-solid fa-volume-high"></i> Normal
+                                </button>
+                            </div>
+                        </div>
+                        <p id="benchmark-text" class="text-sm text-slate-700 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-900/60 p-4 rounded-xl border border-slate-100 dark:border-slate-700 italic">
+                            <!-- Benchmark Answer Text -->
+                        </p>
+                    </div>
+
+                    <!-- Navigation Footer -->
+                    <div class="flex justify-between items-center pt-2">
+                        <button onclick="navigatePrompt(-1)" class="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors flex items-center space-x-2">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Previous</span>
+                        </button>
+                        <button id="btn-fav-prompt" onclick="toggleFavPrompt()" class="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl text-sm text-slate-400 dark:text-slate-500 hover:text-amber-500 hover:border-amber-300 transition-colors" title="Mark prompt as favorite" aria-label="Mark prompt as favorite">
+                            <i id="fav-prompt-icon" class="fa-regular fa-star"></i>
+                        </button>
+                        <button onclick="navigatePrompt(1)" class="px-4 py-2 bg-brand-600 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors flex items-center space-x-2">
+                            <span>Next Prompt</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-4 mt-8 mb-16 md:mb-0">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400">
+            <p>GBS Language Training System &copy; 2026. Empowering Technical English Speech via VOIZ Method.</p>
+            <div class="flex items-center gap-4">
+                <span class="hidden md:inline-flex items-center gap-1.5">
+                    <i class="fa-solid fa-keyboard"></i>
+                    <kbd>&larr;</kbd><kbd>&rarr;</kbd> navigate &middot; <kbd>S</kbd> sprint &middot; <kbd>L</kbd> listen &middot; <kbd>F</kbd> favorite
+                </span>
+                <button onclick="resetAllProgress()" class="flex items-center gap-1.5 font-semibold text-rose-500 hover:text-rose-600 transition-colors">
+                    <i class="fa-solid fa-trash-can"></i> Reset progress
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+        <div class="grid grid-cols-3">
+            <button data-tab="glossary" onclick="switchTab('glossary')" class="tab-btn-m flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                <i class="fa-solid fa-book-bookmark text-base"></i>Glossary
+            </button>
+            <button data-tab="grammar" onclick="switchTab('grammar')" class="tab-btn-m flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                <i class="fa-solid fa-diagram-project text-base"></i>Grammar
+            </button>
+            <button data-tab="voiz" onclick="switchTab('voiz')" class="tab-btn-m flex flex-col items-center gap-1 py-2.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                <i class="fa-solid fa-bolt text-base"></i>VOIZ
+            </button>
+        </div>
+    </nav>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-[9998] space-y-2 w-80 max-w-[calc(100vw-2rem)]"></div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+
+        /* ================= DATA STRUCTURES ================= */
+
+        // 1. Glossary Data (40 Items)
+        const glossaryData = [
+            { term: "Behind-the-scenes", category: "Vocabulary", ipa: "/bɪˈhaɪnd ðə siːnz/", def: "Out of sight of the audience, showing real production context.", ex: "I love watching behind-the-scenes footage of film sets." },
+            { term: "Film location", category: "Vocabulary", ipa: "/fɪlm ləʊˈkeɪʃn/", def: "A real place outside a studio where scenes are recorded.", ex: "New Zealand became a famous film location for fantasy movies." },
+            { term: "Iconic scene", category: "Vocabulary", ipa: "/aɪˈkɒnɪk siːn/", def: "A widely recognized, famous, and memorable cinematic moment.", ex: "The staircase moment in Titanic is an iconic scene." },
+            { term: "Shoot a film", category: "Vocabulary", ipa: "/ʃuːt ə fɪlm/", def: "To record or capture video/cinema footage.", ex: "The filmmakers decided to shoot a film in a public plaza." },
+            { term: "Studio", category: "Vocabulary", ipa: "/ˈstjuːdiəʊ/", def: "A specialized facility equipped for movie production.", ex: "It is hard to notice if a show was filmed in a studio." },
+            { term: "Film set", category: "Vocabulary", ipa: "/fɪlm set/", def: "An artificially constructed environment where a scene is filmed.", ex: "It requires a huge budget to build a complex film set." },
+            { term: "Set in (Location)", category: "Vocabulary", ipa: "/set ɪn/", def: "To establish the narrative background or environment.", ex: "When a movie is set in Paris, it makes me want to travel." },
+            { term: "Props", category: "Vocabulary", ipa: "/prɒps/", def: "Portable objects used by actors during a performance.", ex: "Diagon Alley features authentic props and magic wands." },
+            { term: "Green screen", category: "Vocabulary", ipa: "/ɡriːn skriːn/", def: "A background backdrop replaced by digital CGI visuals.", ex: "Actors perform key action sequences in front of a green screen." },
+            { term: "Stunt work", category: "Vocabulary", ipa: "/stʌnt wɜːk/", def: "Dangerous physical maneuvers performed by professionals.", ex: "Filmpark Babelsberg offers live demonstrations of stunt work." },
+            { term: "Special effects", category: "Vocabulary", ipa: "/ˈspeʃl ɪˈfekts/", def: "Visual or practical illusions created for film.", ex: "Blockbuster movies rely heavily on modern computer special effects." },
+            { term: "Preserve a set", category: "Vocabulary", ipa: "/prɪˈzɜːv ə set/", def: "To maintain and protect a production set for future tours.", ex: "Historic film sets should be preserved rather than demolished." },
+            { term: "Passive Voice", category: "Grammar", ipa: "/ˈpæsɪv vɔɪs/", def: "Structure focusing on the action/object over the agent.", ex: "'The movie was filmed in 1997' uses passive voice." },
+            { term: "Agent", category: "Grammar", ipa: "/ˈeɪdʒənt/", def: "The performer of an action, introduced by 'by' in passive voice.", ex: "In 'Directed by Spielberg', 'Spielberg' is the active agent." },
+            { term: "Past Participle", category: "Grammar", ipa: "/pɑːst pɑːˈtɪsɪpl/", def: "Third verb form used in perfect tenses and passive voice.", ex: "The verb 'shot' is the past participle of 'shoot'." },
+            { term: "Temporal Framing", category: "Grammar", ipa: "/ˈtempərəl ˈfreɪmɪŋ/", def: "Distinguishing completed past actions vs present continuous states.", ex: "Use 'was set' for historic shooting and 'is set' for current setting." },
+            { term: "Active Voice", category: "Grammar", ipa: "/ˈæktɪv vɔɪs/", def: "Structure where the subject performs the verb action.", ex: "'The director shot the scene' is an active voice sentence." },
+            { term: "Sound stage", category: "Vocabulary", ipa: "/saʊnd steɪdʒ/", def: "A soundproofed studio building for filming movies.", ex: "Paramount includes over 30 independent sound stages." },
+            { term: "Costume", category: "Vocabulary", ipa: "/ˈkɒstjuːm/", def: "Attire or clothing worn by actors to portray a persona.", ex: "Visitors can inspect authentic original movie costumes." },
+            { term: "Preservation", category: "Vocabulary", ipa: "/ˌprezəˈveɪʃn/", def: "The process of keeping something in its original state.", ex: "Set preservation allows fans to experience historical filming." },
+
+            // --- Lesson: "Are we running out of things?" (ESL Brains) — Supply Chain & Business ---
+            { term: "Supply", category: "Supply Chain", ipa: "/səˈplaɪ/", def: "A stock of goods that is available for use or sale.", ex: "Companies keep a large supply of spare parts to keep production running." },
+            { term: "Demand", category: "Supply Chain", ipa: "/dɪˈmɑːnd/", def: "The need for goods or services that people want to buy or use.", ex: "There's a high demand for IT professionals in my country." },
+            { term: "Shortage", category: "Supply Chain", ipa: "/ˈʃɔːtɪdʒ/", def: "A situation in which there is a lack of something you need.", ex: "There is rarely a shortage of goods because companies do a good job predicting demand." },
+            { term: "Excess", category: "Supply Chain", ipa: "/ɪkˈses/", def: "An amount that is more than what you need.", ex: "Excess of some goods is no better for the economy than shortage." },
+            { term: "Spike", category: "Supply Chain", ipa: "/spaɪk/", def: "A sudden and considerable increase in demand, prices or sales.", ex: "Shops run out of toilet paper whenever there is a spike in demand." },
+            { term: "Surge", category: "Supply Chain", ipa: "/sɜːdʒ/", def: "A sudden large increase — a close synonym of 'spike'.", ex: "It isn't fair to increase taxi prices when there is a surge in demand." },
+            { term: "Stock", category: "Supply Chain", ipa: "/stɒk/", def: "The goods a shop or company has available (be in stock).", ex: "I only buy things that are in stock. I don't like to wait for my order." },
+            { term: "Warehouse", category: "Supply Chain", ipa: "/ˈweəhaʊs/", def: "A large building where goods are stored before they are sold or distributed.", ex: "Automation in warehouses is not a good thing as it makes many people unemployed." },
+            { term: "Warehousing", category: "Supply Chain", ipa: "/ˈweəhaʊzɪŋ/", def: "The business or activity of storing goods in warehouses.", ex: "Storing excess parts in expensive warehousing cost Toyota a lot of money." },
+            { term: "Supply chain", category: "Supply Chain", ipa: "/səˈplaɪ tʃeɪn/", def: "The whole network of companies that produce and deliver a product.", ex: "If a problem occurs anywhere in the supply chain, production stops." },
+            { term: "Meet demand", category: "Supply Chain", ipa: "/ˌmiːt dɪˈmɑːnd/", def: "To produce or provide enough goods for what customers need.", ex: "In the past, companies stored enough goods to meet demand." },
+            { term: "Devise a plan", category: "Supply Chain", ipa: "/dɪˈvaɪz ə plæn/", def: "To create or invent a clever strategy to solve a problem.", ex: "Toyota devised a plan to order only the parts it needed, just in time." },
+            { term: "Spending spree", category: "Supply Chain", ipa: "/ˈspendɪŋ spriː/", def: "A short period of time when people buy a lot of things.", ex: "A global spending spree can stall the whole shipping industry." },
+            { term: "Stay ahead of the competition", category: "Supply Chain", ipa: "/steɪ əˈhed əv ðə ˌkɒmpəˈtɪʃn/", def: "To be more successful than the companies you compete with.", ex: "The new system enabled Toyota to expand and stay ahead of the competition." },
+            { term: "Fragile system", category: "Supply Chain", ipa: "/ˈfrædʒaɪl ˈsɪstəm/", def: "A system that stops working easily when a problem occurs.", ex: "A just-in-time supply chain is fragile: one delay can stop production." },
+            { term: "Just-in-time", category: "Supply Chain", ipa: "/ˌdʒʌst ɪn ˈtaɪm/", def: "A system in which goods arrive exactly when they are needed, not earlier.", ex: "Toyota ordered only what was needed so parts arrived just in time." },
+            { term: "Just-in-case", category: "Supply Chain", ipa: "/ˌdʒʌst ɪn ˈkeɪs/", def: "A system that stores extra goods in case of problems or demand spikes.", ex: "Just-in-case companies keep excess stock in their warehouses." },
+            { term: "Run out of", category: "Supply Chain", ipa: "/rʌn aʊt əv/", def: "To have no more of something left.", ex: "Shops run out of bulky, low-profit items like toilet paper very quickly." },
+            { term: "Zero Conditional", category: "Grammar", ipa: "/ˈzɪərəʊ kənˈdɪʃnl/", def: "If + present simple → present simple. Describes general truths and how systems work.", ex: "'If a problem occurs anywhere in the supply chain, production stops.'" },
+            { term: "First Conditional", category: "Grammar", ipa: "/fɜːst kənˈdɪʃnl/", def: "If + present simple → will + base verb. Describes real future possibilities.", ex: "'If there is a spike in demand, shops will run out of stock.'" }
+        ];
+
+        // 2. Grammar Questions Data (10 Items)
+        const grammarQuestions = [
+            {
+                q: "1. Complete with Passive Voice: 'The iconic blockbuster ________ (shoot) in a desert location in 2001.'",
+                options: ["was shot", "is shooting", "shoots", "were shot"],
+                correct: 0,
+                explanation: "Use Past Passive ('was shot') for a completed action at a specific past time."
+            },
+            {
+                q: "2. Active vs Passive: 'The movie ________ in London, but it ________ in a futuristic city.'",
+                options: ["was filmed / is set", "is filmed / was set", "filmed / sets", "was filming / set"],
+                correct: 0,
+                explanation: "'was filmed' describes past production; 'is set' describes the current setting/story world."
+            },
+            {
+                q: "3. Identify the Passive Agent: 'Special effects were designed by Babelsberg technicians.'",
+                options: ["Special effects", "were designed", "Babelsberg technicians", "by"],
+                correct: 2,
+                explanation: "'Babelsberg technicians' perform the action following the preposition 'by'."
+            },
+            {
+                q: "4. Select the Passive Voice equivalent of: 'Filmmakers preserved the set.'",
+                options: ["The set was preserved by filmmakers.", "Filmmakers were preserving the set.", "The set preserved filmmakers.", "The set is preserved by filmmakers."],
+                correct: 0,
+                explanation: "Subject (The set) + Past Passive (was preserved) + by + Agent (filmmakers)."
+            },
+            {
+                q: "5. Temporal Choice: 'Diagon Alley ________ today by thousands of Harry Potter fans.'",
+                options: ["is visited", "was visited", "visited", "will visit"],
+                correct: 0,
+                explanation: "'is visited' uses Present Passive to describe a regular, current action."
+            },
+            {
+                q: "6. Zero Conditional: 'If a problem ________ anywhere in the supply chain, production stops.'",
+                options: ["occurs", "will occur", "occurred", "is occurred"],
+                correct: 0,
+                explanation: "Zero conditional (if + present simple, present simple) describes general truths about how the just-in-time system works."
+            },
+            {
+                q: "7. First Conditional: 'If there ________ a spike in demand, shops will run out of toilet paper quickly.'",
+                options: ["is", "will be", "was", "would be"],
+                correct: 0,
+                explanation: "First conditional: if + present simple, will + base verb. The 'if' clause never takes 'will'."
+            },
+            {
+                q: "8. Zero Conditional with 'when': 'When companies ________ demand well, there is rarely a shortage of goods.'",
+                options: ["will predict", "predict", "predicted", "are predicting"],
+                correct: 1,
+                explanation: "With 'when' describing how systems work, use the zero conditional: present simple in both clauses."
+            },
+            {
+                q: "9. Choose the correct first conditional sentence:",
+                options: ["If we won't store excess supplies, we don't respond to a surge.", "If we didn't store excess supplies, we won't respond to a surge.", "If we don't store excess supplies, we won't be able to respond to a surge.", "If we don't store excess supplies, we wouldn't respond to a surge."],
+                correct: 2,
+                explanation: "First conditional for real future results: if + present simple, then will/won't + base verb."
+            },
+            {
+                q: "10. Comparative structure: 'Excess of some goods is ________ for the economy than shortage.'",
+                options: ["no good", "not better as", "no more good", "no better"],
+                correct: 3,
+                explanation: "'No better than' is a comparative structure meaning both options are equally bad."
+            }
+        ];
+
+        // 3. VOIZ Speaking Prompts (30 Prompts)
+        const voizPrompts = [
+            // --- Lesson: "Are we running out of things?" (ESL Brains) — Supply Chain & Business ---
+            // Warm-up opinions (pre-class statements)
+            { id: 1, title: "Give your opinion: is it fair to raise taxi prices when there is a surge in demand?", vocab: ["surge", "demand"], benchmark: "I don't think it is fair to increase the price for taxi services when there is a surge in demand. Customers already wait longer when demand is high, so charging them extra feels unfair." },
+            { id: 2, title: "Explain why there is rarely a shortage of goods these days.", vocab: ["shortage", "demand"], benchmark: "There is rarely a shortage of goods these days because companies do a good job predicting demand. When they forecast well, their supply always meets the demand." },
+            { id: 3, title: "Do you only buy things that are in stock? Talk about your shopping habits.", vocab: ["in stock", "run out of"], benchmark: "I only buy things that are in stock because I don't like to wait for my order. If a shop runs out of a product, I usually find it on another website the same day." },
+            { id: 4, title: "Discuss automation in warehouses: is it good for workers and companies?", vocab: ["warehouse", "supply chain"], benchmark: "Automation in warehouses is not a good thing for many people because it makes workers unemployed. On the other hand, an automated supply chain is faster and makes fewer mistakes." },
+            { id: 5, title: "Talk about a profession that is in high demand in your country.", vocab: ["demand", "shortage"], benchmark: "There is a high demand for IT professionals in my country. Because universities graduate too few specialists, companies suffer a real shortage of qualified workers." },
+            { id: 6, title: "Is excess of some goods no better for the economy than a shortage? Explain your view.", vocab: ["excess", "shortage"], benchmark: "Excess of some goods is no better for the economy than shortage. Too much stock wastes money and space, while a shortage means customers cannot buy what they need." },
+            // Vocabulary pairs from the lesson
+            { id: 7, title: "Explain the difference between supply and demand with your own examples.", vocab: ["supply", "demand"], benchmark: "Supply is a stock of goods available for use, and demand is the need for goods to be sold or supplied. When demand is higher than supply, prices normally go up." },
+            { id: 8, title: "Explain the difference between a spike and a surge in demand.", vocab: ["spike", "surge"], benchmark: "Both words mean a sudden and considerable increase. A spike is usually short and sharp, while a surge can last longer, like the surge in demand for masks during the pandemic." },
+            { id: 9, title: "Explain the difference between stock and a warehouse.", vocab: ["stock", "warehouse"], benchmark: "Stock means available goods or supplies, while a warehouse is a place to store goods and supplies. A warehouse full of stock costs the company money every single day." },
+            // Collocations: spending spree, devise a plan, fragile system...
+            { id: 10, title: "Talk about the last time you went on a spending spree, or explain why you avoid them.", vocab: ["spending spree", "supply chain"], benchmark: "I go on a short spending spree from time to time, but I always plan it before the holidays. When everybody spends at once, the extra demand creates problems for the whole supply chain." },
+            // Toyota / video part 1
+            { id: 11, title: "Retell the story of Toyota and the just-in-time system.", vocab: ["devise a plan", "just-in-time"], benchmark: "Toyota executive Taiichi Ohno devised a plan where the company ordered only what was needed, so parts arrived just in time. That allowed Toyota to free up the money spent on expensive warehousing." },
+            { id: 12, title: "Explain why storing excess parts cost Toyota money.", vocab: ["excess", "warehousing"], benchmark: "Storing excess parts cost Toyota money because expensive warehousing consumed the company's budget. When Toyota reduced its stock, it freed up money to expand the business." },
+            { id: 13, title: "How can a company stay ahead of the competition? Give real examples.", vocab: ["stay ahead of the competition", "devise a plan"], benchmark: "A company stays ahead of the competition when it devises a plan to cut costs and innovate faster. Toyota, for example, used the just-in-time system to expand while rivals kept paying for warehousing." },
+            // Video part 2
+            { id: 14, title: "What two things make a just-in-time system fragile?", vocab: ["fragile system", "supply chain"], benchmark: "First, if a problem occurs anywhere in the supply chain and materials do not arrive, production stops. Second, if there is a spike in demand, businesses cannot respond because they have no excess supplies." },
+            { id: 15, title: "Why do shops run out of toilet paper whenever there is a spike in demand?", vocab: ["run out of", "spike"], benchmark: "Toilet paper is a bulky and low-profit item, so supermarkets don't want to store a lot of it. When there is a spike in demand, shops run out of it very quickly." },
+            { id: 16, title: "Why are spending sprees problematic on a global scale?", vocab: ["spending spree", "supply chain"], benchmark: "The shipping industry is dominated by the just-in-time system, so any spike in demand might stall the whole system. A global spending spree creates exactly that kind of pressure." },
+            { id: 17, title: "Describe an example of a just-in-time supply chain and explain how it works.", vocab: ["supply chain", "just-in-time"], benchmark: "Raw materials leave Australia and are supplied to China for refining. Then they travel to Germany for manufacturing and finally reach retailers all around the world, including Australia again." },
+            { id: 18, title: "What real problems have recently occurred in global supply chains?", vocab: ["supply chain", "shortage"], benchmark: "Ports closed in China during the pandemic, and after Brexit companies had to fill out more forms, which caused delays. Both problems led to shortages of goods in many countries." },
+            { id: 19, title: "Think about other areas of life where just-in-time systems might be problematic.", vocab: ["just-in-time", "shortage"], benchmark: "The military, medicine and job recruitment all depend on supplies, so just-in-time can be risky there. For example, a shortage of protective equipment in a hospital can put lives in danger." },
+            // Discussion questions (Let's talk! part 1)
+            { id: 20, title: "Have you heard about just-in-case and just-in-time systems before? Which one do you prefer?", vocab: ["just-in-case", "just-in-time"], benchmark: "Just-in-case companies store extra goods in case of problems, while just-in-time companies order only what they need. I prefer just-in-time to save money, but only when the supply chain is reliable." },
+            { id: 21, title: "Will companies ever return to just-in-case? Will the climate crisis be the main reason?", vocab: ["just-in-case", "supply chain"], benchmark: "I think some companies will return to just-in-case because the climate crisis causes floods, fires and port closures. If a disaster blocks the supply chain, companies with extra stock will survive." },
+            { id: 22, title: "Who should be responsible for the transition: manufacturers or governments?", vocab: ["devise a plan", "supply chain"], benchmark: "I believe both sides share the responsibility. Manufacturers should devise a plan to make their supply chain stronger, while governments should set the rules and support smaller companies." },
+            // Discussion questions (Let's talk! part 2)
+            { id: 23, title: "Can a just-in-time system be applied to areas of life other than manufacturing?", vocab: ["just-in-time", "meet demand"], benchmark: "Yes, it can. Restaurants and delivery apps cook food only when customers order, so they meet demand without excess meals. The risk is that a sudden surge in orders makes delivery times much longer." },
+            { id: 24, title: "What has always been in demand in the place where you live? Can producers meet the demand?", vocab: ["demand", "meet demand"], benchmark: "In my region, fresh food and public transport are always in demand. Local producers usually meet the demand, but in holiday weeks there is sometimes a shortage of bread or fruit." },
+            { id: 25, title: "Have you ever experienced a shortage of some goods? Tell us about it.", vocab: ["shortage", "run out of"], benchmark: "During the pandemic, shops in my town ran out of flour, pasta and toilet paper. It was a strange shortage because new stock arrived only once a week, so people bought everything early in the morning." },
+            { id: 26, title: "Think of a recent crisis: which goods had a surge in demand? Did they have excess supplies?", vocab: ["surge", "excess"], benchmark: "During the pandemic there was a surge in demand for masks, hand gel and laptops. At the beginning there was no excess supply, so shops sold out and prices increased fast." },
+            // Grammar in speaking: zero & first conditional
+            { id: 27, title: "Use the zero conditional to explain how a just-in-time system works.", vocab: ["zero conditional", "supply chain"], benchmark: "If a problem occurs anywhere in the supply chain, production stops. When companies predict demand well, there is rarely a shortage of goods — that is how the system works." },
+            { id: 28, title: "Use the first conditional to predict what will happen if demand spikes.", vocab: ["first conditional", "spike"], benchmark: "If there is a spike in demand, shops will run out of stock quickly. And if companies don't store excess supplies, they won't be able to respond to the surge." },
+            // Role play (computer manufacturer)
+            { id: 29, title: "Role play: you manufacture computers — argue in favour of the just-in-case system.", vocab: ["just-in-case", "warehouse", "shortage"], benchmark: "I advocate for just-in-case because our warehouses will always have extra parts and components. If a supplier has problems, we won't face a shortage, and we will always meet demand." },
+            { id: 30, title: "Role play: now argue in favour of just-in-time and stay ahead of the competition.", vocab: ["just-in-time", "stay ahead of the competition"], benchmark: "I advocate for just-in-time because we will spend less money on warehouses. If we order only what we need, we will free up money to innovate and stay ahead of the competition." }
+        ];
+
+
+        /* ================= APP STATE & STORAGE ================= */
+        const STORAGE_PREFIX = 'gbs_b1_w2_';
+        const store = {
+            get(key, fallback) {
+                try {
+                    const raw = localStorage.getItem(STORAGE_PREFIX + key);
+                    return raw === null ? fallback : JSON.parse(raw);
+                } catch (e) { return fallback; }
+            },
+            set(key, value) {
+                try { localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value)); } catch (e) {}
+            },
+            clearAll() {
+                try {
+                    Object.keys(localStorage)
+                        .filter(k => k.startsWith(STORAGE_PREFIX))
+                        .forEach(k => localStorage.removeItem(k));
+                } catch (e) {}
+            }
+        };
+
+        let currentTab = 'glossary';
+        let glossaryView = 'cards';
+        let favOnly = false;
+        let currentGlossaryList = glossaryData.slice();
+        let fcList = [], fcPos = 0, fcFlipped = false;
+
+        let quizOrder = [], quizScore = 0, quizAnswered = 0;
+        let quizBest = store.get('quizBest', 0);
+
+        let currentPromptIndex = 0;
+        let sprintState = 'idle'; // idle | prep | running
+        let sprintSeconds = store.get('sprintSeconds', 10);
+        let prepInterval = null, tickInterval = null, ticksLeft = 0, lastBeepSec = null;
+        let mediaRecorder = null, audioChunks = [], audioBlob = null, audioUrl = null, micStream = null;
+        let voiceAssist = store.get('voiceAssist', true);
+        let finalTranscript = '', interimTranscript = '', recognition = null, srActive = false;
+        let assessment = { used: [], rating: 0 };
+
+        let learnedTerms = store.get('learned', []);
+        let favTerms = store.get('favTerms', []);
+        let promptResults = store.get('promptResults', {});
+        let favPrompts = store.get('favPrompts', []);
+        let sprintsDone = store.get('sprintsDone', 0);
+        let streak = store.get('streak', { count: 0, last: null });
+
+        const CIRCLE_C = 314.16;
+        const SRClass = window.SpeechRecognition || window.webkitSpeechRecognition || null;
+
+        /* ================= UTILITIES ================= */
+        function shuffleArr(a) {
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function escapeHtml(s) {
+            return String(s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        function showToast(msg, type = 'info') {
+            const palette = {
+                info: 'border-brand-200 bg-white dark:bg-slate-800 dark:border-sky-500/30',
+                success: 'border-emerald-200 bg-emerald-50 dark:bg-slate-800 dark:border-emerald-500/30',
+                error: 'border-rose-200 bg-rose-50 dark:bg-slate-800 dark:border-rose-500/30',
+                warn: 'border-amber-200 bg-amber-50 dark:bg-slate-800 dark:border-amber-500/30'
+            };
+            const icons = {
+                info: 'fa-solid fa-circle-info text-brand-600 dark:text-sky-400',
+                success: 'fa-solid fa-circle-check text-emerald-600',
+                error: 'fa-solid fa-circle-xmark text-rose-600',
+                warn: 'fa-solid fa-triangle-exclamation text-amber-500'
+            };
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast-item flex items-start gap-2.5 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium text-slate-700 dark:text-slate-200 ${palette[type] || palette.info}`;
+            toast.innerHTML = `<i class="${icons[type] || icons.info} mt-0.5"></i><span>${escapeHtml(msg)}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('out');
+                setTimeout(() => toast.remove(), 260);
+            }, 3200);
+        }
+
+        function launchConfetti() {
+            try {
+                const c = document.createElement('canvas');
+                c.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9999';
+                document.body.appendChild(c);
+                const ctx = c.getContext('2d');
+                c.width = window.innerWidth;
+                c.height = window.innerHeight;
+                const colors = ['#0284c7', '#0ea5e9', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6'];
+                const parts = Array.from({ length: 140 }, () => ({
+                    x: Math.random() * c.width,
+                    y: -20 - Math.random() * c.height * 0.3,
+                    w: 6 + Math.random() * 6,
+                    h: 8 + Math.random() * 8,
+                    vy: 2 + Math.random() * 3.5,
+                    vx: -1.5 + Math.random() * 3,
+                    rot: Math.random() * 360,
+                    vr: -8 + Math.random() * 16,
+                    color: colors[Math.floor(Math.random() * colors.length)]
+                }));
+                let frames = 0;
+                (function loop() {
+                    ctx.clearRect(0, 0, c.width, c.height);
+                    parts.forEach(p => {
+                        p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+                        ctx.save();
+                        ctx.translate(p.x, p.y);
+                        ctx.rotate(p.rot * Math.PI / 180);
+                        ctx.fillStyle = p.color;
+                        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                        ctx.restore();
+                    });
+                    frames++;
+                    if (frames < 220) requestAnimationFrame(loop); else c.remove();
+                })();
+            } catch (e) {}
+        }
+
+        /* ================= WEB SPEECH API ================= */
+        function speakText(text, rate = 0.9) {
+            if (!('speechSynthesis' in window)) {
+                showToast('Audio synthesis is not supported on your browser.', 'error');
+                return;
+            }
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = rate;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function speakBenchmark(rate) {
+            const text = document.getElementById('benchmark-text').innerText;
+            speakText(text, rate);
+            showToast(rate < 0.8 ? 'Playing model at slow speed' : 'Playing model at normal speed', 'info');
+        }
+
+        /* ================= DARK MODE ================= */
+        function applyDark(on) {
+            document.documentElement.classList.toggle('dark', on);
+            const icon = document.getElementById('dark-icon');
+            if (icon) icon.className = on ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            store.set('dark', on);
+        }
+
+        function toggleDark() {
+            applyDark(!document.documentElement.classList.contains('dark'));
+        }
+
+        /* ================= NAVIGATION ================= */
+        function switchTab(tabName) {
+            currentTab = tabName;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === tabName));
+            document.querySelectorAll('.tab-btn-m').forEach(btn => btn.classList.toggle('tab-active', btn.dataset.tab === tabName));
+            ['glossary', 'grammar', 'voiz'].forEach(s => {
+                document.getElementById('section-' + s).classList.add('hidden');
+            });
+            const target = document.getElementById('section-' + tabName);
+            target.classList.remove('hidden');
+            target.classList.remove('fade-in');
+            void target.offsetWidth;
+            target.classList.add('fade-in');
+        }
+
+        /* ================= STATS DASHBOARD ================= */
+        function updateStatsBar() {
+            document.getElementById('stat-glossary').innerText = `${learnedTerms.length}/${glossaryData.length}`;
+            document.getElementById('stat-quiz').innerText = `${quizBest}/${grammarQuestions.length}`;
+            document.getElementById('stat-sprints').innerText = sprintsDone;
+            document.getElementById('stat-streak').innerText = streak.count;
+        }
+
+        /* ================= GLOSSARY ENGINE ================= */
+        function initGlossaryFilter() {
+            const sel = document.getElementById('glossary-filter');
+            const countBy = cat => glossaryData.filter(i => i.category === cat).length;
+            if (sel.options.length >= 4) {
+                sel.options[1].text = `Film & Studio Terminology (${countBy('Vocabulary')})`;
+                sel.options[2].text = `Grammar Structures (${countBy('Grammar')})`;
+                sel.options[3].text = `Supply Chain & Business (${countBy('Supply Chain')})`;
+            }
+        }
+
+        function getFilteredGlossary() {
+            const searchVal = document.getElementById('glossary-search').value.toLowerCase().trim();
+            const filterVal = document.getElementById('glossary-filter').value;
+            return glossaryData.filter(item => {
+                const matchesSearch = !searchVal
+                    || item.term.toLowerCase().includes(searchVal)
+                    || item.def.toLowerCase().includes(searchVal)
+                    || item.ipa.toLowerCase().includes(searchVal);
+                const matchesFilter = filterVal === 'all' || item.category === filterVal;
+                const matchesFav = !favOnly || favTerms.includes(item.term);
+                return matchesSearch && matchesFilter && matchesFav;
+            });
+        }
+
+        function renderGlossary(data) {
+            currentGlossaryList = data;
+            const grid = document.getElementById('glossary-grid');
+            grid.innerHTML = '';
+
+            data.forEach(item => {
+                const isGrammar = item.category === 'Grammar';
+                const isSupply = item.category === 'Supply Chain';
+                const learned = learnedTerms.includes(item.term);
+                const fav = favTerms.includes(item.term);
+                const card = document.createElement('div');
+                card.className = `bg-white dark:bg-slate-800 p-5 rounded-2xl border shadow-sm card-hover flex flex-col justify-between space-y-3 ${learned ? 'border-emerald-300 dark:border-emerald-500/40' : 'border-slate-200/80 dark:border-slate-700'}`;
+                card.innerHTML = `
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-start">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-full border ${isGrammar
+                                ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/30'
+                                : isSupply
+                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/30'
+                                    : 'bg-brand-50 text-brand-700 border-brand-200 dark:bg-sky-500/10 dark:text-sky-300 dark:border-sky-500/30'}">
+                                ${item.category}
+                            </span>
+                            <div class="flex items-center gap-1">
+                                <button data-speak="${escapeHtml(item.term)}" class="text-slate-400 hover:text-brand-600 dark:hover:text-sky-400 transition-colors p-1" title="Pronounce audio" aria-label="Pronounce ${escapeHtml(item.term)}">
+                                    <i class="fa-solid fa-volume-high text-lg"></i>
+                                </button>
+                                <button data-favterm="${escapeHtml(item.term)}" class="star-btn p-1 ${fav ? 'on' : ''}" title="Favorite term" aria-label="Favorite ${escapeHtml(item.term)}">
+                                    <i class="${fav ? 'fa-solid' : 'fa-regular'} fa-star text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">${item.term}</h3>
+                        <p class="text-xs font-mono text-brand-600 dark:text-sky-400 bg-slate-50 dark:bg-slate-900/60 px-2 py-0.5 rounded inline-block">${item.ipa}</p>
+                        <p class="text-sm text-slate-600 dark:text-slate-300 leading-snug">${item.def}</p>
+                    </div>
+                    <div class="pt-3 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between gap-2">
+                        <p class="text-xs text-slate-500 dark:text-slate-400 italic flex-1">"${item.ex}"</p>
+                        <button data-learn="${escapeHtml(item.term)}" class="shrink-0 text-[10px] font-bold px-2.5 py-1.5 rounded-lg border transition-colors ${learned
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/30'
+                            : 'bg-slate-50 text-slate-500 border-slate-200 hover:text-emerald-600 hover:border-emerald-300 dark:bg-slate-900/60 dark:text-slate-400 dark:border-slate-600'}">
+                            ${learned ? '<i class="fa-solid fa-check mr-0.5"></i>Learned' : 'Mark learned'}
+                        </button>
+                    </div>`;
+                grid.appendChild(card);
+            });
+        }
+
+        function updateLearnedUI() {
+            const total = glossaryData.length;
+            document.getElementById('learned-count').innerText = `${learnedTerms.length}/${total}`;
+            document.getElementById('learned-bar').style.width = `${total ? (learnedTerms.length / total) * 100 : 0}%`;
+        }
+
+        function filterGlossary() {
+            const data = getFilteredGlossary();
+            currentGlossaryList = data;
+            const grid = document.getElementById('glossary-grid');
+            const empty = document.getElementById('glossary-empty');
+            const fcView = document.getElementById('flashcard-view');
+            empty.classList.toggle('hidden', data.length > 0);
+            if (!data.length) {
+                grid.classList.add('hidden');
+                fcView.classList.add('hidden');
+                return;
+            }
+            if (glossaryView === 'cards') {
+                fcView.classList.add('hidden');
+                grid.classList.remove('hidden');
+                renderGlossary(data);
+            } else {
+                grid.classList.add('hidden');
+                fcView.classList.remove('hidden');
+                fcList = data.slice();
+                fcPos = Math.max(0, Math.min(fcPos, fcList.length - 1));
+                renderFlashcard();
+            }
+        }
+
+        function clearGlossaryFilters() {
+            document.getElementById('glossary-search').value = '';
+            document.getElementById('glossary-filter').value = 'all';
+            favOnly = false;
+            updateFavOnlyBtn();
+            filterGlossary();
+        }
+
+        function toggleFavOnly() {
+            favOnly = !favOnly;
+            updateFavOnlyBtn();
+            filterGlossary();
+            if (favOnly && !favTerms.length) showToast('No favorite terms yet — tap the star on any card', 'info');
+        }
+
+        function updateFavOnlyBtn() {
+            const btn = document.getElementById('btn-fav-only');
+            btn.classList.toggle('text-amber-500', favOnly);
+            btn.classList.toggle('border-amber-300', favOnly);
+            btn.classList.toggle('bg-amber-50', favOnly);
+            btn.classList.toggle('dark:bg-amber-500/10', favOnly);
+        }
+
+        function setViewMode(mode) {
+            glossaryView = mode;
+            const active = ['bg-white', 'dark:bg-slate-900', 'shadow', 'text-brand-600', 'dark:text-sky-400'];
+            const inactive = ['text-slate-500', 'dark:text-slate-400'];
+            const bCards = document.getElementById('vm-cards');
+            const bFlash = document.getElementById('vm-flash');
+            const target = mode === 'cards' ? bCards : bFlash;
+            const other = mode === 'cards' ? bFlash : bCards;
+            active.forEach(cl => target.classList.add(cl));
+            inactive.forEach(cl => target.classList.remove(cl));
+            active.forEach(cl => other.classList.remove(cl));
+            inactive.forEach(cl => other.classList.add(cl));
+            filterGlossary();
+        }
+
+        function toggleLearned(term) {
+            const i = learnedTerms.indexOf(term);
+            if (i >= 0) {
+                learnedTerms.splice(i, 1);
+                showToast('Marked as not learned', 'info');
+            } else {
+                learnedTerms.push(term);
+                showToast('Term marked as learned', 'success');
+            }
+            store.set('learned', learnedTerms);
+            updateLearnedUI();
+            updateStatsBar();
+            filterGlossary();
+        }
+
+        function toggleFavTerm(term) {
+            const i = favTerms.indexOf(term);
+            if (i >= 0) {
+                favTerms.splice(i, 1);
+            } else {
+                favTerms.push(term);
+                showToast('Term added to favorites', 'success');
+            }
+            store.set('favTerms', favTerms);
+            if (favOnly && !favTerms.length) {
+                favOnly = false;
+                updateFavOnlyBtn();
+            }
+            filterGlossary();
+        }
+
+        /* ---- Flashcard Study Mode ---- */
+        function renderFlashcard() {
+            if (!fcList.length) return;
+            fcPos = Math.max(0, Math.min(fcPos, fcList.length - 1));
+            const item = fcList[fcPos];
+            const card = document.getElementById('flash-card');
+            fcFlipped = false;
+            card.classList.remove('flipped');
+            document.getElementById('fc-term').innerText = item.term;
+            document.getElementById('fc-ipa').innerText = item.ipa;
+            document.getElementById('fc-def').innerText = item.def;
+            document.getElementById('fc-ex').innerText = `"${item.ex}"`;
+            const cat = document.getElementById('fc-category');
+            cat.innerText = item.category;
+            const isGrammar = item.category === 'Grammar';
+            const isSupply = item.category === 'Supply Chain';
+            cat.className = 'absolute top-4 left-4 text-xs font-bold px-2.5 py-1 rounded-full border ' + (isGrammar
+                ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-300 dark:border-amber-500/30'
+                : isSupply
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/30'
+                    : 'bg-brand-50 text-brand-700 border-brand-200 dark:bg-sky-500/10 dark:text-sky-300 dark:border-sky-500/30');
+            document.getElementById('fc-counter').innerText = `Card ${fcPos + 1} of ${fcList.length}`;
+            updateFcLearnBtn(item);
+        }
+
+        function updateFcLearnBtn(item) {
+            const btn = document.getElementById('fc-learn');
+            const learned = learnedTerms.includes(item.term);
+            btn.className = 'px-4 py-2.5 rounded-xl text-xs font-bold border transition-colors ' + (learned
+                ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/30'
+                : 'bg-slate-50 text-slate-500 border-slate-200 hover:text-emerald-600 hover:border-emerald-300 dark:bg-slate-900/60 dark:text-slate-400 dark:border-slate-600');
+            btn.innerHTML = learned ? '<i class="fa-solid fa-check mr-1"></i>Learned' : '<i class="fa-regular fa-square-check mr-1"></i>Mark learned';
+        }
+
+        function fcFlip() {
+            if (!fcList.length) return;
+            fcFlipped = !fcFlipped;
+            document.getElementById('flash-card').classList.toggle('flipped', fcFlipped);
+        }
+
+        function fcMove(direction) {
+            if (!fcList.length) return;
+            fcPos = (fcPos + direction + fcList.length) % fcList.length;
+            renderFlashcard();
+        }
+
+        function fcSpeak() {
+            if (!fcList.length) return;
+            speakText(fcList[fcPos].term);
+        }
+
+        function fcShuffle() {
+            if (!fcList.length) return;
+            shuffleArr(fcList);
+            fcPos = 0;
+            renderFlashcard();
+            showToast('Deck shuffled', 'info');
+        }
+
+        function fcToggleLearn() {
+            if (!fcList.length) return;
+            toggleLearned(fcList[fcPos].term);
+        }
+
+        /* ================= GRAMMAR ENGINE ================= */
+        function buildQuizOrder() {
+            quizOrder = grammarQuestions.map(q => {
+                const opts = q.options.map((text, oi) => ({ text, correct: oi === q.correct }));
+                shuffleArr(opts);
+                return { q: q.q.replace(/^\d+\.\s*/, ''), explanation: q.explanation, options: opts };
+            });
+            shuffleArr(quizOrder);
+        }
+
+        function resetQuiz(userInitiated) {
+            quizScore = 0;
+            quizAnswered = 0;
+            buildQuizOrder();
+            renderGrammarQuiz();
+            document.getElementById('quiz-score').innerText = `Score: 0 / ${grammarQuestions.length}`;
+            document.getElementById('quiz-progress').style.width = '0%';
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('btn-quiz-retry').classList.add('hidden');
+            if (userInitiated) showToast('Quiz reshuffled — good luck!', 'info');
+        }
+
+        function renderGrammarQuiz() {
+            const container = document.getElementById('grammar-quiz-container');
+            container.innerHTML = '';
+
+            quizOrder.forEach((q, idx) => {
+                const qCard = document.createElement('div');
+                qCard.className = 'p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/40 space-y-3';
+
+                let optionsHTML = '';
+                q.options.forEach(opt => {
+                    optionsHTML += `
+                        <button data-correct="${opt.correct}" onclick="checkAnswer(${idx}, this)" class="quiz-opt-${idx} text-left text-sm font-medium p-3 rounded-lg border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:bg-brand-50 dark:hover:bg-sky-500/10 hover:border-brand-300 dark:hover:border-sky-500/40 transition-all w-full flex items-center justify-between gap-2">
+                            <span>${opt.text}</span>
+                            <i class="fa-regular fa-circle text-slate-300 dark:text-slate-600"></i>
+                        </button>`;
+                });
+
+                qCard.innerHTML = `
+                    <p class="text-sm font-semibold text-slate-800 dark:text-slate-200"><span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-brand-600 text-white text-[10px] font-bold mr-1.5">${idx + 1}</span>${q.q}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${optionsHTML}</div>
+                    <div id="explanation-${idx}" class="hidden text-xs p-2.5 rounded-lg"></div>`;
+                container.appendChild(qCard);
+            });
+        }
+
+        function checkAnswer(qIdx, btn) {
+            const q = quizOrder[qIdx];
+            const buttons = [...document.querySelectorAll(`.quiz-opt-${qIdx}`)];
+            if (buttons[0].dataset.answered) return;
+            buttons.forEach(b => { b.dataset.answered = '1'; });
+
+            const expBox = document.getElementById(`explanation-${qIdx}`);
+            const isCorrect = btn.dataset.correct === 'true';
+
+            const clearNeutral = b => b.classList.remove('bg-white', 'dark:bg-slate-800', 'border-slate-200', 'dark:border-slate-600');
+            const markCorrect = b => {
+                clearNeutral(b);
+                b.classList.add('bg-emerald-50', 'dark:bg-emerald-500/10', 'border-emerald-500', 'text-emerald-800', 'dark:text-emerald-300');
+                b.querySelector('i').className = 'fa-solid fa-circle-check text-emerald-600';
+            };
+            const markWrong = b => {
+                clearNeutral(b);
+                b.classList.add('bg-rose-50', 'dark:bg-rose-500/10', 'border-rose-400', 'text-rose-800', 'dark:text-rose-300');
+                b.querySelector('i').className = 'fa-solid fa-circle-xmark text-rose-500';
+            };
+
+            if (isCorrect) {
+                markCorrect(btn);
+                expBox.className = 'text-xs p-2.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 mt-2 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/30';
+                expBox.innerHTML = `<strong><i class="fa-solid fa-circle-check mr-1"></i>Correct!</strong> ${q.explanation}`;
+                quizScore += 1;
+            } else {
+                markWrong(btn);
+                markCorrect(buttons.find(b => b.dataset.correct === 'true'));
+                expBox.className = 'text-xs p-2.5 rounded-lg bg-rose-50 text-rose-800 border border-rose-200 mt-2 dark:bg-rose-500/10 dark:text-rose-300 dark:border-rose-500/30';
+                expBox.innerHTML = `<strong><i class="fa-solid fa-circle-xmark mr-1"></i>Incorrect.</strong> ${q.explanation}`;
+            }
+
+            expBox.classList.remove('hidden');
+            quizAnswered += 1;
+            document.getElementById('quiz-score').innerText = `Score: ${quizScore} / ${grammarQuestions.length}`;
+            document.getElementById('quiz-progress').style.width = `${(quizAnswered / grammarQuestions.length) * 100}%`;
+
+            if (quizAnswered === grammarQuestions.length) finishQuiz();
+        }
+
+        function finishQuiz() {
+            const pct = Math.round((quizScore / grammarQuestions.length) * 100);
+            const isPerfect = quizScore === grammarQuestions.length;
+            const box = document.getElementById('quiz-result');
+            const message = isPerfect
+                ? 'Perfect score — outstanding work!'
+                : quizScore >= 3
+                    ? 'Good effort! Review the explanations and try again.'
+                    : 'Keep practicing — review the formulas above and retry.';
+            box.className = 'p-4 rounded-xl border flex items-start gap-3 ' + (isPerfect
+                ? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/30'
+                : 'bg-brand-50 border-brand-200 dark:bg-sky-500/10 dark:border-sky-500/30');
+            box.innerHTML = `
+                <i class="fa-solid ${isPerfect ? 'fa-trophy text-amber-500' : 'fa-lightbulb text-brand-600 dark:text-sky-400'} text-xl mt-0.5"></i>
+                <div class="text-sm">
+                    <p class="font-bold text-slate-800 dark:text-slate-100">${message}</p>
+                    <p class="text-slate-600 dark:text-slate-300 mt-0.5">You scored ${quizScore}/${grammarQuestions.length} (${pct}%).</p>
+                </div>`;
+            box.classList.remove('hidden');
+            document.getElementById('btn-quiz-retry').classList.remove('hidden');
+
+            if (quizScore > quizBest) {
+                quizBest = quizScore;
+                store.set('quizBest', quizBest);
+                document.getElementById('quiz-best').innerText = `Best: ${quizBest}`;
+                updateStatsBar();
+                showToast(`New best score: ${quizBest}/${grammarQuestions.length}!`, 'success');
+            }
+            if (isPerfect) launchConfetti();
+        }
+
+        /* ================= WORD PARTNERS CHALLENGE ================= */
+        const collocationPairs = [
+            { first: "spending", second: "spree" },
+            { first: "devise", second: "a plan" },
+            { first: "fragile", second: "system" },
+            { first: "meet", second: "demand" },
+            { first: "supply", second: "chain" },
+            { first: "stay ahead of", second: "the competition" }
+        ];
+        let matchFirstSel = null;
+        let matchLocked = 0;
+
+        function buildMatch() {
+            matchFirstSel = null;
+            matchLocked = 0;
+            updateMatchScore();
+            const board = document.getElementById('match-board');
+            board.innerHTML = '';
+            const leftCol = document.createElement('div');
+            const rightCol = document.createElement('div');
+            leftCol.className = 'space-y-2';
+            rightCol.className = 'space-y-2';
+            shuffleArr(collocationPairs.map((p, i) => i)).forEach(i => leftCol.appendChild(makeMatchBtn(i, collocationPairs[i].first, 'first')));
+            shuffleArr(collocationPairs.map((p, i) => i)).forEach(i => rightCol.appendChild(makeMatchBtn(i, collocationPairs[i].second, 'second')));
+            board.appendChild(leftCol);
+            board.appendChild(rightCol);
+        }
+
+        function makeMatchBtn(id, text, side) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.dataset.id = String(id);
+            btn.dataset.side = side;
+            btn.onclick = () => handleMatchClick(btn);
+            btn.className = 'match-btn w-full text-sm font-semibold px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-900/40 text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-sky-500/10 hover:border-brand-300 dark:hover:border-sky-500/40 transition-all text-left';
+            btn.innerText = text;
+            return btn;
+        }
+
+        function handleMatchClick(btn) {
+            if (btn.classList.contains('matched')) return;
+            if (btn.dataset.side === 'first') {
+                if (matchFirstSel === btn) {
+                    btn.classList.remove('ring-2', 'ring-brand-500', 'dark:ring-sky-400');
+                    matchFirstSel = null;
+                    return;
+                }
+                if (matchFirstSel) matchFirstSel.classList.remove('ring-2', 'ring-brand-500', 'dark:ring-sky-400');
+                matchFirstSel = btn;
+                btn.classList.add('ring-2', 'ring-brand-500', 'dark:ring-sky-400');
+                return;
+            }
+            if (!matchFirstSel) {
+                showToast('Pick the first half of the collocation first', 'info');
+                return;
+            }
+            const firstBtn = matchFirstSel;
+            matchFirstSel = null;
+            firstBtn.classList.remove('ring-2', 'ring-brand-500', 'dark:ring-sky-400');
+            if (firstBtn.dataset.id === btn.dataset.id) {
+                [firstBtn, btn].forEach(b => {
+                    b.classList.add('matched', 'bg-emerald-50', 'dark:bg-emerald-500/10', 'border-emerald-400', 'text-emerald-700', 'dark:text-emerald-300');
+                });
+                matchLocked += 1;
+                updateMatchScore();
+                playBeep(900, 0.1);
+                if (matchLocked === collocationPairs.length) {
+                    showToast('All collocations matched — great job!', 'success');
+                    launchConfetti();
+                }
+            } else {
+                [firstBtn, btn].forEach(b => {
+                    b.classList.add('border-rose-400', 'text-rose-600', 'dark:text-rose-300');
+                    setTimeout(() => b.classList.remove('border-rose-400', 'text-rose-600', 'dark:text-rose-300'), 450);
+                });
+                playBeep(300, 0.12);
+            }
+        }
+
+        function updateMatchScore() {
+            const el = document.getElementById('match-score');
+            if (el) el.innerText = `${matchLocked} / ${collocationPairs.length} matched`;
+        }
+
+        function resetMatch() {
+            buildMatch();
+            showToast('Board reshuffled — match them again!', 'info');
+        }
+
+        /* ================= VOIZ SPRINT ENGINE ================= */
+        function initVoizSelector() {
+            const select = document.getElementById('prompt-select');
+            select.innerHTML = '';
+            voizPrompts.forEach((p, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                const marks = (promptResults[p.id] ? ' \u2713' : '') + (favPrompts.includes(p.id) ? ' \u2605' : '');
+                opt.innerText = `${p.id}. ${p.title}${marks}`;
+                select.appendChild(opt);
+            });
+        }
+
+        function loadPrompt(index) {
+            currentPromptIndex = Math.max(0, Math.min(index, voizPrompts.length - 1));
+            document.getElementById('prompt-select').value = currentPromptIndex;
+            const data = voizPrompts[currentPromptIndex];
+
+            document.getElementById('prompt-badge').innerText = `Prompt ${data.id} of ${voizPrompts.length}`;
+            document.getElementById('prompt-title').innerText = data.title;
+            document.getElementById('benchmark-text').innerText = data.benchmark;
+
+            const targetContainer = document.getElementById('prompt-target-vocab');
+            targetContainer.innerHTML = '';
+            data.vocab.forEach(word => {
+                const chip = document.createElement('span');
+                chip.className = 'bg-brand-50 text-brand-700 font-semibold text-xs px-3 py-1 rounded-full border border-brand-200 dark:bg-sky-500/10 dark:text-sky-300 dark:border-sky-500/30';
+                chip.innerText = word;
+                targetContainer.appendChild(chip);
+            });
+
+            updateFavPromptBtn();
+            resetSprint();
+        }
+
+        function navigatePrompt(direction) {
+            const newIndex = currentPromptIndex + direction;
+            if (newIndex >= 0 && newIndex < voizPrompts.length) {
+                loadPrompt(newIndex);
+            } else {
+                showToast(direction > 0 ? 'You reached the last prompt' : 'You are at the first prompt', 'info');
+            }
+        }
+
+        function jumpToPending() {
+            const idx = voizPrompts.findIndex(p => !promptResults[p.id]);
+            if (idx === -1) {
+                showToast('All 30 prompts completed — amazing!', 'success');
+                launchConfetti();
+                return;
+            }
+            loadPrompt(idx);
+            showToast(`Jumped to pending Prompt ${voizPrompts[idx].id}`, 'info');
+        }
+
+        function randomPrompt() {
+            if (voizPrompts.length < 2) return;
+            let idx;
+            do { idx = Math.floor(Math.random() * voizPrompts.length); } while (idx === currentPromptIndex);
+            loadPrompt(idx);
+        }
+
+        function toggleFavPrompt() {
+            const id = voizPrompts[currentPromptIndex].id;
+            const i = favPrompts.indexOf(id);
+            if (i >= 0) {
+                favPrompts.splice(i, 1);
+                showToast('Prompt removed from favorites', 'info');
+            } else {
+                favPrompts.push(id);
+                showToast('Prompt added to favorites', 'success');
+            }
+            store.set('favPrompts', favPrompts);
+            updateFavPromptBtn();
+            initVoizSelector();
+            document.getElementById('prompt-select').value = currentPromptIndex;
+        }
+
+        function updateFavPromptBtn() {
+            const id = voizPrompts[currentPromptIndex].id;
+            const on = favPrompts.includes(id);
+            document.getElementById('fav-prompt-icon').className = on ? 'fa-solid fa-star text-amber-500' : 'fa-regular fa-star';
+        }
+
+        function setDuration(sec) {
+            if (sprintState !== 'idle') {
+                showToast('Finish or reset the current sprint first', 'warn');
+                return;
+            }
+            sprintSeconds = sec;
+            store.set('sprintSeconds', sec);
+            document.querySelectorAll('.dur-btn').forEach(b => {
+                const on = parseInt(b.dataset.dur, 10) === sec;
+                b.className = 'dur-btn px-2.5 py-1 rounded-lg text-xs font-bold transition-all ' + (on
+                    ? 'bg-brand-600 text-white shadow'
+                    : 'bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600');
+            });
+            document.getElementById('timer-display').innerText = sec.toFixed(1);
+            document.getElementById('timer-circle').style.strokeDashoffset = 0;
+        }
+
+        /* ---- Sound FX ---- */
+        let audioCtx = null;
+        function playBeep(freq = 800, duration = 0.1) {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.frequency.value = freq;
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {}
+        }
+
+        /* ---- Microphone & Recorder ---- */
+        function startMic() {
+            return new Promise(resolve => {
+                if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) { resolve(false); return; }
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                    .then(stream => {
+                        micStream = stream;
+                        try { mediaRecorder = new MediaRecorder(stream); } catch (e) { resolve(true); return; }
+                        audioChunks = [];
+                        const rec = mediaRecorder;
+                        rec.ondataavailable = e => { if (e.data && e.data.size) audioChunks.push(e.data); };
+                        rec.onstop = () => {
+                            const type = rec.mimeType || 'audio/webm';
+                            audioBlob = new Blob(audioChunks, { type });
+                            if (audioUrl) URL.revokeObjectURL(audioUrl);
+                            audioUrl = URL.createObjectURL(audioBlob);
+                            document.getElementById('audio-playback').src = audioUrl;
+                            document.getElementById('playback-area').classList.remove('hidden');
+                            const ext = type.includes('mp4') ? 'm4a' : (type.includes('ogg') ? 'ogg' : 'webm');
+                            const dl = document.getElementById('btn-download-rec');
+                            dl.href = audioUrl;
+                            dl.download = `voiz-prompt-${voizPrompts[currentPromptIndex].id}.${ext}`;
+                        };
+                        rec.start();
+                        resolve(true);
+                    })
+                    .catch(() => {
+                        showToast('Microphone not available — the timer will run without recording', 'warn');
+                        resolve(false);
+                    });
+            });
+        }
+
+        function stopMicOnly() {
+            try { if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop(); } catch (e) {}
+            mediaRecorder = null;
+            try { if (micStream) micStream.getTracks().forEach(t => t.stop()); } catch (e) {}
+            micStream = null;
+        }
+
+        /* ---- Live Speech-to-Text (beta) ---- */
+        function startRecognition() {
+            if (!SRClass || !voiceAssist) return;
+            try {
+                recognition = new SRClass();
+                recognition.lang = 'en-US';
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                finalTranscript = '';
+                interimTranscript = '';
+                recognition.onresult = e => {
+                    interimTranscript = '';
+                    for (let i = e.resultIndex; i < e.results.length; i++) {
+                        const t = e.results[i][0].transcript;
+                        if (e.results[i].isFinal) finalTranscript += t + ' ';
+                        else interimTranscript += t;
+                    }
+                    updateTranscriptBox();
+                };
+                recognition.onerror = () => {};
+                recognition.onend = () => { srActive = false; };
+                recognition.start();
+                srActive = true;
+            } catch (e) { srActive = false; }
+        }
+
+        function stopRecognition() {
+            try { if (recognition && srActive) recognition.stop(); } catch (e) {}
+            srActive = false;
+        }
+
+        function updateTranscriptBox() {
+            if (!SRClass || !voiceAssist) return;
+            const box = document.getElementById('transcript-box');
+            const txt = document.getElementById('transcript-text');
+            box.classList.remove('hidden');
+            const full = (finalTranscript + ' ' + interimTranscript).trim();
+            txt.innerHTML = full
+                ? escapeHtml(full)
+                : '<span class="text-slate-400 dark:text-slate-500 italic">Listening... speak to see the live transcription.</span>';
+        }
+
+        function toggleVoiceAssist() {
+            if (!SRClass) {
+                showToast('Live transcription is not supported on this browser', 'error');
+                return;
+            }
+            voiceAssist = !voiceAssist;
+            store.set('voiceAssist', voiceAssist);
+            updateCCBtn();
+            showToast(voiceAssist ? 'Live transcription enabled' : 'Live transcription disabled', 'info');
+            if (!voiceAssist) document.getElementById('transcript-box').classList.add('hidden');
+        }
+
+        function updateCCBtn() {
+            const btn = document.getElementById('btn-cc');
+            if (!SRClass) { btn.classList.add('hidden'); return; }
+            btn.classList.remove('hidden');
+            btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold transition-all ' + (voiceAssist
+                ? 'bg-brand-600 text-white shadow'
+                : 'bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600');
+            btn.innerHTML = `<i class="fa-solid fa-closed-captioning mr-1"></i>CC ${voiceAssist ? 'On' : 'Off'}`;
+        }
+
+        /* ---- Sprint Flow ---- */
+        function startSprint() {
+            if (sprintState !== 'idle') return;
+            sprintState = 'prep';
+
+            const startBtn = document.getElementById('btn-start-sprint');
+            startBtn.disabled = true;
+            startBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            const display = document.getElementById('timer-display');
+            document.getElementById('recording-status').innerHTML = '<span class="text-brand-600 dark:text-sky-400 font-bold">Get ready...</span>';
+
+            let count = 3;
+            const showPrep = n => {
+                display.classList.remove('prep-zoom');
+                void display.offsetWidth;
+                display.innerText = String(n);
+                display.classList.remove('text-slate-900', 'dark:text-white');
+                display.classList.add('text-brand-600', 'dark:text-sky-400', 'prep-zoom');
+            };
+            showPrep(count);
+            playBeep(880, 0.12);
+
+            prepInterval = setInterval(() => {
+                count -= 1;
+                if (count > 0) {
+                    showPrep(count);
+                    playBeep(880, 0.12);
+                } else {
+                    clearInterval(prepInterval);
+                    prepInterval = null;
+                    beginSprint();
+                }
+            }, 1000);
+        }
+
+        function beginSprint() {
+            sprintState = 'running';
+            const display = document.getElementById('timer-display');
+            const circle = document.getElementById('timer-circle');
+
+            display.classList.remove('prep-zoom');
+            display.classList.remove('text-brand-600', 'dark:text-sky-400');
+            display.classList.add('text-slate-900', 'dark:text-white');
+            circle.classList.replace('text-brand-600', 'text-rose-500');
+            document.getElementById('timer-wrap').classList.add('sprint-pulse');
+            document.getElementById('recording-status').innerHTML = '<span class="text-rose-600 font-bold animate-pulse"><i class="fa-solid fa-circle text-xs mr-1"></i> Recording... Speak now!</span>';
+
+            playBeep(1000, 0.15);
+            startMic();
+            startRecognition();
+
+            const totalTicks = sprintSeconds * 10;
+            ticksLeft = totalTicks;
+            lastBeepSec = null;
+
+            tickInterval = setInterval(() => {
+                ticksLeft -= 1;
+                if (ticksLeft <= 0) {
+                    ticksLeft = 0;
+                    updateTimerUI(display, circle);
+                    stopSprint();
+                    return;
+                }
+                updateTimerUI(display, circle);
+                const sec = Math.ceil(ticksLeft / 10);
+                if (sec <= 3 && sec !== lastBeepSec) {
+                    lastBeepSec = sec;
+                    playBeep(650, 0.08);
+                }
+            }, 100);
+        }
+
+        function updateTimerUI(display, circle) {
+            display.innerText = (ticksLeft / 10).toFixed(1);
+            circle.style.strokeDashoffset = CIRCLE_C * (1 - ticksLeft / (sprintSeconds * 10));
+        }
+
+        function stopSprint() {
+            clearInterval(tickInterval);
+            tickInterval = null;
+            if (sprintState !== 'running') return;
+            sprintState = 'idle';
+
+            playBeep(1200, 0.3);
+            document.getElementById('timer-wrap').classList.remove('sprint-pulse');
+            document.getElementById('timer-circle').classList.replace('text-rose-500', 'text-brand-600');
+            document.getElementById('recording-status').innerHTML = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-check mr-1"></i> Sprint completed! Rate your performance below.</span>';
+
+            const startBtn = document.getElementById('btn-start-sprint');
+            startBtn.disabled = false;
+            startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+            stopRecognition();
+            setTimeout(() => {
+                stopMicOnly();
+                openAssessment();
+            }, 400);
+        }
+
+        function resetSprint() {
+            clearInterval(prepInterval);
+            clearInterval(tickInterval);
+            prepInterval = null;
+            tickInterval = null;
+            sprintState = 'idle';
+            stopRecognition();
+            stopMicOnly();
+            finalTranscript = '';
+            interimTranscript = '';
+
+            const display = document.getElementById('timer-display');
+            display.innerText = sprintSeconds.toFixed(1);
+            display.classList.remove('text-brand-600', 'dark:text-sky-400', 'prep-zoom');
+            display.classList.add('text-slate-900', 'dark:text-white');
+            document.getElementById('timer-circle').style.strokeDashoffset = 0;
+            document.getElementById('timer-circle').classList.replace('text-rose-500', 'text-brand-600');
+            document.getElementById('timer-wrap').classList.remove('sprint-pulse');
+            document.getElementById('recording-status').innerHTML = 'Press Start Sprint to speak';
+            document.getElementById('playback-area').classList.add('hidden');
+
+            const startBtn = document.getElementById('btn-start-sprint');
+            startBtn.disabled = false;
+            startBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+
+        /* ---- Self-Assessment & Progress ---- */
+        function normalizeText(s) {
+            return ' ' + String(s).toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim() + ' ';
+        }
+
+        function openAssessment() {
+            const data = voizPrompts[currentPromptIndex];
+            assessment = { used: [], rating: 0 };
+
+            document.getElementById('assessment-prompt').innerText = `Prompt ${data.id}`;
+
+            const tBox = document.getElementById('transcript-box');
+            if (SRClass && voiceAssist) {
+                tBox.classList.remove('hidden');
+                const full = finalTranscript.trim();
+                document.getElementById('transcript-text').innerHTML = full
+                    ? escapeHtml(full)
+                    : '<span class="text-slate-400 dark:text-slate-500 italic">No transcription captured (speak clearly near the microphone).</span>';
+                const norm = normalizeText(finalTranscript + ' ' + interimTranscript);
+                assessment.used = data.vocab.filter(w => norm.includes(normalizeText(w)));
+            } else {
+                tBox.classList.add('hidden');
+            }
+
+            renderAssessmentVocab(data);
+            renderRatingStars();
+            const panel = document.getElementById('assessment-panel');
+            panel.classList.remove('hidden');
+            panel.classList.remove('fade-in');
+            void panel.offsetWidth;
+            panel.classList.add('fade-in');
+        }
+
+        function renderAssessmentVocab(data) {
+            const c = document.getElementById('assessment-vocab');
+            c.innerHTML = '';
+            data.vocab.forEach(w => {
+                const on = assessment.used.includes(w);
+                const chip = document.createElement('button');
+                chip.type = 'button';
+                chip.className = 'text-xs font-semibold px-3 py-1.5 rounded-full border transition-all ' + (on
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-500/10 dark:text-emerald-300 dark:border-emerald-500/40'
+                    : 'bg-slate-50 text-slate-500 border-slate-200 dark:bg-slate-900/60 dark:text-slate-400 dark:border-slate-600');
+                chip.innerHTML = (on ? '<i class="fa-solid fa-check mr-1"></i>' : '') + escapeHtml(w);
+                chip.onclick = () => {
+                    const i = assessment.used.indexOf(w);
+                    if (i >= 0) assessment.used.splice(i, 1); else assessment.used.push(w);
+                    renderAssessmentVocab(data);
+                };
+                c.appendChild(chip);
+            });
+        }
+
+        function renderRatingStars() {
+            const c = document.getElementById('rating-stars');
+            c.innerHTML = '';
+            for (let n = 1; n <= 5; n++) {
+                const b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'star-btn text-2xl ' + (n <= assessment.rating ? 'on' : '');
+                b.innerHTML = '<i class="fa-solid fa-star"></i>';
+                b.setAttribute('aria-label', `${n} star${n > 1 ? 's' : ''}`);
+                b.onclick = () => { assessment.rating = n; renderRatingStars(); };
+                c.appendChild(b);
+            }
+        }
+
+        function saveAssessment() {
+            const data = voizPrompts[currentPromptIndex];
+            if (!assessment.rating) {
+                showToast('Choose a fluency rating first (1-5 stars)', 'warn');
+                return;
+            }
+            const firstTime = !promptResults[data.id];
+            promptResults[data.id] = { used: assessment.used.slice(), rating: assessment.rating, ts: Date.now() };
+            store.set('promptResults', promptResults);
+            sprintsDone += 1;
+            store.set('sprintsDone', sprintsDone);
+            updateStreak();
+
+            hideAssessment();
+            updateVoizProgress();
+            updateStatsBar();
+            initVoizSelector();
+            document.getElementById('prompt-select').value = currentPromptIndex;
+
+            const doneCount = Object.keys(promptResults).length;
+            showToast(firstTime
+                ? `Sprint saved — ${doneCount} of ${voizPrompts.length} prompts completed!`
+                : 'Sprint saved! Repeat it to build mastery.', 'success');
+            if (doneCount === voizPrompts.length) {
+                launchConfetti();
+                showToast('All 30 VOIZ prompts completed — outstanding!', 'success');
+            } else if (doneCount % 10 === 0) {
+                launchConfetti();
+            }
+        }
+
+        function hideAssessment() {
+            document.getElementById('assessment-panel').classList.add('hidden');
+        }
+
+        function discardAssessment() {
+            hideAssessment();
+            showToast('Assessment dismissed — no progress saved', 'info');
+        }
+
+        function updateStreak() {
+            const today = new Date().toDateString();
+            const yesterday = new Date(Date.now() - 86400000).toDateString();
+            if (streak.last !== today) {
+                streak.count = streak.last === yesterday ? streak.count + 1 : 1;
+                streak.last = today;
+                store.set('streak', streak);
+            }
+        }
+
+        function updateVoizProgress() {
+            const done = Object.keys(promptResults).length;
+            const pct = Math.round((done / voizPrompts.length) * 100);
+            document.getElementById('voiz-progress-text').innerText = `${done}/${voizPrompts.length} (${pct}%)`;
+            document.getElementById('voiz-progress-bar').style.width = pct + '%';
+        }
+
+        /* ================= RESET ================= */
+        function resetAllProgress() {
+            if (!confirm('Reset all learning progress (glossary, quiz, sprints)? This cannot be undone.')) return;
+            store.clearAll();
+            learnedTerms = [];
+            favTerms = [];
+            promptResults = {};
+            favPrompts = [];
+            quizBest = 0;
+            sprintsDone = 0;
+            streak = { count: 0, last: null };
+            favOnly = false;
+            updateFavOnlyBtn();
+            document.getElementById('glossary-search').value = '';
+            document.getElementById('glossary-filter').value = 'all';
+            filterGlossary();
+            resetQuiz(false);
+            document.getElementById('quiz-best').innerText = 'Best: 0';
+            initVoizSelector();
+            loadPrompt(currentPromptIndex);
+            updateStatsBar();
+            updateVoizProgress();
+            showToast('All progress has been reset', 'info');
+        }
+
+        /* ================= KEYBOARD SHORTCUTS ================= */
+        document.addEventListener('keydown', e => {
+            const tag = (e.target && e.target.tagName ? e.target.tagName : '').toLowerCase();
+            if (tag === 'input' || tag === 'select' || tag === 'textarea') return;
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+            if (currentTab === 'voiz') {
+                if (e.key === 'ArrowLeft') { e.preventDefault(); navigatePrompt(-1); }
+                else if (e.key === 'ArrowRight') { e.preventDefault(); navigatePrompt(1); }
+                else if (e.key.toLowerCase() === 's') { startSprint(); }
+                else if (e.key.toLowerCase() === 'l') { speakBenchmark(0.95); }
+                else if (e.key.toLowerCase() === 'f') { toggleFavPrompt(); }
+            } else if (currentTab === 'glossary' && glossaryView === 'flashcards') {
+                if (e.key === 'ArrowLeft') { e.preventDefault(); fcMove(-1); }
+                else if (e.key === 'ArrowRight') { e.preventDefault(); fcMove(1); }
+                else if (e.key === ' ') { e.preventDefault(); fcFlip(); }
+            }
+        });
+
+        /* ================= INITIALIZATION ================= */
+        document.getElementById('glossary-grid').addEventListener('click', e => {
+            const speakBtn = e.target.closest('[data-speak]');
+            if (speakBtn) { speakText(speakBtn.dataset.speak); return; }
+            const favBtn = e.target.closest('[data-favterm]');
+            if (favBtn) { toggleFavTerm(favBtn.dataset.favterm); return; }
+            const learnBtn = e.target.closest('[data-learn]');
+            if (learnBtn) { toggleLearned(learnBtn.dataset.learn); }
+        });
+
+        window.addEventListener('load', () => {
+            applyDark(store.get('dark', !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)));
+            initGlossaryFilter();
+            setViewMode('cards');
+            filterGlossary();
+            updateLearnedUI();
+            buildMatch();
+            resetQuiz(false);
+            document.getElementById('quiz-best').innerText = `Best: ${quizBest}`;
+            initVoizSelector();
+            loadPrompt(0);
+            setDuration(sprintSeconds);
+            updateCCBtn();
+            updateStatsBar();
+            updateVoizProgress();
+        });
+    </script>
+</body>
+</html>
