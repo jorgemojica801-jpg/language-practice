@@ -1,0 +1,2104 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GBS Language Training · Sistema Voiz Pro</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%232551eb'/%3E%3Ctext x='50' y='68' font-size='48' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold'%3EV%3C/text%3E%3C/svg%3E">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Tipografía -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 50:'#eef4ff',100:'#dbe6fe',200:'#bfd3fe',300:'#93b4fd',400:'#6090fa',500:'#3b6cf6',600:'#2551eb',700:'#1d3fd8',800:'#1e35af',900:'#1e318a' },
+                        accent: { 50:'#f5f3ff',100:'#ede9fe',200:'#ddd6fe',500:'#8b5cf6',600:'#7c3aed',700:'#6d28d9' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['"Plus Jakarta Sans"', 'Inter', 'sans-serif']
+                    },
+                    boxShadow: {
+                        soft: '0 8px 30px rgba(15,23,42,.06)',
+                        lift: '0 16px 40px rgba(37,81,235,.16)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* ---------- Base ---------- */
+        body { font-feature-settings: "cv02","cv03","cv04"; }
+        .font-display { letter-spacing: -0.02em; }
+
+        /* ---------- Decoración de fondo ---------- */
+        .bg-decor { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+        .bg-decor::before { content:''; position:absolute; width:560px; height:560px; border-radius:50%;
+            background: radial-gradient(circle, rgba(37,81,235,.09), transparent 65%); top:-180px; left:-140px; }
+        .bg-decor::after { content:''; position:absolute; width:620px; height:620px; border-radius:50%;
+            background: radial-gradient(circle, rgba(124,58,237,.08), transparent 65%); bottom:-220px; right:-160px; }
+
+        /* ---------- Header glass ---------- */
+        .glass-header { background: rgba(255,255,255,.78); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+        .nav-pill { display:inline-flex; align-items:center; gap:.45rem; padding:.5rem .95rem; border-radius:.8rem;
+            font-size:.875rem; font-weight:500; color:#64748b; transition:all .18s ease; white-space:nowrap; }
+        .nav-pill:hover { color:#0f172a; background:#f1f5f9; }
+        .nav-pill-active { background:linear-gradient(135deg,#2551eb,#7c3aed); color:#fff !important;
+            box-shadow:0 8px 20px rgba(37,81,235,.30); }
+        .nav-pill-active:hover { background:linear-gradient(135deg,#2551eb,#7c3aed); }
+        .nav-pill-mobile { padding:.55rem .8rem; border-radius:.7rem; font-size:.78rem; }
+
+        /* ---------- Animaciones ---------- */
+        @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes popIn { from { opacity:0; transform:scale(.96); } to { opacity:1; transform:scale(1); } }
+        @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.25; } }
+        @keyframes pulseRing { 0% { box-shadow:0 0 0 0 rgba(225,29,72,.35);} 70% { box-shadow:0 0 0 12px rgba(225,29,72,0);} 100% { box-shadow:0 0 0 0 rgba(225,29,72,0);} }
+        @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-5px)} 40%{transform:translateX(5px)} 60%{transform:translateX(-3px)} 80%{transform:translateX(3px)} }
+        @keyframes eqBar { 0%,100%{height:30%} 50%{height:100%} }
+        .sec-enter { animation: fadeUp .38s ease both; }
+        .pop-in { animation: popIn .25s ease both; }
+        .shake { animation: shake .4s ease; }
+        .rec-dot { width:9px; height:9px; border-radius:9999px; background:#e11d48; animation: blink 1s infinite; }
+        .rec-glow { animation: pulseRing 1.6s infinite; }
+
+        /* ---------- Equalizer decorativo ---------- */
+        .eq { display:inline-flex; align-items:flex-end; gap:2.5px; height:16px; }
+        .eq span { width:3px; border-radius:2px; background:currentColor; animation: eqBar 1s ease-in-out infinite; }
+        .eq span:nth-child(2){ animation-delay:.15s } .eq span:nth-child(3){ animation-delay:.3s }
+        .eq span:nth-child(4){ animation-delay:.45s } .eq span:nth-child(5){ animation-delay:.6s }
+
+        /* ---------- Anillo del temporizador ---------- */
+        .circle-bg { fill:none; stroke:#e2e8f0; stroke-width:4; }
+        .circle-progress { fill:none; stroke-width:4; stroke-linecap:round; transform:rotate(-90deg);
+            transform-origin:50% 50%; transition: stroke-dashoffset .12s linear, stroke .4s ease; }
+
+        /* ---------- Análisis palabra por palabra ---------- */
+        .w-ok    { background:#d1fae5; color:#065f46; border:1px solid #a7f3d0; }
+        .w-sub   { background:#ffe4e6; color:#9f1239; border:1px solid #fecdd3; }
+        .w-del   { background:#fef3c7; color:#92400e; border:1px solid #fde68a; text-decoration:line-through; opacity:.85; }
+        .w-ins   { background:#ede9fe; color:#5b21b6; border:1px dashed #c4b5fd; }
+        .w-chip  { display:inline-block; padding:.3rem .6rem; margin:.22rem; border-radius:.6rem;
+                   font-size:.85rem; font-weight:600; animation:popIn .3s ease both; position:relative; }
+        .w-chip small { display:block; font-size:.62rem; font-weight:500; opacity:.75; text-decoration:none; }
+
+        /* ---------- Scrollbars finas ---------- */
+        .nice-scroll::-webkit-scrollbar { width:6px; height:6px; }
+        .nice-scroll::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:9999px; }
+        .nice-scroll::-webkit-scrollbar-track { background:transparent; }
+
+        /* ---------- Chips de ordenar / emparejar ---------- */
+        .chip-tok { padding:.45rem .8rem; border-radius:.7rem; background:#fff; border:1.5px solid #e2e8f0;
+            font-size:.85rem; font-weight:600; color:#334155; cursor:pointer; transition:all .15s; user-select:none; }
+        .chip-tok:hover { border-color:#2551eb; color:#2551eb; transform:translateY(-1px); }
+        .chip-tok.used { opacity:.25; pointer-events:none; }
+        .chip-lock { padding:.45rem .8rem; border-radius:.7rem; background:#eef4ff; border:1.5px solid #bfd3fe;
+            font-size:.85rem; font-weight:600; color:#1e35af; cursor:pointer; transition:all .15s; }
+        .chip-lock:hover { border-color:#2551eb; }
+
+        /* ---------- Tarjetas ---------- */
+        .card-hover { transition: transform .2s ease, box-shadow .2s ease; }
+        .card-hover:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(15,23,42,.10); }
+
+        /* ---------- Hero ---------- */
+        .hero-grad { background: linear-gradient(130deg,#1d3fd8 0%, #2551eb 38%, #6d28d9 100%); }
+        .dot-grid { background-image: radial-gradient(rgba(255,255,255,.16) 1px, transparent 1px); background-size: 20px 20px; }
+
+        /* ---------- Segmented control ---------- */
+        .seg-btn { padding:.5rem 1rem; border-radius:.65rem; font-size:.82rem; font-weight:600; color:#64748b; transition:all .18s; }
+        .seg-btn-active { background:#fff; color:#2551eb; box-shadow:0 2px 8px rgba(15,23,42,.12); }
+
+        /* ---------- Inputs ---------- */
+        input:focus, select:focus, button:focus-visible { outline:none; }
+        .fill-input { border:1.5px solid #e2e8f0; border-radius:.6rem; padding:.4rem .7rem; font-size:.85rem; width:130px;
+            transition:border-color .15s; background:#fff; }
+        .fill-input:focus { border-color:#2551eb; box-shadow:0 0 0 3px rgba(37,81,235,.12); }
+        .fill-input.ok { border-color:#10b981; background:#ecfdf5; }
+        .fill-input.bad { border-color:#f43f5e; background:#fff1f2; }
+    </style>
+</head>
+<body class="min-h-full text-slate-800 bg-slate-50 flex flex-col font-sans antialiased">
+<div class="bg-decor"></div>
+
+    <!-- ================================================================ -->
+    <!-- HEADER -->
+    <!-- ================================================================ -->
+    <header class="glass-header border-b border-slate-200/70 sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center gap-4">
+                <!-- Logo & Brand -->
+                <div class="flex items-center space-x-3 shrink-0">
+                    <div class="text-white p-2.5 rounded-xl shadow-lift flex items-center justify-center bg-gradient-to-br from-brand-600 to-accent-600">
+                        <i data-lucide="mic" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-display font-extrabold tracking-tight text-slate-900 leading-tight">GBS <span class="bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-accent-600">Language Training</span></h1>
+                        <p class="text-[11px] text-slate-500 font-medium">Metodología Voiz · ELE A1-A2 · 7 Unidades</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <nav class="hidden lg:flex items-center gap-1 bg-slate-100/70 p-1 rounded-2xl">
+                    <button onclick="switchTab('panel')" id="tab-panel" class="nav-pill nav-pill-active"><i data-lucide="bar-chart-3" class="w-4 h-4"></i> Panel</button>
+                    <button onclick="switchTab('glosario')" id="tab-glosario" class="nav-pill"><i data-lucide="book-open" class="w-4 h-4"></i> Glosario</button>
+                    <button onclick="switchTab('gramatica')" id="tab-gramatica" class="nav-pill"><i data-lucide="layout-grid" class="w-4 h-4"></i> Gramática</button>
+                    <button onclick="switchTab('ejercicios')" id="tab-ejercicios" class="nav-pill"><i data-lucide="pencil-line" class="w-4 h-4"></i> Ejercicios</button>
+                    <button onclick="switchTab('voiz')" id="tab-voiz" class="nav-pill"><i data-lucide="zap" class="w-4 h-4"></i> Voiz Oral <span class="text-[10px] font-bold bg-white/20 px-1.5 py-0.5 rounded-md" id="nav-voiz-count">70</span></button>
+                </nav>
+
+                <!-- Status Badge -->
+                <div class="hidden md:flex items-center shrink-0">
+                    <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span> Voiz AI Activo
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div class="lg:hidden border-t border-slate-200/70 bg-white/60 px-2 flex gap-1 overflow-x-auto nice-scroll">
+            <button onclick="switchTab('panel')" id="tab-mobile-panel" class="nav-pill nav-pill-active nav-pill-mobile"><i data-lucide="bar-chart-3" class="w-3.5 h-3.5"></i> Panel</button>
+            <button onclick="switchTab('glosario')" id="tab-mobile-glosario" class="nav-pill nav-pill-mobile"><i data-lucide="book-open" class="w-3.5 h-3.5"></i> Glosario</button>
+            <button onclick="switchTab('gramatica')" id="tab-mobile-gramatica" class="nav-pill nav-pill-mobile"><i data-lucide="layout-grid" class="w-3.5 h-3.5"></i> Gramática</button>
+            <button onclick="switchTab('ejercicios')" id="tab-mobile-ejercicios" class="nav-pill nav-pill-mobile"><i data-lucide="pencil-line" class="w-3.5 h-3.5"></i> Ejercicios</button>
+            <button onclick="switchTab('voiz')" id="tab-mobile-voiz" class="nav-pill nav-pill-mobile"><i data-lucide="zap" class="w-3.5 h-3.5"></i> Voiz Oral</button>
+        </div>
+    </header>
+
+    <!-- ================================================================ -->
+    <!-- MAIN -->
+    <!-- ================================================================ -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ============================================================ -->
+        <!-- SECCIÓN PANEL (DASHBOARD CON GRÁFICAS) -->
+        <!-- ============================================================ -->
+        <section id="sec-panel" class="space-y-8 sec-enter">
+
+            <!-- Hero banner -->
+            <div class="hero-grad rounded-3xl p-8 sm:p-10 text-white relative overflow-hidden shadow-lift">
+                <div class="dot-grid absolute inset-0 opacity-60"></div>
+                <div class="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-white/10 blur-2xl"></div>
+                <div class="absolute right-32 bottom-0 w-40 h-40 rounded-full bg-accent-500/30 blur-2xl"></div>
+                <div class="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+                    <div class="max-w-2xl">
+                        <span class="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest bg-white/15 border border-white/25 px-3 py-1 rounded-full">
+                            <i data-lucide="graduation-cap" class="w-3.5 h-3.5"></i> MCER A1-A2 · Español como Lengua Extranjera
+                        </span>
+                        <h2 class="font-display text-3xl sm:text-4xl font-extrabold mt-4 leading-tight">Domina el español con práctica oral inteligente</h2>
+                        <p class="text-blue-100 text-sm sm:text-base mt-3 leading-relaxed">7 unidades didácticas integradas · 41 términos con fonética IPA · 70 prompts de conversación · Evaluación de pronunciación en vivo con <span class="font-bold text-white">Word Error Rate</span> y detección palabra por palabra.</p>
+                        <div class="flex flex-wrap gap-3 mt-6">
+                            <button onclick="switchTab('voiz')" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-brand-700 font-bold text-sm rounded-xl shadow-md hover:bg-blue-50 transition-all active:scale-95">
+                                <i data-lucide="mic" class="w-4 h-4"></i> Iniciar Sprint Oral
+                            </button>
+                            <button onclick="switchTab('glosario')" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 border border-white/30 text-white font-bold text-sm rounded-xl hover:bg-white/20 transition-all active:scale-95">
+                                <i data-lucide="book-open" class="w-4 h-4"></i> Explorar Glosario
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex lg:flex-col gap-3 shrink-0">
+                        <div class="bg-white/12 border border-white/20 backdrop-blur rounded-2xl px-5 py-4 text-center min-w-[130px]">
+                            <p class="text-3xl font-display font-extrabold" id="hero-units">7</p>
+                            <p class="text-[11px] uppercase tracking-wider text-blue-100 font-bold mt-1">Unidades</p>
+                        </div>
+                        <div class="bg-white/12 border border-white/20 backdrop-blur rounded-2xl px-5 py-4 text-center min-w-[130px]">
+                            <p class="text-3xl font-display font-extrabold" id="hero-prompts">70</p>
+                            <p class="text-[11px] uppercase tracking-wider text-blue-100 font-bold mt-1">Prompts orales</p>
+                        </div>
+                        <div class="bg-white/12 border border-white/20 backdrop-blur rounded-2xl px-5 py-4 text-center min-w-[130px]">
+                            <p class="text-3xl font-display font-extrabold" id="hero-wer">WER</p>
+                            <p class="text-[11px] uppercase tracking-wider text-blue-100 font-bold mt-1">En vivo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stat cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-5 rounded-2xl shadow-soft border border-slate-200/70 card-hover">
+                    <div class="flex items-center justify-between">
+                        <span class="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center"><i data-lucide="flame" class="w-5 h-5"></i></span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total</span>
+                    </div>
+                    <p class="text-3xl font-display font-extrabold text-slate-900 mt-3" id="stat-sprints">0</p>
+                    <p class="text-xs text-slate-500 font-medium mt-0.5">Sprints de pronunciación</p>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-soft border border-slate-200/70 card-hover">
+                    <div class="flex items-center justify-between">
+                        <span class="w-10 h-10 rounded-xl bg-accent-50 text-accent-600 flex items-center justify-center"><i data-lucide="gauge" class="w-5 h-5"></i></span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Promedio</span>
+                    </div>
+                    <p class="text-3xl font-display font-extrabold text-slate-900 mt-3"><span id="stat-wer">—</span><span class="text-base text-slate-400 font-bold">%</span></p>
+                    <p class="text-xs text-slate-500 font-medium mt-0.5">WER promedio global</p>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-soft border border-slate-200/70 card-hover">
+                    <div class="flex items-center justify-between">
+                        <span class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center"><i data-lucide="trophy" class="w-5 h-5"></i></span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Récord</span>
+                    </div>
+                    <p class="text-3xl font-display font-extrabold text-slate-900 mt-3"><span id="stat-best">—</span><span class="text-base text-slate-400 font-bold">%</span></p>
+                    <p class="text-xs text-slate-500 font-medium mt-0.5">Mejor WER (menor error)</p>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-soft border border-slate-200/70 card-hover">
+                    <div class="flex items-center justify-between">
+                        <span class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center"><i data-lucide="check-check" class="w-5 h-5"></i></span>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Precisión</span>
+                    </div>
+                    <p class="text-3xl font-display font-extrabold text-slate-900 mt-3" id="stat-words">0</p>
+                    <p class="text-xs text-slate-500 font-medium mt-0.5">Palabras bien pronunciadas</p>
+                </div>
+            </div>
+
+            <!-- Charts row 1 -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <h3 class="font-display font-bold text-slate-900 flex items-center gap-2"><i data-lucide="trending-up" class="w-4 h-4 text-brand-600"></i> Evolución del Word Error Rate</h3>
+                            <p class="text-xs text-slate-500 mt-1">Porcentaje de error por intento: menos es mejor. Baja la curva para dominar la pronunciación.</p>
+                        </div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider bg-brand-50 text-brand-700 border border-brand-100 px-2 py-1 rounded-md">WER %</span>
+                    </div>
+                    <div class="relative h-64">
+                        <canvas id="chart-wer"></canvas>
+                        <div id="overlay-wer" class="absolute inset-0 flex flex-col items-center justify-center text-center bg-white/70 rounded-xl">
+                            <i data-lucide="ear" class="w-8 h-8 text-slate-300 mb-2"></i>
+                            <p class="text-sm font-semibold text-slate-400">Aún no hay datos</p>
+                            <p class="text-xs text-slate-400 mt-1">Completa tu primer sprint en la pestaña Voiz Oral.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70">
+                    <h3 class="font-display font-bold text-slate-900 flex items-center gap-2"><i data-lucide="pie-chart" class="w-4 h-4 text-accent-600"></i> Análisis de palabras</h3>
+                    <p class="text-xs text-slate-500 mt-1 mb-4">Distribución acumulada de tu pronunciación.</p>
+                    <div class="relative h-56">
+                        <canvas id="chart-errors"></canvas>
+                        <div id="overlay-errors" class="absolute inset-0 flex flex-col items-center justify-center text-center bg-white/70 rounded-xl">
+                            <i data-lucide="pie-chart" class="w-8 h-8 text-slate-300 mb-2"></i>
+                            <p class="text-sm font-semibold text-slate-400">Sin intentos todavía</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 mt-4 text-[11px] font-semibold">
+                        <span class="flex items-center gap-1.5 text-emerald-700"><span class="w-2.5 h-2.5 rounded-sm bg-emerald-400"></span> Correctas</span>
+                        <span class="flex items-center gap-1.5 text-rose-700"><span class="w-2.5 h-2.5 rounded-sm bg-rose-400"></span> Mal pronunciadas</span>
+                        <span class="flex items-center gap-1.5 text-amber-700"><span class="w-2.5 h-2.5 rounded-sm bg-amber-400"></span> Omitidas</span>
+                        <span class="flex items-center gap-1.5 text-violet-700"><span class="w-2.5 h-2.5 rounded-sm bg-violet-400"></span> Extrañas</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts row 2 -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70">
+                    <h3 class="font-display font-bold text-slate-900 flex items-center gap-2"><i data-lucide="bar-chart-3" class="w-4 h-4 text-brand-600"></i> Precisión media por unidad</h3>
+                    <p class="text-xs text-slate-500 mt-1 mb-4">100 − WER promedio de cada unidad. Detecta tus temas débiles.</p>
+                    <div class="relative h-64">
+                        <canvas id="chart-units"></canvas>
+                        <div id="overlay-units" class="absolute inset-0 flex flex-col items-center justify-center text-center bg-white/70 rounded-xl">
+                            <i data-lucide="bar-chart-3" class="w-8 h-8 text-slate-300 mb-2"></i>
+                            <p class="text-sm font-semibold text-slate-400">Practica cada unidad para ver tu precisión</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70 flex flex-col">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="font-display font-bold text-slate-900 flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4 text-emerald-600"></i> Actividad reciente</h3>
+                        <button onclick="resetProgress()" title="Reiniciar progreso" class="text-slate-300 hover:text-rose-500 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                    <div id="recent-activity" class="flex-1 space-y-2 overflow-y-auto nice-scroll max-h-64 pr-1">
+                        <div class="flex flex-col items-center justify-center py-10 text-center text-slate-400">
+                            <i data-lucide="inbox" class="w-8 h-8 mb-2 opacity-50"></i>
+                            <p class="text-xs">Tus últimos sprints aparecerán aquí.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unit cards -->
+            <div>
+                <div class="flex items-end justify-between mb-4">
+                    <div>
+                        <h3 class="font-display text-xl font-bold text-slate-900">Ruta de aprendizaje · 7 unidades</h3>
+                        <p class="text-xs text-slate-500 mt-1">Tres unidades originales + cuatro fichas Linguahouse integradas (¡A Trabajar!, Un Sábado por la Tarde, Mis Amigos, ¿Casa o Departamento?).</p>
+                    </div>
+                </div>
+                <div id="unit-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SECCIÓN 2: GLOSARIO -->
+        <!-- ============================================================ -->
+        <section id="sec-glosario" class="space-y-6 hidden">
+            <!-- Header & Search Controls -->
+            <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h2 class="text-2xl font-display font-bold text-slate-900">Glosario Léxico-Fonético</h2>
+                            <span class="text-[10px] font-bold uppercase tracking-wider bg-accent-50 text-accent-700 border border-accent-100 px-2 py-0.5 rounded-md">41 términos · 7 unidades</span>
+                        </div>
+                        <p class="text-slate-500 text-sm mt-1">Vocabulario extraído de las siete unidades didácticas, con transcripción fonética IPA, definición, ejemplo y audio de pronunciación.</p>
+                        <div class="flex gap-2 mt-3 flex-wrap" id="vocab-stats"></div>
+                    </div>
+                    <!-- Search and Filters -->
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <div class="relative min-w-[220px]">
+                            <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-3.5 text-slate-400"></i>
+                            <input type="text" id="vocab-search" oninput="filterVocab()" placeholder="Buscar término, definición o ejemplo..."
+                                class="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all">
+                        </div>
+                        <select id="vocab-filter" onchange="filterVocab()" class="bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <option value="all">Todas las unidades</option>
+                            <option value="sentimientos">Los Sentimientos</option>
+                            <option value="fiestas">Fiestas y Celebraciones</option>
+                            <option value="saludos">Saludos y Despedidas</option>
+                            <option value="trabajo">¡A Trabajar! · Profesiones</option>
+                            <option value="sabado">Un Sábado por la Tarde</option>
+                            <option value="amigos">Mis Amigos · Descripciones</option>
+                            <option value="casa">¿Casa o Departamento?</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vocabulary Cards Grid -->
+            <div id="vocab-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SECCIÓN 3: GRAMÁTICA Y USO DEL LENGUAJE -->
+        <!-- ============================================================ -->
+        <section id="sec-gramatica" class="space-y-8 hidden">
+            <!-- Header -->
+            <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70">
+                <h2 class="text-2xl font-display font-bold text-slate-900">Uso del Lenguaje y Estructuras Fundamentales</h2>
+                <p class="text-slate-500 text-sm mt-1">Fórmulas visuales, tablas de conjugación interactivas (pulsa cualquier forma para escucharla) y reglas de género de las 7 unidades.</p>
+            </div>
+
+            <!-- Subtítulo: reglas originales -->
+            <div>
+                <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Reglas visuales esenciales · Unidades originales</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Formula 1: Estar + Adjetivo -->
+                    <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70 flex flex-col justify-between card-hover">
+                        <div>
+                            <div class="flex items-center space-x-2 text-brand-600 font-semibold text-xs tracking-wider uppercase mb-3">
+                                <i data-lucide="heart-handshake" class="w-4 h-4"></i><span>Los Sentimientos</span>
+                            </div>
+                            <h4 class="text-lg font-display font-bold text-slate-900 mb-2">Expresión de Estados Emocionales</h4>
+                            <div class="bg-brand-50/70 p-4 rounded-xl border border-brand-100 font-mono text-sm text-brand-900 mb-4">
+                                [Sujeto] + <span class="font-bold text-brand-600">ESTAR</span> + [Adjetivo concordante]
+                            </div>
+                            <ul class="space-y-2 text-xs text-slate-600 mb-4">
+                                <li class="flex items-center"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500 mr-2"></i> Concordancia en género (o/a) y número (s/es).</li>
+                                <li class="flex items-center"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500 mr-2"></i> Expresa un estado temporal o pasajero.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-lg text-xs text-slate-500 italic border border-slate-100">
+                            Ejemplo: "Ella <strong class="text-slate-800">está preocupada</strong> por la entrevista."
+                        </div>
+                    </div>
+
+                    <!-- Formula 2: ¿Cuándo es...? -->
+                    <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70 flex flex-col justify-between card-hover">
+                        <div>
+                            <div class="flex items-center space-x-2 text-brand-600 font-semibold text-xs tracking-wider uppercase mb-3">
+                                <i data-lucide="calendar" class="w-4 h-4"></i><span>Fiestas y Celebraciones</span>
+                            </div>
+                            <h4 class="text-lg font-display font-bold text-slate-900 mb-2">Estructuras Temporales de Eventos</h4>
+                            <div class="bg-brand-50/70 p-4 rounded-xl border border-brand-100 font-mono text-xs text-brand-900 mb-4 space-y-1">
+                                <div><span class="text-brand-600 font-bold">¿Cuándo + SER + Evento?</span></div>
+                                <div class="text-slate-500">➜ Respuesta mes: <span class="font-bold">Es EN [Mes]</span></div>
+                                <div class="text-slate-500">➜ Respuesta fecha: <span class="font-bold">Es EL [Día] DE [Mes]</span></div>
+                            </div>
+                            <p class="text-xs text-slate-600 mb-4">Uso contrastivo: en Latinoamérica se dice <i>"el primero de mayo"</i> y en España <i>"el uno de mayo"</i>.</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-lg text-xs text-slate-500 italic border border-slate-100">
+                            Ejemplo: "El Día de San Valentín es <strong class="text-slate-800">el 14 de febrero</strong>."
+                        </div>
+                    </div>
+
+                    <!-- Formula 3: Saludos por franja horaria -->
+                    <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70 flex flex-col justify-between card-hover">
+                        <div>
+                            <div class="flex items-center space-x-2 text-brand-600 font-semibold text-xs tracking-wider uppercase mb-3">
+                                <i data-lucide="clock" class="w-4 h-4"></i><span>Saludos y Despedidas</span>
+                            </div>
+                            <h4 class="text-lg font-display font-bold text-slate-900 mb-2">Línea del Tiempo Horaria</h4>
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center text-xs justify-between bg-amber-50 p-2 rounded-lg border border-amber-200/60">
+                                    <span class="font-semibold text-amber-900">06:00 AM - 11:59 AM</span>
+                                    <span class="bg-amber-200/70 text-amber-900 px-2 py-0.5 rounded font-bold">Buenos días</span>
+                                </div>
+                                <div class="flex items-center text-xs justify-between bg-orange-50 p-2 rounded-lg border border-orange-200/60">
+                                    <span class="font-semibold text-orange-900">12:00 PM - 06:00 PM</span>
+                                    <span class="bg-orange-200/70 text-orange-900 px-2 py-0.5 rounded font-bold">Buenas tardes</span>
+                                </div>
+                                <div class="flex items-center text-xs justify-between bg-indigo-50 p-2 rounded-lg border border-indigo-200/60">
+                                    <span class="font-semibold text-indigo-900">06:00 PM - 05:59 AM</span>
+                                    <span class="bg-indigo-200/70 text-indigo-900 px-2 py-0.5 rounded font-bold">Buenas noches</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-lg text-xs text-slate-500 italic border border-slate-100">
+                            Atención: distinción Formal (Usted / Dr. / Sr.) vs Informal (Tú / Amigo).
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subtítulo: verbos de los PDFs -->
+            <div>
+                <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Verbos fundamentales · Fichas integradas (Linguahouse A1-A2)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- SER -->
+                    <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70 card-hover">
+                        <div class="flex items-center space-x-2 text-indigo-600 font-semibold text-xs tracking-wider uppercase mb-2">
+                            <i data-lucide="briefcase" class="w-4 h-4"></i><span>¡A Trabajar!</span>
+                        </div>
+                        <h4 class="text-lg font-display font-bold text-slate-900 mb-2">Verbo <span class="text-indigo-600">SER</span></h4>
+                        <p class="text-[11px] text-slate-500 mb-3">Profesiones, atributos permanentes, personalidad, nacionalidad y días.</p>
+                        <div id="conj-ser" class="space-y-1"></div>
+                        <div class="bg-slate-50 p-3 rounded-lg text-xs text-slate-500 italic border border-slate-100 mt-3">
+                            "Ellos <strong>son</strong> doctores." · "Hoy <strong>es</strong> miércoles."
+                        </div>
+                    </div>
+                    <!-- ESTAR -->
+                    <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70 card-hover">
+                        <div class="flex items-center space-x-2 text-teal-600 font-semibold text-xs tracking-wider uppercase mb-2">
+                            <i data-lucide="tv" class="w-4 h-4"></i><span>Un Sábado por la Tarde</span>
+                        </div>
+                        <h4 class="text-lg font-display font-bold text-slate-900 mb-2">Verbo <span class="text-teal-600">ESTAR</span></h4>
+                        <p class="text-[11px] text-slate-500 mb-3">Estados temporales, ubicación, clima y estaciones del año.</p>
+                        <div id="conj-estar" class="space-y-1"></div>
+                        <div class="bg-slate-50 p-3 rounded-lg text-xs text-slate-500 italic border border-slate-100 mt-3">
+                            "María y Juan <strong>están</strong> en la escuela." · "Hoy <strong>está</strong> nublado."
+                        </div>
+                    </div>
+                    <!-- VIVIR -->
+                    <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70 card-hover">
+                        <div class="flex items-center space-x-2 text-emerald-600 font-semibold text-xs tracking-wider uppercase mb-2">
+                            <i data-lucide="home" class="w-4 h-4"></i><span>¿Casa o Departamento?</span>
+                        </div>
+                        <h4 class="text-lg font-display font-bold text-slate-900 mb-2">Verbo <span class="text-emerald-600">VIVIR</span></h4>
+                        <p class="text-[11px] text-slate-500 mb-3">Lugares de residencia: casa, departamento, centro, afueras.</p>
+                        <div id="conj-vivir" class="space-y-1"></div>
+                        <div class="bg-slate-50 p-3 rounded-lg text-xs text-slate-500 italic border border-slate-100 mt-3">
+                            "Yo <strong>vivo</strong> en una casa grande." · "¿Vosotros <strong>vivís</strong> en una casa antigua?"
+                        </div>
+                    </div>
+                    <!-- HABER -->
+                    <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70 card-hover">
+                        <div class="flex items-center space-x-2 text-amber-600 font-semibold text-xs tracking-wider uppercase mb-2">
+                            <i data-lucide="sofa" class="w-4 h-4"></i><span>¿Casa o Departamento?</span>
+                        </div>
+                        <h4 class="text-lg font-display font-bold text-slate-900 mb-2">Verbo <span class="text-amber-600">HABER</span> · forma "HAY"</h4>
+                        <ul class="space-y-2 text-xs text-slate-600 mb-3">
+                            <li class="flex items-start"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500 mr-2 mt-0.5"></i> Expresa presencia o existencia.</li>
+                            <li class="flex items-start"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500 mr-2 mt-0.5"></i> Va acompañado de un sustantivo.</li>
+                            <li class="flex items-start"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500 mr-2 mt-0.5"></i> Con artículos indefinidos o numerales.</li>
+                        </ul>
+                        <div class="bg-amber-50/70 p-4 rounded-xl border border-amber-100 font-mono text-xs text-amber-900 space-y-1">
+                            <div>HAY <span class="font-bold">una</span> cama.</div>
+                            <div>HAY <span class="font-bold">tres</span> sillas.</div>
+                            <div class="text-amber-700/70">✗ Hay <s>unos</s> camas · ✓ Hay unas camas</div>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-lg text-xs text-slate-500 italic border border-slate-100 mt-3">
+                            "En el palacio <strong>hay</strong> 78 baños y ¡21 cocineros!"
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subtítulo: género, descripción y posesivos -->
+            <div>
+                <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3">Descripción física, género y posesivos</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Género y artículos -->
+                    <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70 card-hover">
+                        <div class="flex items-center space-x-2 text-indigo-600 font-semibold text-xs tracking-wider uppercase mb-2">
+                            <i data-lucide="scissors" class="w-4 h-4"></i><span>¡A Trabajar! · Parte I y II</span>
+                        </div>
+                        <h4 class="text-lg font-display font-bold text-slate-900 mb-3">Género, Artículos y Plurales</h4>
+                        <div class="overflow-hidden rounded-xl border border-slate-100 mb-4">
+                            <table class="w-full text-xs text-center">
+                                <thead class="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider">
+                                    <tr><th class="py-2">Singular</th><th class="py-2">Plural</th><th class="py-2">Ejemplo</th></tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-slate-700">
+                                    <tr><td class="py-1.5 font-bold">la / una</td><td class="py-1.5">las / unas</td><td class="py-1.5 italic">la pintora</td></tr>
+                                    <tr><td class="py-1.5 font-bold">el / un</td><td class="py-1.5">los / unos</td><td class="py-1.5 italic">el pintor</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <ul class="space-y-2 text-xs text-slate-600">
+                            <li class="flex items-start"><span class="w-5 h-5 rounded-md bg-rose-100 text-rose-700 flex items-center justify-center font-bold mr-2 shrink-0 text-[10px]">F</span> Terminación en <b>-a</b>: generalmente femenino (la maestra).</li>
+                            <li class="flex items-start"><span class="w-5 h-5 rounded-md bg-sky-100 text-sky-700 flex items-center justify-center font-bold mr-2 shrink-0 text-[10px]">M</span> Terminación en <b>-o</b>: generalmente masculino (el maestro).</li>
+                            <li class="flex items-start"><span class="w-5 h-5 rounded-md bg-violet-100 text-violet-700 flex items-center justify-center font-bold mr-2 shrink-0 text-[10px]">N</span> Terminaciones en <b>-ista, -ante, -ente</b>: neutras, no cambian (el/la futbolista, el/la cantante). El género lo marca el artículo.</li>
+                        </ul>
+                        <div class="bg-slate-50 p-3 rounded-lg text-xs text-slate-500 italic border border-slate-100 mt-3">
+                            actor → actriz (excepción) · camarero → camarera · doctor → doctora
+                        </div>
+                    </div>
+
+                    <!-- TENER -->
+                    <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70 card-hover">
+                        <div class="flex items-center space-x-2 text-violet-600 font-semibold text-xs tracking-wider uppercase mb-2">
+                            <i data-lucide="users" class="w-4 h-4"></i><span>Mis Amigos</span>
+                        </div>
+                        <h4 class="text-lg font-display font-bold text-slate-900 mb-2">Verbo <span class="text-violet-600">TENER</span> para describir</h4>
+                        <div id="conj-tener" class="space-y-1 mb-3"></div>
+                        <div class="bg-violet-50/70 p-4 rounded-xl border border-violet-100 text-xs text-violet-900 space-y-1.5 mb-3">
+                            <p><b>Tiene + el pelo</b> largo / corto / liso / rizado.</p>
+                            <p><b>Tiene + los ojos</b> claros / oscuros.</p>
+                            <p><b>Tiene</b> barba · bigote · gafas · sobrepeso.</p>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-lg text-xs text-slate-500 italic border border-slate-100">
+                            Físico con SER: alto, bajo, rubio, moreno, delgado · Carácter con SER: tímido, simpático, alegre, serio, reservado, inteligente, antipático, tranquilo.
+                        </div>
+                    </div>
+
+                    <!-- Posesivos -->
+                    <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70 card-hover">
+                        <div class="flex items-center space-x-2 text-rose-600 font-semibold text-xs tracking-wider uppercase mb-2">
+                            <i data-lucide="key-round" class="w-4 h-4"></i><span>Mis Amigos</span>
+                        </div>
+                        <h4 class="text-lg font-display font-bold text-slate-900 mb-3">Los Posesivos</h4>
+                        <p class="text-[11px] text-slate-500 mb-3">Concuerdan en género y número con el sustantivo al que acompañan.</p>
+                        <div class="overflow-hidden rounded-xl border border-slate-100 mb-3">
+                            <table class="w-full text-xs text-center">
+                                <thead class="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] tracking-wider">
+                                    <tr><th class="py-2">Persona</th><th class="py-2">Sing.</th><th class="py-2">Plural</th></tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 text-slate-700" id="posesivos-tbody"></tbody>
+                            </table>
+                        </div>
+                        <div class="bg-slate-50 p-3 rounded-lg text-xs text-slate-500 italic border border-slate-100">
+                            "<strong>Mi</strong> amiga tiene el pelo largo y rizado." · "<strong>Sus</strong> amigas son simpáticas."
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pronombres personales (sabado) -->
+            <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70">
+                <div class="flex items-center space-x-2 text-teal-600 font-semibold text-xs tracking-wider uppercase mb-2">
+                    <i data-lucide="tv" class="w-4 h-4"></i><span>Un Sábado por la Tarde</span>
+                </div>
+                <h3 class="text-lg font-display font-bold text-slate-900 mb-1">Los Pronombres Personales</h3>
+                <p class="text-slate-500 text-xs mb-4">Base de toda conjugación: primera persona (habla), segunda (escucha), tercera (de quien se habla).</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-teal-50/60 border border-teal-100 rounded-xl p-4">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-teal-700 mb-2">Primera persona · habla</p>
+                        <p class="text-sm font-semibold text-slate-800">Sing. <span class="font-mono font-bold text-teal-700">yo</span></p>
+                        <p class="text-sm font-semibold text-slate-800">Plural <span class="font-mono font-bold text-teal-700">nosotros / nosotras</span></p>
+                    </div>
+                    <div class="bg-sky-50/60 border border-sky-100 rounded-xl p-4">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-sky-700 mb-2">Segunda persona · escucha</p>
+                        <p class="text-sm font-semibold text-slate-800">Sing. <span class="font-mono font-bold text-sky-700">tú / vos (informal) · usted (formal)</span></p>
+                        <p class="text-sm font-semibold text-slate-800">Plural <span class="font-mono font-bold text-sky-700">vosotros / vosotras · ustedes</span></p>
+                    </div>
+                    <div class="bg-violet-50/60 border border-violet-100 rounded-xl p-4">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-violet-700 mb-2">Tercera persona · de quien se habla</p>
+                        <p class="text-sm font-semibold text-slate-800">Sing. <span class="font-mono font-bold text-violet-700">él · ella</span></p>
+                        <p class="text-sm font-semibold text-slate-800">Plural <span class="font-mono font-bold text-violet-700">ellos · ellas</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SECCIÓN 4: EJERCICIOS (VARIEDAD) -->
+        <!-- ============================================================ -->
+        <section id="sec-ejercicios" class="space-y-8 hidden">
+            <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70">
+                <h2 class="text-2xl font-display font-bold text-slate-900">Laboratorio de Ejercicios</h2>
+                <p class="text-slate-500 text-sm mt-1">Cinco formatos interactivos extraídos de las fichas: opción múltiple, completar, ordenar oraciones, emparejar profesiones y comprensión lectora.</p>
+            </div>
+
+            <!-- Ejercicio 1: Opción múltiple -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-soft border border-slate-200/70">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+                    <div>
+                        <span class="bg-brand-50 text-brand-700 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider border border-brand-100">Ejercicio 1 · Opción múltiple</span>
+                        <h3 class="font-display text-xl font-bold text-slate-900 mt-2">Quiz Gramatical Integral</h3>
+                        <p class="text-slate-500 text-sm">12 preguntas de las 7 unidades: SER, ESTAR, género, posesivos, VIVIR y HAY.</p>
+                    </div>
+                    <span id="quiz-score-chip" class="self-start sm:self-center text-xs font-bold bg-slate-100 text-slate-500 px-3 py-1.5 rounded-full">Sin resolver</span>
+                </div>
+                <div id="grammar-quiz-container" class="space-y-5"></div>
+                <div class="flex flex-col sm:flex-row gap-3 mt-6">
+                    <button id="btn-check-quiz" onclick="checkQuizAnswers()" class="flex-1 py-3 bg-gradient-to-r from-brand-600 to-accent-600 text-white font-bold rounded-xl shadow-md hover:opacity-90 transition-all text-sm active:scale-[.98]">Verificar Respuestas</button>
+                    <button onclick="renderGrammarQuiz()" class="px-5 py-3 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 transition-all text-sm">Reiniciar Quiz</button>
+                </div>
+                <div id="quiz-result" class="hidden mt-5 p-4 rounded-xl text-center text-sm font-bold"></div>
+            </div>
+
+            <!-- Ejercicio 2: Completar -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-soft border border-slate-200/70">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+                    <div>
+                        <span class="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider border border-emerald-100">Ejercicio 2 · Completar</span>
+                        <h3 class="font-display text-xl font-bold text-slate-900 mt-2">Completa la Oración</h3>
+                        <p class="text-slate-500 text-sm">Escribe la forma correcta del verbo o el posesivo. Se ignoran mayúsculas y acentos.</p>
+                    </div>
+                    <span id="fill-score-chip" class="self-start sm:self-center text-xs font-bold bg-slate-100 text-slate-500 px-3 py-1.5 rounded-full">0 / 8</span>
+                </div>
+                <div id="fill-container" class="space-y-3"></div>
+                <div class="flex flex-col sm:flex-row gap-3 mt-6">
+                    <button id="btn-check-fill" onclick="checkFill()" class="flex-1 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-xl shadow-md hover:opacity-90 transition-all text-sm active:scale-[.98]">Comprobar</button>
+                    <button id="btn-reveal-fill" onclick="revealFill()" class="px-5 py-3 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 transition-all text-sm flex items-center justify-center gap-2"><i data-lucide="lightbulb" class="w-4 h-4"></i> Ver soluciones</button>
+                </div>
+            </div>
+
+            <!-- Ejercicio 3: Ordenar oraciones -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-soft border border-slate-200/70">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+                    <div>
+                        <span class="bg-violet-50 text-violet-700 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider border border-violet-100">Ejercicio 3 · Ordenar</span>
+                        <h3 class="font-display text-xl font-bold text-slate-900 mt-2">Ordena las Palabras</h3>
+                        <p class="text-slate-500 text-sm">Toca las palabras en orden para formar oraciones correctas (tarea de extensión de "Mis Amigos").</p>
+                    </div>
+                    <span id="order-score-chip" class="self-start sm:self-center text-xs font-bold bg-slate-100 text-slate-500 px-3 py-1.5 rounded-full">0 / 6</span>
+                </div>
+                <div id="order-container" class="space-y-5"></div>
+            </div>
+
+            <!-- Ejercicio 4: Emparejar -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-soft border border-slate-200/70">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+                    <div>
+                        <span class="bg-amber-50 text-amber-700 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider border border-amber-100">Ejercicio 4 · Emparejar</span>
+                        <h3 class="font-display text-xl font-bold text-slate-900 mt-2">Masculino ⇄ Femenino</h3>
+                        <p class="text-slate-500 text-sm">Empareja cada profesión masculina con su forma femenina (ficha "¡A Trabajar!").</p>
+                    </div>
+                    <span id="match-score-chip" class="self-start sm:self-center text-xs font-bold bg-slate-100 text-slate-500 px-3 py-1.5 rounded-full">0 / 6 pares</span>
+                </div>
+                <div class="grid grid-cols-2 gap-4 max-w-xl mx-auto">
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 text-center">Masculino</p>
+                        <div id="match-left" class="space-y-2"></div>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 text-center">Femenino</p>
+                        <div id="match-right" class="space-y-2"></div>
+                    </div>
+                </div>
+                <div id="match-result" class="hidden mt-5 p-3 rounded-xl text-center text-sm font-bold"></div>
+                <div class="text-center mt-4">
+                    <button onclick="initMatchGame()" class="px-5 py-2.5 bg-slate-100 text-slate-600 font-bold rounded-xl hover:bg-slate-200 transition-all text-sm">Reiniciar emparejamiento</button>
+                </div>
+            </div>
+
+            <!-- Ejercicio 5: Lectura V/F -->
+            <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-soft border border-slate-200/70">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+                    <div>
+                        <span class="bg-rose-50 text-rose-700 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider border border-rose-100">Ejercicio 5 · Comprensión lectora</span>
+                        <h3 class="font-display text-xl font-bold text-slate-900 mt-2">Lectura: ¿Verdadero o Falso?</h3>
+                        <p class="text-slate-500 text-sm">Lee los textos del PDF "¿Casa o Departamento?" y evalúa cada afirmación. Corrige oralmente las falsas.</p>
+                    </div>
+                    <span id="tf-score-chip" class="self-start sm:self-center text-xs font-bold bg-slate-100 text-slate-500 px-3 py-1.5 rounded-full">0 / 4</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-slate-50 border border-slate-100 rounded-xl p-4">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-brand-700 mb-1">1 · Palacio de Buckingham</p>
+                        <p class="text-xs text-slate-600 leading-relaxed">En el palacio de Buckingham vive el rey Carlos III. Hay 19 salas de estar, 52 cuartos para la familia real, 92 cuartos para los empleados y 78 baños. Hay una cocina muy grande y ¡21 cocineros! Hay un cine, una piscina y un consultorio médico. ¡Y hay un cajero automático! Está en el centro de la ciudad de Londres.</p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-100 rounded-xl p-4">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-brand-700 mb-1">2 · Villa Bolonia</p>
+                        <p class="text-xs text-slate-600 leading-relaxed">Es una casa en Bolonia, Italia, en las afueras de la ciudad. Es muy grande y muy antigua. Hay 4 salas de estar, 14 cuartos y 9 baños. En esta casa viven 28 personas.</p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-100 rounded-xl p-4">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-brand-700 mb-1">3 · Castillo Azay-le-Rideau</p>
+                        <p class="text-xs text-slate-600 leading-relaxed">Es un castillo en Francia de una familia muy importante. Hay 50 habitaciones: 28 cuartos, 12 baños, 5 salas de estar y 4 comedores. Hay 2 cocinas. Hoy la familia no vive en el castillo, es un museo.</p>
+                    </div>
+                </div>
+                <div id="tf-container" class="space-y-3"></div>
+            </div>
+        </section>
+
+        <!-- ============================================================ -->
+        <!-- SECCIÓN 5: VOIZ · PRONUNCIACIÓN EN VIVO CON WER -->
+        <!-- ============================================================ -->
+        <section id="sec-voiz" class="space-y-6 hidden">
+            <!-- Header -->
+            <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-display font-bold text-slate-900">Voiz Engine · 70 Prompts con Evaluación en Vivo</h2>
+                    <p class="text-slate-500 text-sm mt-1">Lee la oración objetivo en voz alta: la IA transcribe lo que dices, calcula el Word Error Rate y pinta cada palabra en tiempo real.</p>
+                </div>
+                <div id="sr-warning" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-900 flex items-center gap-2 max-w-sm">
+                    <i data-lucide="info" class="w-5 h-5 text-amber-500 shrink-0"></i>
+                    <span>Tu navegador no soporta reconocimiento de voz. Usa <b>Chrome o Edge</b> para el análisis WER; el temporizador seguirá funcionando.</span>
+                </div>
+                <div class="bg-brand-50 border border-brand-100 rounded-xl p-3 text-xs text-brand-900 flex items-center gap-2 max-w-sm">
+                    <i data-lucide="target" class="w-5 h-5 text-brand-600 shrink-0"></i>
+                    <span>Intenta pronunciar la <b>oración objetivo completa</b> dentro del límite de tiempo que elijas.</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <!-- Catálogo de prompts -->
+                <div class="lg:col-span-5 bg-white p-5 rounded-2xl shadow-soft border border-slate-200/70 lg:max-h-[860px] flex flex-col">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                        <h3 class="font-bold text-slate-900 flex items-center text-base">
+                            <i data-lucide="list" class="w-4 h-4 mr-2 text-brand-600"></i> Catálogo de Prompts
+                        </h3>
+                        <span id="prompt-counter" class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold">1 / 70</span>
+                    </div>
+                    <!-- Filtros por unidad -->
+                    <div class="flex gap-1.5 mb-3 overflow-x-auto pb-2 nice-scroll text-xs">
+                        <button onclick="filterPrompts('all')" id="pfilter-all" class="px-3 py-1.5 rounded-lg bg-brand-600 text-white font-semibold shrink-0 transition-all">Todos</button>
+                        <button onclick="filterPrompts('sentimientos')" id="pfilter-sentimientos" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-semibold shrink-0 transition-all">Sentimientos</button>
+                        <button onclick="filterPrompts('fiestas')" id="pfilter-fiestas" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-semibold shrink-0 transition-all">Fiestas</button>
+                        <button onclick="filterPrompts('saludos')" id="pfilter-saludos" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-semibold shrink-0 transition-all">Saludos</button>
+                        <button onclick="filterPrompts('trabajo')" id="pfilter-trabajo" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-semibold shrink-0 transition-all">Trabajo</button>
+                        <button onclick="filterPrompts('sabado')" id="pfilter-sabado" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-semibold shrink-0 transition-all">Sábado</button>
+                        <button onclick="filterPrompts('amigos')" id="pfilter-amigos" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-semibold shrink-0 transition-all">Amigos</button>
+                        <button onclick="filterPrompts('casa')" id="pfilter-casa" class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-semibold shrink-0 transition-all">Casa</button>
+                    </div>
+                    <div id="prompts-list" class="flex-1 overflow-y-auto nice-scroll space-y-2 pr-1 max-h-[420px] lg:max-h-none"></div>
+                </div>
+
+                <!-- Consola del sprint -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-soft border border-slate-200/70 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-500 via-accent-500 to-rose-400"></div>
+
+                        <!-- Badges -->
+                        <div class="flex flex-wrap justify-between items-center gap-2 mb-4">
+                            <span id="active-prompt-category" class="bg-brand-50 text-brand-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-brand-100">Los Sentimientos</span>
+                            <span id="active-prompt-id" class="text-xs font-mono font-semibold text-slate-400">PROMPT #01</span>
+                        </div>
+
+                        <!-- Pregunta -->
+                        <h3 id="active-prompt-title" class="text-xl sm:text-2xl font-display font-bold text-slate-900 mb-4 leading-snug"></h3>
+
+                        <!-- Vocabulario objetivo -->
+                        <div class="mb-5 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                            <p class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center">
+                                <i data-lucide="target" class="w-3.5 h-3.5 mr-1 text-brand-600"></i> Vocabulario objetivo sugerido:
+                            </p>
+                            <div id="active-prompt-vocab" class="flex flex-wrap gap-2"></div>
+                        </div>
+
+                        <!-- Oración objetivo -->
+                        <div class="bg-gradient-to-br from-indigo-50 via-brand-50 to-accent-50 border border-brand-100 rounded-2xl p-5 mb-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <p class="text-[11px] font-bold uppercase tracking-widest text-brand-700 flex items-center gap-1.5">
+                                    <i data-lucide="scan-eye" class="w-3.5 h-3.5"></i> Oración objetivo · pronúnciala en voz alta
+                                </p>
+                                <button onclick="speakTargetSentence()" class="inline-flex items-center gap-1.5 text-[11px] font-bold text-brand-700 bg-white border border-brand-200 px-3 py-1.5 rounded-lg hover:bg-brand-50 transition-all">
+                                    <i data-lucide="volume-2" class="w-3.5 h-3.5"></i> Escuchar modelo
+                                </button>
+                            </div>
+                            <p id="target-sentence" class="text-lg sm:text-xl font-display font-semibold text-slate-900 leading-relaxed"></p>
+                        </div>
+
+                        <!-- Selector de límite de tiempo -->
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-2">
+                            <div class="inline-flex bg-slate-100 p-1 rounded-xl" id="time-mode-group">
+                                <button onclick="setTimeMode(10)" id="timemode-10" class="seg-btn seg-btn-active">10 segundos</button>
+                                <button onclick="setTimeMode(20)" id="timemode-20" class="seg-btn">20 segundos</button>
+                                <button onclick="setTimeMode(0)" id="timemode-0" class="seg-btn inline-flex items-center gap-1.5"><i data-lucide="infinity" class="w-3.5 h-3.5"></i> Tiempo libre</button>
+                            </div>
+                            <p class="text-[11px] text-slate-400 font-medium text-center sm:text-right">El sprint se detiene automáticamente al agotarse el tiempo.<br>En tiempo libre, pulsa "Detener" cuando termines.</p>
+                        </div>
+
+                        <!-- Temporizador circular -->
+                        <div class="my-6 flex flex-col items-center justify-center">
+                            <div class="relative w-44 h-44 flex items-center justify-center" id="timer-wrap">
+                                <svg class="w-full h-full" viewBox="0 0 100 100">
+                                    <circle class="circle-bg" cx="50" cy="50" r="42"></circle>
+                                    <circle id="timer-progress" class="circle-progress" cx="50" cy="50" r="42" stroke="#2551eb" stroke-dasharray="263.89" stroke-dashoffset="0"></circle>
+                                </svg>
+                                <div class="absolute flex flex-col items-center justify-center text-center">
+                                    <span id="timer-display" class="text-4xl font-extrabold text-slate-900 tracking-tight font-mono">10.0</span>
+                                    <span id="timer-label" class="text-[10px] uppercase font-bold text-slate-400 tracking-widest mt-1">Segundos restantes</span>
+                                </div>
+                            </div>
+
+                            <!-- Botones de control -->
+                            <div class="flex flex-wrap items-center justify-center gap-3 mt-6">
+                                <button id="btn-start-sprint" onclick="startSprint()" class="px-6 py-3 bg-gradient-to-r from-brand-600 to-accent-600 hover:opacity-90 active:scale-95 text-white font-bold text-sm rounded-xl shadow-lift transition-all flex items-center gap-2 rec-glow-none">
+                                    <i data-lucide="mic" class="w-5 h-5"></i><span id="btn-start-label">Iniciar Sprint (10s)</span>
+                                </button>
+                                <button id="btn-stop-sprint" onclick="stopSprint()" disabled class="px-5 py-3 bg-slate-100 text-slate-400 font-bold text-sm rounded-xl transition-all flex items-center gap-2 cursor-not-allowed">
+                                    <i data-lucide="square" class="w-4 h-4"></i><span>Detener</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- CAJÓN: transcripción en vivo -->
+                        <div id="live-box" class="rounded-2xl border border-slate-200 bg-slate-50/70 p-5 transition-all">
+                            <div class="flex items-center justify-between gap-3 flex-wrap">
+                                <span class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+                                    <span id="live-eq" class="eq text-brand-500 hidden"><span></span><span></span><span></span><span></span><span></span></span>
+                                    <i data-lucide="captions" class="w-4 h-4 text-brand-600" id="live-icon"></i> Lo que estás diciendo
+                                </span>
+                                <span id="live-wer-pill" class="hidden items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-500">
+                                    <i data-lucide="gauge" class="w-3.5 h-3.5"></i> WER en vivo: <span id="live-wer-value">—</span>
+                                </span>
+                            </div>
+                            <div id="live-transcript" class="mt-3 min-h-[3.5rem] text-base sm:text-lg font-medium text-slate-400 italic leading-relaxed">
+                                Pulsa "Iniciar Sprint" y lee la oración objetivo. Aquí verás tu transcripción en tiempo real.
+                            </div>
+                            <div id="live-status" class="hidden mt-2 items-center gap-2 text-xs font-semibold text-rose-600">
+                                <span class="rec-dot"></span> Escuchando... habla con voz clara
+                            </div>
+                        </div>
+
+                        <!-- Panel de resultados WER -->
+                        <div id="results-panel" class="hidden mt-6"></div>
+
+                        <!-- Grabación -->
+                        <div id="audio-playback-container" class="hidden mt-6 p-4 bg-brand-50/60 border border-brand-100 rounded-xl space-y-3">
+                            <div class="flex items-center justify-between text-xs font-bold text-brand-900">
+                                <span class="flex items-center"><i data-lucide="volume-2" class="w-4 h-4 mr-1 text-brand-600"></i> Tu grabación realizada</span>
+                                <span class="text-emerald-600 flex items-center"><i data-lucide="check-circle-2" class="w-3.5 h-3.5 mr-1"></i> Audio listo</span>
+                            </div>
+                            <audio id="audio-player" controls class="w-full h-10 rounded-lg"></audio>
+                        </div>
+
+                        <!-- Benchmark -->
+                        <div class="mt-6 pt-6 border-t border-slate-100">
+                            <button onclick="toggleBenchmark()" class="flex items-center justify-between w-full text-left text-sm font-semibold text-slate-700 hover:text-brand-600 transition-colors">
+                                <span class="flex items-center"><i data-lucide="award" class="w-4 h-4 mr-2 text-amber-500"></i> Respuesta modelo de referencia (benchmark)</span>
+                                <i id="benchmark-chevron" data-lucide="chevron-down" class="w-4 h-4 transition-transform"></i>
+                            </button>
+                            <div id="benchmark-content" class="hidden mt-3 p-4 bg-amber-50/50 border border-amber-200/60 rounded-xl text-sm text-amber-950 italic leading-relaxed"></div>
+                        </div>
+                    </div>
+
+                    <!-- Mini evolución -->
+                    <div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-200/70">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-display font-bold text-slate-900 flex items-center gap-2"><i data-lucide="line-chart" class="w-4 h-4 text-accent-600"></i> Tu WER en los últimos intentos</h3>
+                            <span id="spark-count" class="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-500 px-2 py-1 rounded-md">0 registros</span>
+                        </div>
+                        <div class="relative h-40">
+                            <canvas id="chart-spark"></canvas>
+                            <div id="overlay-spark" class="absolute inset-0 flex flex-col items-center justify-center text-center bg-white/70 rounded-xl">
+                                <i data-lucide="line-chart" class="w-7 h-7 text-slate-300 mb-1"></i>
+                                <p class="text-xs font-semibold text-slate-400">Realiza sprints para ver tu curva de mejora</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white/80 backdrop-blur border-t border-slate-200/70 py-6 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400">
+            <p class="font-semibold text-slate-500">GBS Language Training System · Metodología Voiz con evaluación WER en vivo</p>
+            <p class="mt-1">Basado en el Marco Común Europeo de Referencia (MCER A1-A2) · Fichas Linguahouse integradas · Diseño Instruccional EdTech para Español como Segunda Lengua</p>
+            <p class="mt-1 text-[10px]">El reconocimiento de voz funciona en Chrome / Edge. Los datos de progreso se guardan localmente en tu navegador.</p>
+        </div>
+    </footer>
+<script>
+/* ==========================================================================
+   1. DATOS · UNIDADES (7 unidades: 3 originales + 4 fichas Linguahouse)
+   ========================================================================== */
+const UNITS = {
+    sentimientos: { label: 'Los Sentimientos',        short: 'Sentimientos', icon: 'heart',      color: '#f43f5e', ref: 'Unidad original' },
+    fiestas:      { label: 'Fiestas y Celebraciones', short: 'Fiestas',      icon: 'party-popper', color: '#f59e0b', ref: 'Unidad original' },
+    saludos:      { label: 'Saludos y Despedidas',    short: 'Saludos',      icon: 'handshake',  color: '#0ea5e9', ref: 'Unidad original' },
+    trabajo:      { label: '¡A Trabajar! · Profesiones', short: 'Trabajo',   icon: 'briefcase',  color: '#6366f1', ref: 'Ficha Linguahouse A1-A2' },
+    sabado:       { label: 'Un Sábado por la Tarde',  short: 'Sábado',       icon: 'tv',         color: '#14b8a6', ref: 'Ficha Linguahouse A1-A2' },
+    amigos:       { label: 'Mis Amigos · Descripciones', short: 'Amigos',    icon: 'users',      color: '#8b5cf6', ref: 'Ficha Linguahouse A1-A2' },
+    casa:         { label: '¿Casa o Departamento?',   short: 'Casa',         icon: 'home',       color: '#10b981', ref: 'Ficha Linguahouse A1-A2 (centroamericano)' }
+};
+const UNIT_KEYS = Object.keys(UNITS);
+
+/* ==========================================================================
+   2. DATOS · VOCABULARIO (41 términos, IPA + definición + ejemplo)
+   ========================================================================== */
+const vocabularyData = [
+    /* --- Los Sentimientos (original) --- */
+    { id: 'vocab-1',  unit: 'sentimientos', unitLabel: 'Los Sentimientos', term: 'Enamorado / Enamorada', ipa: '/ena.moˈɾa.ðo/', definition: 'Que siente amor romántico o atracción profunda por alguien.', example: 'El padre de Anna está enamorado de las esculturas del museo.', category: 'Emociones Positivas' },
+    { id: 'vocab-2',  unit: 'sentimientos', unitLabel: 'Los Sentimientos', term: 'Preocupado / Preocupada', ipa: '/pɾeo.kuˈpa.ðo/', definition: 'Que siente intranquilidad, temor o angustia por algún asunto.', example: 'Sara está preocupada porque tiene una entrevista de trabajo.', category: 'Emociones Complejas' },
+    { id: 'vocab-3',  unit: 'sentimientos', unitLabel: 'Los Sentimientos', term: 'Confundido / Confundida', ipa: '/kom.funˈdi.ðo/', definition: 'Que no logra comprender algo con claridad o está desorientado.', example: 'El estudiante está confundido con la dirección del evento.', category: 'Estados Mentales' },
+    { id: 'vocab-4',  unit: 'sentimientos', unitLabel: 'Los Sentimientos', term: 'Enfadado / Enfadada', ipa: '/em.faˈða.ðo/', definition: 'Que siente disgusto, ira o enojo visible.', example: 'Los hermanos de Anna están enfadados porque no hay videojuegos.', category: 'Emociones Negativas' },
+    { id: 'vocab-5',  unit: 'sentimientos', unitLabel: 'Los Sentimientos', term: 'Tranquilo / Tranquila', ipa: '/tɾaŋˈki.lo/', definition: 'Estado de paz, calma y ausencia de nerviosismo.', example: 'Sara se siente más tranquila después de hablar con su amiga Ana.', category: 'Emociones Positivas' },
+    /* --- Fiestas y Celebraciones (original) --- */
+    { id: 'vocab-6',  unit: 'fiestas', unitLabel: 'Fiestas y Celebraciones', term: 'Cumpleaños', ipa: '/kum.pleˈa.ɲos/', definition: 'Aniversario del nacimiento de una persona.', example: '¿Cuándo es tu cumpleaños? Mi cumpleaños es el once de agosto.', category: 'Celebraciones' },
+    { id: 'vocab-7',  unit: 'fiestas', unitLabel: 'Fiestas y Celebraciones', term: 'Las Fallas', ipa: '/las ˈfa.ʎas/', definition: 'Festividad tradicional con monumentos satíricos celebrada en marzo en España.', example: 'Las Fallas son en marzo y culminan el quince de marzo.', category: 'Tradiciones' },
+    { id: 'vocab-8',  unit: 'fiestas', unitLabel: 'Fiestas y Celebraciones', term: 'Día de los Muertos', ipa: '/ˈdi.a ðe los ˈmweɾ.tos/', definition: 'Celebración tradicional mexicana para honrar a los difuntos el 2 de noviembre.', example: 'El Día de los Muertos es el dos de noviembre en México.', category: 'Tradiciones' },
+    { id: 'vocab-9',  unit: 'fiestas', unitLabel: 'Fiestas y Celebraciones', term: 'Pascuas', ipa: '/ˈpas.kwas/', definition: 'Festividad religiosa y de primavera caracterizada por huevos de chocolate.', example: 'Las Pascuas se celebran habitualmente en el mes de abril.', category: 'Celebraciones' },
+    { id: 'vocab-10', unit: 'fiestas', unitLabel: 'Fiestas y Celebraciones', term: 'San Valentín', ipa: '/sam ba.lenˈtin/', definition: 'Día del amor y la amistad celebrado el 14 de febrero.', example: 'El Día de San Valentín es el catorce de febrero.', category: 'Celebraciones' },
+    /* --- Saludos y Despedidas (original) --- */
+    { id: 'vocab-11', unit: 'saludos', unitLabel: 'Saludos y Despedidas', term: 'Buenas Tardes', ipa: '/ˈbwe.nas ˈtaɾ.ðes/', definition: 'Saludo formal e informal utilizado entre las 12:00 PM y las 6:00 PM.', example: 'Buenas tardes, Dr. Sánchez. ¿Cómo está usted hoy?', category: 'Fórmulas Formales' },
+    { id: 'vocab-12', unit: 'saludos', unitLabel: 'Saludos y Despedidas', term: 'Hasta luego', ipa: '/ˈas.ta ˈlwe.ɣo/', definition: 'Fórmula de despedida cuando se prevé volver a ver a la persona.', example: 'Hasta luego, Luis. Que tengas un excelente día.', category: 'Despedidas' },
+    { id: 'vocab-13', unit: 'saludos', unitLabel: 'Saludos y Despedidas', term: 'Mucho gusto', ipa: '/ˈmu.tʃo ˈɣus.to/', definition: 'Expresión cortés utilizada al ser presentado a alguien por primera vez.', example: 'Mucho gusto, Sr. Carlos. Soy el nuevo director de área.', category: 'Cortesía' },
+    { id: 'vocab-14', unit: 'saludos', unitLabel: 'Saludos y Despedidas', term: 'Que tenga un buen día', ipa: '/ke ˈteŋ.ɡa un bwem ˈdi.a/', definition: 'Deseo cortés de despedida en registro formal (Usted).', example: 'Adiós, profesora Susana. Que tenga un buen día.', category: 'Despedidas Formales' },
+    { id: 'vocab-15', unit: 'saludos', unitLabel: 'Saludos y Despedidas', term: 'Nos vemos pronto', ipa: '/nos ˈbe.mos ˈpɾon.to/', definition: 'Despedida informal para amigos o conocidos cercanos.', example: 'Adiós chicas, me voy a casa. ¡Nos vemos pronto!', category: 'Despedidas Informales' },
+    /* --- ¡A Trabajar! (PDF integrado) --- */
+    { id: 'vocab-16', unit: 'trabajo', unitLabel: '¡A Trabajar!', term: 'Camarero / Camarera', ipa: '/ka.ma.ˈɾe.ɾo/', definition: 'Persona que atiende las mesas y sirve en un restaurante o café.', example: 'La camarera sirve el café con mucha amabilidad.', category: 'Profesiones' },
+    { id: 'vocab-17', unit: 'trabajo', unitLabel: '¡A Trabajar!', term: 'Carpintero / Carpintera', ipa: '/kaɾ.pin.ˈte.ɾo/', definition: 'Persona que construye y repara objetos de madera.', example: 'El carpintero hace sillas y mesas de madera.', category: 'Profesiones' },
+    { id: 'vocab-18', unit: 'trabajo', unitLabel: '¡A Trabajar!', term: 'Doctor / Doctora', ipa: '/dok.ˈtoɾ/', definition: 'Profesional que cura enfermos en un hospital o consultorio.', example: 'La doctora Sánchez atiende a sus pacientes por la mañana.', category: 'Profesiones' },
+    { id: 'vocab-19', unit: 'trabajo', unitLabel: '¡A Trabajar!', term: 'Maestro / Maestra', ipa: '/ma.ˈes.tɾo/', definition: 'Persona que enseña a los niños en una escuela.', example: 'Santiago es maestro y trabaja en una escuela pequeña.', category: 'Profesiones' },
+    { id: 'vocab-20', unit: 'trabajo', unitLabel: '¡A Trabajar!', term: 'Pintor / Pintora', ipa: '/pin.ˈtoɾ/', definition: 'Artista que pinta cuadros o persona que pinta paredes.', example: 'La pintora Anna está enamorada de las esculturas del museo.', category: 'Profesiones' },
+    { id: 'vocab-21', unit: 'trabajo', unitLabel: '¡A Trabajar!', term: 'Futbolista', ipa: '/fu.tβo.ˈlis.ta/', definition: 'Persona que juega al fútbol. Sustantivo neutro en -ista: no cambia de género.', example: 'El futbolista y la futbolista entrenan todos los días.', category: 'Sustantivos Neutros' },
+    /* --- Un Sábado por la Tarde (PDF integrado) --- */
+    { id: 'vocab-22', unit: 'sabado', unitLabel: 'Un Sábado por la Tarde', term: 'El tiempo libre', ipa: '/ˈtjem.po ˈli.βɾe/', definition: 'Momentos de descanso sin trabajo ni estudio.', example: '¿Qué haces en tu tiempo libre? Yo escucho música.', category: 'Tiempo Libre' },
+    { id: 'vocab-23', unit: 'sabado', unitLabel: 'Un Sábado por la Tarde', term: 'Escuchar música', ipa: '/es.ku.ˈtʃaɾ ˈmu.si.ka/', definition: 'Actividad de ocio: oír canciones o melodías.', example: 'Los sábados escucho música en mi cuarto.', category: 'Tiempo Libre' },
+    { id: 'vocab-24', unit: 'sabado', unitLabel: 'Un Sábado por la Tarde', term: 'Ver televisión', ipa: '/βeɾ te.le.βi.ˈsjon/', definition: 'Actividad de ocio: mirar programas en la televisión.', example: 'Por la tarde veo televisión con mi familia.', category: 'Tiempo Libre' },
+    { id: 'vocab-25', unit: 'sabado', unitLabel: 'Un Sábado por la Tarde', term: 'La piscina', ipa: '/pi.ˈsi.na/', definition: 'Lugar con agua para nadar o descansar.', example: 'Él está en la piscina todos los sábados.', category: 'Lugares' },
+    { id: 'vocab-26', unit: 'sabado', unitLabel: 'Un Sábado por la Tarde', term: 'Estar nublado', ipa: '/es.ˈtaɾ nu.ˈβla.ðo/', definition: 'Decir que el cielo está cubierto, sin sol.', example: 'Hoy el día está nublado en toda la ciudad.', category: 'Clima' },
+    { id: 'vocab-27', unit: 'sabado', unitLabel: 'Un Sábado por la Tarde', term: 'Enfermo / Enferma', ipa: '/en.ˈfeɾ.mo/', definition: 'Que tiene mala salud o se siente mal del cuerpo.', example: 'Jesus y Leo están enfermos y no van a la escuela.', category: 'Salud' },
+    /* --- Mis Amigos (PDF integrado) --- */
+    { id: 'vocab-28', unit: 'amigos', unitLabel: 'Mis Amigos', term: 'El bigote', ipa: '/bi.ˈɣo.te/', definition: 'Pelo que crece sobre el labio superior.', example: 'Mi tío tiene un bigote muy largo.', category: 'Apariencia Física' },
+    { id: 'vocab-29', unit: 'amigos', unitLabel: 'Mis Amigos', term: 'La barba', ipa: '/ˈbaɾ.βa/', definition: 'Pelo que crece en la cara de los hombres.', example: 'El amigo de mi padre tiene barba y gafas.', category: 'Apariencia Física' },
+    { id: 'vocab-30', unit: 'amigos', unitLabel: 'Mis Amigos', term: 'Rubio / Rubia', ipa: '/ˈru.βjo/', definition: 'Que tiene el pelo de color amarillo claro.', example: 'Sus amigas son rubias y muy altas.', category: 'Apariencia Física' },
+    { id: 'vocab-31', unit: 'amigos', unitLabel: 'Mis Amigos', term: 'Delgado / Delgada', ipa: '/del.ˈɣa.ðo/', definition: 'Que no está gordo; de cuerpo delgado.', example: 'Su amigo es delgado y tiene el pelo corto.', category: 'Apariencia Física' },
+    { id: 'vocab-32', unit: 'amigos', unitLabel: 'Mis Amigos', term: 'Tímido / Tímida', ipa: '/ˈti.mi.ðo/', definition: 'Persona callada y nerviosa cuando está con gente.', example: 'Él es tímido: no habla mucho en clase.', category: 'Personalidad' },
+    { id: 'vocab-33', unit: 'amigos', unitLabel: 'Mis Amigos', term: 'Alegre', ipa: '/a.ˈle.ɣɾe/', definition: 'Que tiene alegría, energía y buen humor.', example: 'Mis amigos son muy alegres y simpáticos.', category: 'Personalidad' },
+    { id: 'vocab-34', unit: 'amigos', unitLabel: 'Mis Amigos', term: 'Las gafas', ipa: '/ˈɣa.fas/', definition: 'Objeto con cristales para ver mejor o protegerse del sol.', example: 'Tu amigo lleva gafas de sol en la playa.', category: 'Objetos' },
+    /* --- ¿Casa o Departamento? (PDF integrado) --- */
+    { id: 'vocab-35', unit: 'casa', unitLabel: '¿Casa o Departamento?', term: 'La sala de estar', ipa: '/ˈsa.la ðe es.ˈtaɾ/', definition: 'Habitación para descansar y recibir visitas.', example: 'En la sala de estar hay dos sofás y una lámpara.', category: 'Habitaciones' },
+    { id: 'vocab-36', unit: 'casa', unitLabel: '¿Casa o Departamento?', term: 'El comedor', ipa: '/ko.me.ˈðoɾ/', definition: 'Habitación donde se come con la familia.', example: 'En el comedor hay una mesa y seis sillas.', category: 'Habitaciones' },
+    { id: 'vocab-37', unit: 'casa', unitLabel: '¿Casa o Departamento?', term: 'El armario', ipa: '/aɾ.ˈma.ɾjo/', definition: 'Mueble grande para guardar la ropa.', example: 'En mi cuarto hay un armario muy grande.', category: 'Muebles' },
+    { id: 'vocab-38', unit: 'casa', unitLabel: '¿Casa o Departamento?', term: 'El escritorio', ipa: '/es.kri.ˈto.ɾjo/', definition: 'Mueble con cajones para trabajar y estudiar.', example: 'Hay un escritorio junto a la ventana.', category: 'Muebles' },
+    { id: 'vocab-39', unit: 'casa', unitLabel: '¿Casa o Departamento?', term: 'Hay', ipa: '/ai/', definition: 'Forma del verbo haber: expresa existencia o presencia.', example: 'Hay una cama, dos sillas y un cuadro en el cuarto.', category: 'Gramática' },
+    { id: 'vocab-40', unit: 'casa', unitLabel: '¿Casa o Departamento?', term: 'Las afueras', ipa: '/a.ˈfwe.ɾas/', definition: 'Zona que está lejos del centro de la ciudad.', example: 'Vivimos en las afueras, en una casa con patio.', category: 'Ciudad' },
+    { id: 'vocab-41', unit: 'casa', unitLabel: '¿Casa o Departamento?', term: 'El cuadro', ipa: '/ˈkwa.ðɾo/', definition: 'Obra de arte pintada que se cuelga en la pared.', example: 'En la sala hay un cuadro muy bonito.', category: 'Muebles y Objetos' }
+];
+
+/* ==========================================================================
+   3. DATOS · EJERCICIOS (5 formatos)
+   ========================================================================== */
+/* 3.1 Quiz de opción múltiple (12 preguntas · 7 unidades) */
+const quizQuestions = [
+    { id: 1, question: 'Completa la oración: Anna está en el museo. Ella ________ feliz porque le gustan las esculturas.', options: ['es', 'está', 'son', 'están'], answer: 1, explanation: 'Se usa el verbo ESTAR para emociones y estados temporales (Ella está feliz).' },
+    { id: 2, question: '¿Cuál es la pregunta correcta para consultar la fecha de un festival?', options: ['¿Qué hora es el Carnaval?', '¿Cuándo son Las Fallas?', '¿Cómo es el cumpleaños?', '¿Dónde está el evento?'], answer: 1, explanation: 'Para consultar fechas de eventos se usa la fórmula "¿Cuándo + ser + evento?".' },
+    { id: 3, question: 'Si son las 2:30 PM y saludas a tu profesor formalmente, dices:', options: ['¡Buenas noches, profesor!', '¡Buenos días, profesor!', '¡Buenas tardes, profesor!', '¡Chao, profesor!'], answer: 2, explanation: 'Entre las 12:00 M y las 6:00 PM corresponde el saludo "Buenas tardes".' },
+    { id: 4, question: 'Identifica la opción con concordancia correcta de género y número:', options: ['Mis hermanos están enfadado.', 'Sara está tranquila.', 'El chico está enamorados.', 'Ella está confundidos.'], answer: 1, explanation: 'Sara (femenino singular) concuerda correctamente con "tranquila".' },
+    { id: 5, question: '(¡A Trabajar!) Elige la frase correcta sobre profesiones:', options: ['Ella es maestro.', 'Ella es maestra.', 'Ella es maestras.', 'Ella son maestra.'], answer: 1, explanation: 'El femenino de "maestro" es "maestra" (-o → -a) y concuerda con "Ella".' },
+    { id: 6, question: '(¡A Trabajar!) Completa: Nosotros ________ policías.', options: ['soy', 'eres', 'somos', 'son'], answer: 2, explanation: 'Con "nosotros" el verbo SER se conjuga "somos".' },
+    { id: 7, question: '(¡A Trabajar!) Completa con el artículo correcto: ________ doctoras trabajan aquí.', options: ['La', 'Las', 'Un', 'El'], answer: 1, explanation: '"Doctoras" es plural femenino, por eso usamos el artículo plural "Las".' },
+    { id: 8, question: '(¡A Trabajar!) ¿Cuál pareja usa un sustantivo neutro que NO cambia de género?', options: ['el actor / la actriz', 'el cocinero / la cocinera', 'el futbolista / la futbolista', 'el maestro / la maestra'], answer: 2, explanation: 'Los sustantivos en -ista, -ante y -ente son neutros: solo cambia el artículo.' },
+    { id: 9, question: '(Un Sábado) Completa: María y yo ________ en el cine.', options: ['estoy', 'está', 'estamos', 'están'], answer: 2, explanation: '"María y yo" equivale a "nosotros": estamos.' },
+    { id: 10, question: '(Mis Amigos) Completa con el posesivo: ________ amiga es muy simpática. (yo)', options: ['Mi', 'Tu', 'Su', 'Nuestra'], answer: 0, explanation: 'Con "yo" usamos "mi" (singular) porque "amiga" es un solo sustantivo femenino.' },
+    { id: 11, question: '(¿Casa o Departamento?) Completa: En mi sala de estar ________ dos sofás.', options: ['es', 'está', 'hay', 'tiene'], answer: 2, explanation: '"Hay" expresa existencia y se usa con numerales: hay dos sofás.' },
+    { id: 12, question: '(¿Casa o Departamento?) Completa: Mi hermana ________ en un departamento moderno.', options: ['vivo', 'vives', 'vive', 'vivimos'], answer: 2, explanation: 'Con "ella" el verbo VIVIR se conjuga "vive".' }
+];
+
+/* 3.2 Completar oraciones (8 huecos) */
+const fillQuestions = [
+    { id: 'f1', pre: 'Yo', post: 'pintora.', answer: 'soy', hint: 'verbo SER · yo', explain: 'SER con "yo" → soy.' },
+    { id: 'f2', pre: 'Usted', post: 'policía.', answer: 'es', hint: 'verbo SER · usted', explain: 'SER con "usted" → es.' },
+    { id: 'f3', pre: 'Vosotros', post: 'muy altos.', answer: 'sois', hint: 'verbo SER · vosotros', explain: 'SER con "vosotros" → sois.' },
+    { id: 'f4', pre: 'Pablo y yo', post: 'en el cine.', answer: 'estamos', hint: 'verbo ESTAR · nosotros', explain: '"Pablo y yo" = nosotros → estamos (ubicación).' },
+    { id: 'f5', pre: 'El día', post: 'nublado.', answer: 'está', hint: 'verbo ESTAR · clima', explain: 'El clima usa ESTAR: hoy está nublado.' },
+    { id: 'f6', pre: '', post: 'una cama y dos sillas en el cuarto.', answer: 'hay', hint: 'verbo HABER · existencia', explain: 'Existencia con numerales → HAY.' },
+    { id: 'f7', pre: '', post: 'amiga tiene el pelo largo. (yo)', answer: 'mi', hint: 'posesivo · yo', explain: 'Posesivo de "yo" con sustantivo singular → MI.' },
+    { id: 'f8', pre: 'Mis abuelos', post: 'en el centro de la ciudad.', answer: 'viven', hint: 'verbo VIVIR · ellos', explain: 'VIVIR con "ellos" → viven.' }
+];
+
+/* 3.3 Ordenar oraciones (Mis Amigos · extensión) */
+const orderSentences = [
+    { id: 'o1', words: ['Ellos', 'son', 'altos', 'y', 'rubios.'] },
+    { id: 'o2', words: ['Mis', 'amigos', 'son', 'alegres.'] },
+    { id: 'o3', words: ['Él', 'es', 'inteligente', 'y', 'tranquilo.'] },
+    { id: 'o4', words: ['Ella', 'tiene', 'ojos', 'claros.'] },
+    { id: 'o5', words: ['Sus', 'amigas', 'son', 'simpáticas.'] },
+    { id: 'o6', words: ['Tu', 'amigo', 'tiene', 'gafas.'] }
+];
+
+/* 3.4 Emparejar masculino ⇄ femenino (¡A Trabajar!) */
+const matchPairs = [
+    { m: 'el actor',     f: 'la actriz' },
+    { m: 'el camarero',  f: 'la camarera' },
+    { m: 'el cocinero',  f: 'la cocinera' },
+    { m: 'el doctor',    f: 'la doctora' },
+    { m: 'el pintor',    f: 'la pintora' },
+    { m: 'el maestro',   f: 'la maestra' }
+];
+
+/* 3.5 Verdadero o Falso (lectura ¿Casa o Departamento?) */
+const tfQuestions = [
+    { id: 't1', text: 'En el palacio de Buckingham vive el rey Carlos III.', answer: true,  fix: 'Correcto: el texto dice que en Buckingham vive el rey Carlos III.' },
+    { id: 't2', text: 'El palacio de Buckingham está en las afueras de Londres.', answer: false, fix: 'Falso: el palacio está en el CENTRO de la ciudad de Londres.' },
+    { id: 't3', text: 'En la Villa Bolonia viven dieciocho personas.', answer: false, fix: 'Falso: en la Villa Bolonia viven VEINTIOCHO (28) personas.' },
+    { id: 't4', text: 'Hoy en el castillo de Azay-le-Rideau vive una familia.', answer: false, fix: 'Falso: hoy la familia no vive allí, el castillo es un museo.' }
+];
+
+/* ==========================================================================
+   4. DATOS · GRAMÁTICA (tablas de conjugación y posesivos)
+   ========================================================================== */
+const CONJ = {
+    ser:   [ ['yo','soy'], ['tú','eres'], ['él / ella / usted','es'], ['nosotros / nosotras','somos'], ['vosotros / vosotras','sois'], ['ellos / ellas / ustedes','son'] ],
+    estar: [ ['yo','estoy'], ['tú / vos','estás'], ['él / ella / usted','está'], ['nosotros / nosotras','estamos'], ['vosotros / vosotras','estáis'], ['ellos / ellas / ustedes','están'] ],
+    vivir: [ ['yo','vivo'], ['tú','vives'], ['él / ella / usted','vive'], ['nosotros / nosotras','vivimos'], ['vosotros / vosotras','vivís'], ['ellos / ellas / ustedes','viven'] ],
+    tener: [ ['yo','tengo'], ['tú','tienes'], ['él / ella / usted','tiene'], ['nosotros / nosotras','tenemos'], ['vosotros / vosotras','tenéis'], ['ellos / ellas / ustedes','tienen'] ]
+};
+const POSESIVOS = [
+    ['yo', 'mi', 'mis'], ['tú / vos', 'tu', 'tus'], ['él / ella / usted', 'su', 'sus'],
+    ['nosotros / nosotras', 'nuestro / nuestra', 'nuestros / nuestras'],
+    ['vosotros / vosotras', 'vuestro / vuestra', 'vuestros / vuestras'],
+    ['ellos / ellas / ustedes', 'su', 'sus']
+];
+
+/* ==========================================================================
+   5. DATOS · CATÁLOGO VOIZ · 70 PROMPTS DE PRÁCTICA ORAL
+   ========================================================================== */
+const voizPrompts = [
+    /* ---- Sentimientos (1-10) ---- */
+    { id: 1, unit: 'sentimientos', prompt: '¿Cómo te sientes antes de una entrevista de trabajo importante?', vocab: ['Nervioso/a', 'Preocupado/a', 'Tranquilo/a'], target: 'Antes de una entrevista me siento un poco nervioso, pero tranquilo.', benchmark: 'Antes de una entrevista de trabajo me siento un poco nervioso y preocupado, pero intento estar tranquilo.' },
+    { id: 2, unit: 'sentimientos', prompt: 'Describe la emoción de Anna cuando está en el museo de arte.', vocab: ['Feliz', 'Enamorado/a', 'Aburrido/a'], target: 'Anna está muy feliz porque está enamorada de las esculturas.', benchmark: 'Anna está muy feliz en el museo porque está enamorada de las esculturas antiguas.' },
+    { id: 3, unit: 'sentimientos', prompt: '¿Cómo reaccionan los niños cuando no pueden jugar videojuegos?', vocab: ['Enfadado/a', 'Triste', 'Aburrido/a'], target: 'Los niños están enfadados y aburridos sin sus videojuegos.', benchmark: 'Los niños están enfadados y aburridos porque no tienen sus videojuegos aquí.' },
+    { id: 4, unit: 'sentimientos', prompt: '¿Qué sientes cuando recibes una sorpresa inesperada de tus amigos?', vocab: ['Sorprendido/a', 'Feliz', 'Tranquilo/a'], target: 'Me siento muy sorprendido y feliz cuando mis amigos me visitan.', benchmark: 'Me siento totalmente sorprendido y muy feliz cuando mis amigos me visitan.' },
+    { id: 5, unit: 'sentimientos', prompt: '¿Cómo se siente una persona cuando no entiende una lección difícil?', vocab: ['Confundido/a', 'Nervioso/a', 'Preocupado/a'], target: 'El estudiante está confundido y preocupado con la lección difícil.', benchmark: 'El estudiante se siente confundido y un poco preocupado porque la lección es compleja.' },
+    { id: 6, unit: 'sentimientos', prompt: 'Explica cómo te sientes después de hacer ejercicio o correr.', vocab: ['Cansado/a', 'Feliz', 'Tranquilo/a'], target: 'Después de hacer ejercicio estoy cansado pero feliz y tranquilo.', benchmark: 'Después de hacer ejercicio estoy muy cansado, pero me siento feliz y tranquilo.' },
+    { id: 7, unit: 'sentimientos', prompt: '¿Cómo se sienten dos personas en su aniversario de bodas?', vocab: ['Enamorados', 'Felices', 'Tranquilos'], target: 'Ellos están enamorados y muy felices en su aniversario.', benchmark: 'Ellos están profundamente enamorados y muy felices de celebrar su aniversario.' },
+    { id: 8, unit: 'sentimientos', prompt: '¿Qué sientes cuando ves una película muy larga y lenta?', vocab: ['Aburrido/a', 'Cansado/a', 'Triste'], target: 'Con una película lenta me siento aburrido y con sueño.', benchmark: 'Cuando la película es muy lenta me siento aburrido y me quedo dormido.' },
+    { id: 9, unit: 'sentimientos', prompt: '¿Cómo cambia la emoción de Sara tras hablar con su amiga Ana?', vocab: ['Tranquila', 'Nerviosa', 'Feliz'], target: 'Sara estaba nerviosa pero ahora está tranquila y feliz.', benchmark: 'Sara estaba nerviosa, pero ahora está más tranquila y feliz tras hablar con Ana.' },
+    { id: 10, unit: 'sentimientos', prompt: 'Expresa tu estado emocional actual al iniciar la práctica de español.', vocab: ['Feliz', 'Nervioso/a', 'Tranquilo/a'], target: 'Hoy estoy feliz y muy tranquilo para practicar español.', benchmark: 'Hoy estoy feliz de practicar español y me siento muy tranquilo para comenzar.' },
+    /* ---- Fiestas (11-20) ---- */
+    { id: 11, unit: 'fiestas', prompt: '¿Cuándo es tu cumpleaños y cómo te gusta celebrarlo?', vocab: ['Cumpleaños', 'Mes', 'Feliz'], target: 'Mi cumpleaños es el once de agosto y lo celebro feliz.', benchmark: 'Mi cumpleaños es el once de agosto y siempre estoy muy feliz ese día.' },
+    { id: 12, unit: 'fiestas', prompt: 'Menciona cuándo y dónde se celebran Las Fallas.', vocab: ['Las Fallas', 'Marzo', 'España'], target: 'Las Fallas son en marzo y se celebran en España.', benchmark: 'Las Fallas son en marzo y se celebran tradicionalmente en España.' },
+    { id: 13, unit: 'fiestas', prompt: '¿Qué día se celebra el Día de los Muertos en México?', vocab: ['Día de los Muertos', 'Noviembre', 'México'], target: 'El Día de los Muertos es el dos de noviembre en México.', benchmark: 'El Día de los Muertos es el dos de noviembre y es famoso en México.' },
+    { id: 14, unit: 'fiestas', prompt: '¿En qué mes se celebran las Pascuas este año?', vocab: ['Pascuas', 'Abril', 'Celebrar'], target: 'Las Pascuas son en abril y comemos chocolates en familia.', benchmark: 'Las Pascuas son en el mes de abril y comemos chocolates en familia.' },
+    { id: 15, unit: 'fiestas', prompt: '¿Cuándo es el Día de San Valentín y con quién lo celebras?', vocab: ['San Valentín', 'Febrero', 'Enamorado/a'], target: 'San Valentín es el catorce de febrero, el día del amor.', benchmark: 'San Valentín es el catorce de febrero y me siento enamorado ese día.' },
+    { id: 16, unit: 'fiestas', prompt: 'Indica la fecha exacta del Día Internacional del Trabajador.', vocab: ['Primero de mayo', 'Mayo', 'Celebración'], target: 'El Día del Trabajador es el primero de mayo.', benchmark: 'El Día Internacional del Trabajador es el primero de mayo.' },
+    { id: 17, unit: 'fiestas', prompt: 'Menciona en qué mes ocurre el Carnaval de Río de Janeiro.', vocab: ['Carnaval', 'Febrero', 'Brasil'], target: 'El Carnaval de Río de Janeiro es en febrero.', benchmark: 'El Carnaval de Río de Janeiro es en febrero en el país de Brasil.' },
+    { id: 18, unit: 'fiestas', prompt: 'Pregunta a un compañero la fecha de su cumpleaños usando la fórmula.', vocab: ['¿Cuándo es...?', 'Cumpleaños', 'Mes'], target: '¿Cuándo es tu cumpleaños? El mío es el cuatro de octubre.', benchmark: '¿Cuándo es tu cumpleaños? El mío es el cuatro de octubre.' },
+    { id: 19, unit: 'fiestas', prompt: '¿Qué meses del año tienen exactamente treinta días?', vocab: ['Noviembre', 'Abril', 'Junio', 'Septiembre'], target: 'Noviembre, abril, junio y septiembre tienen treinta días.', benchmark: 'Noviembre, abril, junio y septiembre tienen treinta días.' },
+    { id: 20, unit: 'fiestas', prompt: 'Di qué fecha es hoy escribiendo el día y el mes completo.', vocab: ['Hoy es...', 'Número', 'Mes'], target: 'Hoy es quince de mayo y es un día perfecto.', benchmark: 'Hoy es quince de mayo y es un día perfecto para estudiar.' },
+    /* ---- Saludos (21-30) ---- */
+    { id: 21, unit: 'saludos', prompt: 'Saluda a tu profesor a las 9:00 AM y pregúntale cómo está.', vocab: ['Buenos días', 'Usted', '¿Cómo está?'], target: 'Buenos días, profesor. ¿Cómo está usted el día de hoy?', benchmark: '¡Buenos días, profesor! ¿Cómo está usted el día de hoy?' },
+    { id: 22, unit: 'saludos', prompt: 'Llegas a una reunión de trabajo a las 3:00 PM. ¿Cómo saludas?', vocab: ['Buenas tardes', 'Mucho gusto', 'Señor/a'], target: 'Buenas tardes a todos. Mucho gusto en conocer al equipo.', benchmark: '¡Buenas tardes a todos! Mucho gusto en conocer al equipo.' },
+    { id: 23, unit: 'saludos', prompt: 'Despídete formalmente de tu jefe antes de salir del trabajo.', vocab: ['Hasta mañana', 'Que tenga un buen día', 'Adiós'], target: 'Hasta mañana, señor Carlos. Que tenga un muy buen día.', benchmark: 'Hasta mañana, señor Carlos. Que tenga un muy buen día.' },
+    { id: 24, unit: 'saludos', prompt: 'Saluda informalmente a tu mejor amigo cuando lo ves en la calle.', vocab: ['¡Hola!', '¿Cómo estás?', '¿Todo bien?'], target: '¡Hola, Juan! ¿Cómo estás? ¡Qué gusto verte por aquí!', benchmark: '¡Hola, Juan! ¿Cómo estás? ¡Qué gusto verte por aquí!' },
+    { id: 25, unit: 'saludos', prompt: 'Te presentan a un nuevo colega de trabajo. ¿Qué le dices?', vocab: ['Mucho gusto', 'Soy...', 'Bienvenido'], target: 'Mucho gusto, soy Miguel. Bienvenido a la empresa.', benchmark: 'Mucho gusto, soy Miguel. Bienvenido a la empresa.' },
+    { id: 26, unit: 'saludos', prompt: 'Despídete de tus compañeros de clase sabiendo que los verás la próxima semana.', vocab: ['Nos vemos pronto', 'Chao', 'Hasta luego'], target: '¡Chao a todos! Nos vemos pronto en la siguiente clase.', benchmark: '¡Chao a todos! Nos vemos pronto en la siguiente clase.' },
+    { id: 27, unit: 'saludos', prompt: 'Saluda a un médico en su consultorio a las 7:00 PM.', vocab: ['Buenas noches', 'Doctor', '¿Cómo está?'], target: 'Buenas noches, doctor. ¿Cómo está usted esta noche?', benchmark: 'Buenas noches, doctor. ¿Cómo está usted esta noche?' },
+    { id: 28, unit: 'saludos', prompt: 'Corrige un saludo incorrecto: decir "Buenos días" a las 10:00 PM.', vocab: ['Buenas noches', 'Incorrecto', 'Hora'], target: 'A las diez de la noche se dice buenas noches.', benchmark: 'A las diez de la noche es incorrecto decir buenos días, se dice buenas noches.' },
+    { id: 29, unit: 'saludos', prompt: 'Despídete amablemente de un cliente deseándole descanso.', vocab: ['Descansa / Descanse', 'Hasta luego', 'Buenas noches'], target: 'Hasta luego. Que tenga un excelente descanso y buenas noches.', benchmark: 'Hasta luego, que tenga un excelente descanso y buenas noches.' },
+    { id: 30, unit: 'saludos', prompt: 'Simula un diálogo completo y rápido de saludo y despedida informal.', vocab: ['¡Hola!', 'Muy bien', 'Nos vemos'], target: '¡Hola! ¿Cómo estás? Muy bien, gracias. Nos vemos luego.', benchmark: '¡Hola! ¿Cómo estás? Yo muy bien, gracias. Nos vemos luego, ¡chao!' },
+    /* ---- ¡A Trabajar! (31-40) ---- */
+    { id: 31, unit: 'trabajo', prompt: '¿Cuál es tu profesión o a qué te dedicas?', vocab: ['Soy', 'Profesión', 'Trabajo'], target: 'Yo soy maestra y trabajo en una escuela de mi ciudad.', tip: 'Usa SER para profesiones: yo soy + profesión sin artículo (soy maestra).' },
+    { id: 32, unit: 'trabajo', prompt: '¿A qué se dedica tu mejor amigo?', vocab: ['Él es', 'Carpintero', 'Madera'], target: 'Mi amigo Santiago es carpintero y trabaja con madera.', tip: 'Para hablar del trabajo de otra persona usa la 3ª persona: él es carpintero.' },
+    { id: 33, unit: 'trabajo', prompt: 'Describe el trabajo de una persona famosa.', vocab: ['Cantante', 'Famoso/a', 'Actor / Actriz'], target: 'Shakira es una cantante famosa y muy inteligente.', tip: 'Con profesiones usa el artículo: es UNA cantante famosa.' },
+    { id: 34, unit: 'trabajo', prompt: '¿Qué trabajo te parece más difícil? ¿Por qué?', vocab: ['Difícil', 'Peligroso', 'Creo que'], target: 'Creo que el trabajo de policía es muy difícil y peligroso.', tip: 'Opina con la estructura: creo que + sustantivo + es + adjetivo.' },
+    { id: 35, unit: 'trabajo', prompt: '¿Cuál es el trabajo más tranquilo para ti?', vocab: ['Tranquilo', 'Pintor/a', 'Para mí'], target: 'Para mí, el trabajo de pintor es tranquilo y creativo.', tip: 'Usa "para mí" para dar tu opinión personal.' },
+    { id: 36, unit: 'trabajo', prompt: '¿Qué hacen tus padres? Describe sus trabajos.', vocab: ['Mi madre es', 'Mi padre es', 'Trabajan'], target: 'Mi madre es doctora y mi padre es camarero en un restaurante.', tip: 'Recuerda el femenino: doctor → doctora, con concordancia total.' },
+    { id: 37, unit: 'trabajo', prompt: '¿Quieres ser actor o actriz en el futuro?', vocab: ['Quiero ser', 'En el futuro', 'Teatro'], target: 'En el futuro quiero ser actor en el teatro de mi ciudad.', tip: 'Expresa deseos con la fórmula: quiero ser + profesión.' },
+    { id: 38, unit: 'trabajo', prompt: '¿Quién cocina mejor: un cocinero profesional o tu familia?', vocab: ['Cocinero', 'Cocina', 'Mejor que'], target: 'El cocinero del restaurante cocina mejor que mi familia.', tip: 'Compara con la estructura: mejor que...' },
+    { id: 39, unit: 'trabajo', prompt: 'Di el femenino de estos trabajos: actor, pintor y maestro.', vocab: ['Actriz', 'Pintora', 'Maestra'], target: 'El femenino es actriz, pintora y maestra.', tip: 'Excepción: actor → actriz cambia la terminación a -triz.' },
+    { id: 40, unit: 'trabajo', prompt: '¿Tu trabajo o estudio es fácil o difícil hoy? Explica.', vocab: ['Fácil', 'Difícil', 'Porque'], target: 'Mi trabajo hoy es fácil porque estoy muy tranquilo.', tip: 'Justifica tus opiniones con la palabra porque.' },
+    /* ---- Un Sábado por la Tarde (41-50) ---- */
+    { id: 41, unit: 'sabado', prompt: '¿Qué haces en tu tiempo libre?', vocab: ['Escucho música', 'Leo', 'En mi tiempo libre'], target: 'En mi tiempo libre escucho música y leo un libro.', tip: 'Responde con la fórmula del PDF: en mi tiempo libre + actividad en presente.' },
+    { id: 42, unit: 'sabado', prompt: '¿Qué hace tu familia los sábados por la tarde?', vocab: ['Ve televisión', 'Sábados', 'Sala de estar'], target: 'Los sábados mi familia ve televisión en la sala de estar.', tip: 'Los días de la semana llevan artículo: los sábados.' },
+    { id: 43, unit: 'sabado', prompt: '¿Dónde estás ahora mismo? Usa el verbo estar.', vocab: ['Estoy', 'En', 'Ahora'], target: 'Ahora estoy en mi casa, en la sala, con mi familia.', tip: 'ESTAR indica ubicación: estoy en + lugar.' },
+    { id: 44, unit: 'sabado', prompt: '¿Cómo está el clima hoy?', vocab: ['Está nublado', 'Hace sol', 'Hoy'], target: 'Hoy el día está nublado, pero no está lloviendo.', tip: 'El clima usa ESTAR: está nublado, está lloviendo, está soleado.' },
+    { id: 45, unit: 'sabado', prompt: '¿Dónde está tu mejor amigo en este momento?', vocab: ['Está en', 'Piscina', 'Parque'], target: 'Mi mejor amigo está en la piscina de su edificio.', tip: 'Para ubicar a otra persona usa la 3ª persona: él está en...' },
+    { id: 46, unit: 'sabado', prompt: '¿Estás feliz o cansado en este momento?', vocab: ['Estoy feliz', 'Cansado/a', 'Un poco'], target: 'Estoy feliz pero también un poco cansado por la semana.', tip: 'Los estados emocionales van con ESTAR + adjetivo concordado.' },
+    { id: 47, unit: 'sabado', prompt: '¿En qué estación del año estamos?', vocab: ['Estamos en', 'Verano', 'Invierno'], target: 'Estamos en verano y hace mucho calor en la ciudad.', tip: 'Las estaciones usan ESTAR: estamos en verano / en invierno.' },
+    { id: 48, unit: 'sabado', prompt: '¿Tú y tus amigos están en el parque o en el cine?', vocab: ['Nosotros', 'Parque', 'Porque'], target: 'Nosotros estamos en el parque porque el día está muy bonito.', tip: 'Usa "porque" para explicar tu elección.' },
+    { id: 49, unit: 'sabado', prompt: '¿Vosotros estáis ocupados hoy?', vocab: ['Estamos', 'Ocupados', 'Muy'], target: 'Hoy nosotros estamos muy ocupados con el trabajo y el estudio.', tip: 'En España: vosotros estáis. En Latinoamérica: ustedes están.' },
+    { id: 50, unit: 'sabado', prompt: '¿Ustedes están contentos con la clase de español?', vocab: ['Contentos', 'Muy', 'Aprender'], target: 'Sí, nosotros estamos muy contentos con la clase de español.', tip: '"Contentos" concuerda en masculino plural con nosotros.' },
+    /* ---- Mis Amigos (51-60) ---- */
+    { id: 51, unit: 'amigos', prompt: 'Describe físicamente a tu mejor amigo.', vocab: ['Alto', 'Rubio', 'Delgado'], target: 'Mi mejor amigo es alto, rubio y muy delgado.', tip: 'El físico usa SER: es alto y rubio.' },
+    { id: 52, unit: 'amigos', prompt: '¿Cómo es el pelo de tu madre?', vocab: ['Tiene', 'Pelo', 'Rizado / Liso'], target: 'Mi madre tiene el pelo corto, liso y castaño.', tip: 'El pelo usa TENER: tiene el pelo + rizado / liso / corto / largo.' },
+    { id: 53, unit: 'amigos', prompt: '¿Tienes ojos claros u oscuros?', vocab: ['Tengo', 'Ojos', 'Claros / Oscuros'], target: 'Tengo los ojos claros como mi padre.', tip: 'Los ojos usan TENER: tengo los ojos + claros / oscuros.' },
+    { id: 54, unit: 'amigos', prompt: '¿Eres una persona tímida o alegre?', vocab: ['Soy', 'Tímido/a', 'Alegre'], target: 'Soy una persona alegre, pero con gente nueva soy tímido.', tip: 'La personalidad usa SER: soy alegre, soy tímido.' },
+    { id: 55, unit: 'amigos', prompt: 'Describe la personalidad de tu mejor amiga.', vocab: ['Simpática', 'Inteligente', 'Tranquila'], target: 'Mi amiga Laura es simpática, inteligente y muy tranquila.', tip: 'Concordancia femenina: simpática, inteligente, tranquila.' },
+    { id: 56, unit: 'amigos', prompt: '¿Tu amigo lleva gafas o tiene barba?', vocab: ['Lleva gafas', 'Tiene', 'Barba'], target: 'Mi amigo lleva gafas y tiene una barba muy larga.', tip: 'Patrones del PDF: lleva gafas · tiene barba · tiene bigote.' },
+    { id: 57, unit: 'amigos', prompt: '¿Cómo son tus amigos del trabajo o de la universidad?', vocab: ['Son', 'Alegres', 'Trabajadores'], target: 'Mis amigos del trabajo son alegres, serios y trabajadores.', tip: 'En plural: son alegres y trabajadores.' },
+    { id: 58, unit: 'amigos', prompt: '¿Eres alto o bajo? ¿Y tu mejor amigo?', vocab: ['Soy', 'Alto', 'Bajo'], target: 'Yo soy bajo, pero mi mejor amigo es muy alto.', tip: 'Compara dos personas con "pero": yo soy bajo, él es alto.' },
+    { id: 59, unit: 'amigos', prompt: 'Describe a una persona famosa que admiras.', vocab: ['Es', 'Moreno/a', 'Pelo largo'], target: 'Ella es morena, inteligente y tiene el pelo largo y rizado.', tip: 'Combina SER (es morena) + TENER (tiene el pelo largo).' },
+    { id: 60, unit: 'amigos', prompt: '¿Cómo eres tú físicamente? Descríbete.', vocab: ['Soy', 'Delgado/a', 'Pelo corto'], target: 'Yo soy delgado, moreno y tengo el pelo corto.', tip: 'Descripción propia: yo soy + adjetivos concordados contigo.' },
+    /* ---- ¿Casa o Departamento? (61-70) ---- */
+    { id: 61, unit: 'casa', prompt: '¿Vives en una casa o en un departamento?', vocab: ['Vivo en', 'Casa', 'Departamento'], target: 'Yo vivo en un departamento moderno en el centro de la ciudad.', tip: 'VIVIR: yo vivo en + tipo de vivienda + lugar.' },
+    { id: 62, unit: 'casa', prompt: '¿Dónde viven tus padres?', vocab: ['Viven', 'Afueras', 'Centro'], target: 'Mis padres viven en una casa con patio en las afueras.', tip: 'Ellos viven... y "las afueras" siempre en plural.' },
+    { id: 63, unit: 'casa', prompt: '¿Cuántas habitaciones hay en tu casa?', vocab: ['Hay', 'Cuatro', 'Habitaciones'], target: 'En mi casa hay cuatro habitaciones y dos baños.', tip: 'Cantidades con HAY + numeral: hay cuatro habitaciones.' },
+    { id: 64, unit: 'casa', prompt: '¿Hay un sofá en tu sala de estar?', vocab: ['Hay', 'Sofá', 'Sí / No'], target: 'Sí, en mi sala de estar hay un sofá grande y dos lámparas.', tip: 'Responde: sí, hay... / no, no hay...' },
+    { id: 65, unit: 'casa', prompt: '¿Qué hay sobre tu escritorio?', vocab: ['Hay', 'Computadora', 'Encima de'], target: 'Sobre mi escritorio hay una computadora y un cuadro pequeño.', tip: 'Ubica objetos: sobre / encima de + lugar + hay + objeto.' },
+    { id: 66, unit: 'casa', prompt: '¿Qué habitación te gusta más de tu casa?', vocab: ['Me gusta', 'Porque', 'Luminoso'], target: 'Me gusta más mi cuarto porque es tranquilo y muy luminoso.', tip: 'Preferencias: me gusta... porque es + adjetivo.' },
+    { id: 67, unit: 'casa', prompt: '¿Tu casa es grande o pequeña?', vocab: ['Es', 'Grande', 'Pequeña'], target: 'Mi casa es pequeña pero muy bonita y confortable.', tip: 'Características permanentes con SER: es grande / pequeña.' },
+    { id: 68, unit: 'casa', prompt: '¿Hay piscina en tu edificio o en tu casa?', vocab: ['Hay', 'Piscina', 'Jardín'], target: 'En mi edificio hay una piscina y un jardín pequeño.', tip: 'Instalaciones: en mi edificio hay...' },
+    { id: 69, unit: 'casa', prompt: 'Describe el comedor de tu casa.', vocab: ['En el comedor', 'Hay', 'Mesa'], target: 'En el comedor hay una mesa, seis sillas y dos cuadros.', tip: 'Inventa cantidades: hay una mesa y seis sillas.' },
+    { id: 70, unit: 'casa', prompt: '¿Prefieres casa o departamento? ¿Por qué?', vocab: ['Prefiero', 'Porque', 'Patio'], target: 'Prefiero una casa porque quiero un patio y una piscina.', tip: 'Opina con la fórmula: prefiero... porque quiero...' }
+];
+/* Derivar campo target para prompts originales que solo tienen benchmark */
+voizPrompts.forEach(p => { if (!p.target) p.target = p.benchmark; if (!p.tip) p.tip = 'Modelo completo: ' + p.target; });
+
+/* ==========================================================================
+   6. ESTADO GLOBAL Y UTILIDADES
+   ========================================================================== */
+let currentTab = 'panel';
+let activePromptIndex = 0;
+let filteredPrompts = [...voizPrompts];
+let timeMode = 10;               // 10 | 20 | 0 (libre)
+let progress = { attempts: [] }; // {promptId, unit, wer, ok, sub, del, ins, ts}
+const LS_KEY = 'gbsVoizProgressV2';
+
+const $ = id => document.getElementById(id);
+function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function werLevel(w) { return w <= 15 ? 'ok' : (w <= 35 ? 'mid' : 'bad'); }
+function werColor(w) { return werLevel(w) === 'ok' ? '#10b981' : (werLevel(w) === 'mid' ? '#f59e0b' : '#f43f5e'); }
+function werLabel(w) { return werLevel(w) === 'ok' ? 'Excelente' : (werLevel(w) === 'mid' ? 'Vas bien' : 'Sigue practicando'); }
+function werStars(w) { return werLevel(w) === 'ok' ? 3 : (werLevel(w) === 'mid' ? 2 : 1); }
+function timeAgo(ts) {
+    const s = Math.floor((Date.now() - ts) / 1000);
+    if (s < 60) return 'hace un momento';
+    if (s < 3600) return 'hace ' + Math.floor(s / 60) + ' min';
+    if (s < 86400) return 'hace ' + Math.floor(s / 3600) + ' h';
+    return 'hace ' + Math.floor(s / 86400) + ' d';
+}
+function loadProgress() {
+    try { const raw = localStorage.getItem(LS_KEY); if (raw) { const d = JSON.parse(raw); if (d && Array.isArray(d.attempts)) progress = d; } } catch (e) { /* noop */ }
+}
+function saveProgress() { try { localStorage.setItem(LS_KEY, JSON.stringify(progress)); } catch (e) { /* noop */ } }
+function resetProgress() {
+    if (!confirm('¿Seguro que deseas borrar todo tu progreso de pronunciación?')) return;
+    progress = { attempts: [] }; saveProgress(); updateDashboard(); updateSpark();
+    const rp = $('results-panel'); if (rp) rp.classList.add('hidden');
+}
+
+/* ==========================================================================
+   7. AUDIO BEEP (WEB AUDIO API)
+   ========================================================================== */
+let audioContext = null;
+function playBeep(freq = 600, duration = 0.1, type = 'sine') {
+    try {
+        if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioContext.state === 'suspended') audioContext.resume();
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = type; osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.15, audioContext.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration);
+        osc.connect(gain); gain.connect(audioContext.destination);
+        osc.start(); osc.stop(audioContext.currentTime + duration);
+    } catch (e) { console.warn('AudioContext no disponible.', e); }
+}
+
+/* ==========================================================================
+   8. NAVEGACIÓN POR PESTAÑAS
+   ========================================================================== */
+const TAB_IDS = ['panel', 'glosario', 'gramatica', 'ejercicios', 'voiz'];
+function switchTab(tabId) {
+    currentTab = tabId;
+    TAB_IDS.forEach(id => {
+        const sec = $('sec-' + id);
+        if (sec) { sec.classList.add('hidden'); sec.classList.remove('sec-enter'); }
+        ['tab-' + id, 'tab-mobile-' + id].forEach(bid => {
+            const btn = $(bid);
+            if (btn) { btn.classList.remove('nav-pill-active'); btn.classList.add('nav-pill'); }
+        });
+    });
+    const sec = $('sec-' + tabId);
+    if (sec) { sec.classList.remove('hidden'); void sec.offsetWidth; sec.classList.add('sec-enter'); }
+    ['tab-' + tabId, 'tab-mobile-' + tabId].forEach(bid => {
+        const btn = $(bid);
+        if (btn) { btn.classList.add('nav-pill-active'); }
+    });
+    if (tabId === 'panel') updateDashboard();
+    if (tabId === 'voiz') initSpark();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ==========================================================================
+   9. GLOSARIO · RENDER, BÚSQUEDA Y TEXT-TO-SPEECH
+   ========================================================================== */
+function renderVocabulary(items) {
+    const grid = $('vocab-grid');
+    grid.innerHTML = '';
+    if (!items.length) {
+        grid.innerHTML = '<div class="col-span-full py-12 text-center text-slate-400"><i data-lucide="search-x" class="w-12 h-12 mx-auto mb-2 opacity-50"></i><p>No se encontraron términos que coincidan con la búsqueda.</p></div>';
+        lucide.createIcons(); return;
+    }
+    items.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = 'bg-white p-5 rounded-2xl shadow-soft border border-slate-200/70 hover:shadow-lift transition-all flex flex-col justify-between group card-hover';
+        card.style.animation = 'fadeUp .35s ease both'; card.style.animationDelay = Math.min(idx * 30, 300) + 'ms';
+        const termSafe = item.term.replace(/'/g, "\\'");
+        card.innerHTML = `
+            <div>
+                <div class="flex justify-between items-start mb-2 gap-2">
+                    <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-md bg-brand-50 text-brand-700 border border-brand-100">${item.unitLabel}</span>
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider text-right">${item.category}</span>
+                </div>
+                <h3 class="text-lg font-display font-bold text-slate-900 group-hover:text-brand-600 transition-colors">${item.term}</h3>
+                <p class="text-xs font-mono text-accent-600 mb-3">${item.ipa}</p>
+                <p class="text-xs text-slate-600 mb-4 leading-relaxed">${item.definition}</p>
+            </div>
+            <div>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs text-slate-600 italic mb-4">"${item.example}"</div>
+                <button onclick="speakText('${termSafe}')" class="w-full py-2 bg-slate-100 hover:bg-gradient-to-r hover:from-brand-600 hover:to-accent-600 hover:text-white text-slate-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all">
+                    <i data-lucide="volume-2" class="w-4 h-4"></i><span>Escuchar pronunciación</span>
+                </button>
+            </div>`;
+        grid.appendChild(card);
+    });
+    lucide.createIcons();
+}
+function filterVocab() {
+    const query = $('vocab-search').value.toLowerCase();
+    const category = $('vocab-filter').value;
+    const filtered = vocabularyData.filter(item => {
+        const mq = item.term.toLowerCase().includes(query) || item.definition.toLowerCase().includes(query) || item.example.toLowerCase().includes(query);
+        const mc = category === 'all' || item.unit === category;
+        return mq && mc;
+    });
+    renderVocabulary(filtered);
+}
+function speakText(text) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'es-ES'; u.rate = 0.9;
+        window.speechSynthesis.speak(u);
+    } else { alert('Tu navegador no soporta la API de síntesis de voz Web Speech.'); }
+}
+function speakTargetSentence() { const p = voizPrompts[activePromptIndex]; if (p) speakText(p.target); }
+
+/* ==========================================================================
+   10. TABLAS DE CONJUGACIÓN INTERACTIVAS (TTS por fila)
+   ========================================================================== */
+function renderConjTable(containerId, rows, colorClass) {
+    const el = $(containerId); if (!el) return;
+    el.innerHTML = rows.map(([pron, form]) => `
+        <button onclick="speakText('${form}')" class="w-full flex items-center justify-between text-xs px-3 py-1.5 rounded-lg hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all group">
+            <span class="text-slate-400 font-medium">${pron}</span>
+            <span class="flex items-center gap-1.5"><span class="font-mono font-bold ${colorClass}">${form}</span>
+            <i data-lucide="volume-2" class="w-3 h-3 text-slate-300 group-hover:text-brand-500"></i></span>
+        </button>`).join('');
+}
+function renderPosesivos() {
+    const tb = $('posesivos-tbody'); if (!tb) return;
+    tb.innerHTML = POSESIVOS.map(r => `<tr><td class="py-1.5 text-slate-500">${r[0]}</td><td class="py-1.5 font-bold text-rose-600">${r[1]}</td><td class="py-1.5 font-bold text-rose-600">${r[2]}</td></tr>`).join('');
+}
+
+/* ==========================================================================
+   11. PANEL · TARJETAS DE UNIDAD, GRÁFICAS Y ACTIVIDAD
+   ========================================================================== */
+let werChart = null, errChart = null, unitChart = null, sparkChart = null;
+function renderUnitCards() {
+    const grid = $('unit-cards-grid'); if (!grid) return;
+    grid.innerHTML = UNIT_KEYS.map(key => {
+        const u = UNITS[key];
+        const vocabN = vocabularyData.filter(v => v.unit === key).length;
+        const promptN = voizPrompts.filter(p => p.unit === key).length;
+        return `
+        <div onclick="goUnit('${key}')" class="bg-white p-5 rounded-2xl shadow-soft border border-slate-200/70 card-hover cursor-pointer group">
+            <div class="flex items-center justify-between mb-3">
+                <span class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:${u.color}1a;color:${u.color}"><i data-lucide="${u.icon}" class="w-5 h-5"></i></span>
+                <i data-lucide="arrow-up-right" class="w-4 h-4 text-slate-300 group-hover:text-brand-500 transition-colors"></i>
+            </div>
+            <h4 class="font-display font-bold text-slate-900 text-sm leading-snug">${u.label}</h4>
+            <p class="text-[10px] uppercase tracking-wider text-slate-400 font-bold mt-0.5">${u.ref}</p>
+            <p class="text-xs text-slate-500 mt-2">${vocabN} términos · ${promptN} prompts</p>
+            <div class="mt-3" id="unit-stat-${key}">
+                <div class="flex justify-between text-[10px] font-bold text-slate-400 mb-1"><span>PRECISIÓN MEDIA</span><span id="unit-val-${key}">—</span></div>
+                <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden"><div id="unit-bar-${key}" class="h-full rounded-full transition-all duration-500" style="width:0%;background:${u.color}"></div></div>
+            </div>
+        </div>`;
+    }).join('');
+    lucide.createIcons();
+}
+function goUnit(unitKey) { switchTab('voiz'); filterPrompts(unitKey); }
+
+function initCharts() {
+    if (typeof Chart === 'undefined') return;
+    Chart.defaults.font.family = 'Inter, sans-serif';
+    Chart.defaults.color = '#64748b';
+    /* WER evolución */
+    const ctxW = $('chart-wer').getContext('2d');
+    const gradW = ctxW.createLinearGradient(0, 0, 0, 260);
+    gradW.addColorStop(0, 'rgba(37,81,235,.22)'); gradW.addColorStop(1, 'rgba(37,81,235,0)');
+    werChart = new Chart(ctxW, {
+        type: 'line',
+        data: { labels: [], datasets: [{ label: 'WER %', data: [], borderColor: '#2551eb', backgroundColor: gradW, fill: true, tension: .4, borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#2551eb', pointBorderColor: '#fff', pointBorderWidth: 1.5 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { title: items => 'Intento #' + items[0].label, label: it => ' WER: ' + it.parsed.y + '%' } } }, scales: { y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' }, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } }
+    });
+    /* Distribución de palabras */
+    errChart = new Chart($('chart-errors').getContext('2d'), {
+        type: 'doughnut',
+        data: { labels: ['Correctas', 'Mal pronunciadas', 'Omitidas', 'Extrañas'], datasets: [{ data: [0, 0, 0, 0], backgroundColor: ['#34d399', '#fb7185', '#fbbf24', '#a78bfa'], borderWidth: 3, borderColor: '#fff', hoverOffset: 6 }] },
+        options: { responsive: true, maintainAspectRatio: false, cutout: '62%', plugins: { legend: { display: false } } }
+    });
+    /* Precisión por unidad */
+    unitChart = new Chart($('chart-units').getContext('2d'), {
+        type: 'bar',
+        data: { labels: UNIT_KEYS.map(k => UNITS[k].short), datasets: [{ label: 'Precisión %', data: UNIT_KEYS.map(() => null), backgroundColor: UNIT_KEYS.map(k => UNITS[k].color + 'cc'), borderRadius: 8, maxBarThickness: 46 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: it => it.parsed.y == null ? ' Sin datos aún' : ' Precisión: ' + it.parsed.y + '%' } } }, scales: { y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' }, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } }
+    });
+}
+function initSpark() {
+    if (sparkChart || typeof Chart === 'undefined') return;
+    const c = $('chart-spark'); if (!c) return;
+    sparkChart = new Chart(c.getContext('2d'), {
+        type: 'line',
+        data: { labels: [], datasets: [{ label: 'WER %', data: [], borderColor: '#7c3aed', backgroundColor: 'rgba(124,58,237,.12)', fill: true, tension: .4, borderWidth: 2.5, pointRadius: 3, pointBackgroundColor: '#7c3aed', pointBorderColor: '#fff', pointBorderWidth: 1.5 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: it => ' WER: ' + it.parsed.y + '%' } } }, scales: { y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' }, grid: { color: '#f1f5f9' } }, x: { grid: { display: false } } } }
+    });
+    updateSpark();
+}
+function updateSpark() {
+    if (!sparkChart) return;
+    const last = progress.attempts.slice(-12);
+    sparkChart.data.labels = last.map(a => '#' + a.promptId);
+    sparkChart.data.datasets[0].data = last.map(a => a.wer);
+    sparkChart.update();
+    const nA = progress.attempts.length;
+    $('spark-count').innerText = nA + (nA === 1 ? ' registro' : ' registros');
+    $('overlay-spark').classList.toggle('hidden', progress.attempts.length === 0);
+}
+function updateDashboard() {
+    const A = progress.attempts;
+    $('stat-sprints').innerText = A.length;
+    $('stat-wer').innerText = A.length ? Math.round(A.reduce((s, a) => s + a.wer, 0) / A.length) : '—';
+    $('stat-best').innerText = A.length ? Math.min(...A.map(a => a.wer)) : '—';
+    $('stat-words').innerText = A.reduce((s, a) => s + (a.ok || 0), 0);
+    $('overlay-wer').classList.toggle('hidden', A.length > 0);
+    $('overlay-errors').classList.toggle('hidden', A.length > 0);
+    $('overlay-units').classList.toggle('hidden', A.length > 0);
+    if (werChart) {
+        const last = A.slice(-40);
+        werChart.data.labels = last.map((a, i) => String(A.length - last.length + i + 1));
+        werChart.data.datasets[0].data = last.map(a => a.wer);
+        werChart.update();
+    }
+    if (errChart) {
+        errChart.data.datasets[0].data = [A.reduce((s, a) => s + a.ok, 0), A.reduce((s, a) => s + a.sub, 0), A.reduce((s, a) => s + a.del, 0), A.reduce((s, a) => s + a.ins, 0)];
+        errChart.update();
+    }
+    if (unitChart) {
+        unitChart.data.datasets[0].data = UNIT_KEYS.map(k => {
+            const ua = A.filter(a => a.unit === k);
+            if (!ua.length) return null;
+            return Math.round(100 - ua.reduce((s, a) => s + a.wer, 0) / ua.length);
+        });
+        unitChart.update();
+    }
+    UNIT_KEYS.forEach(k => {
+        const ua = A.filter(a => a.unit === k);
+        const val = $('unit-val-' + k), bar = $('unit-bar-' + k);
+        if (val && bar) {
+            if (ua.length) {
+                const prec = Math.round(100 - ua.reduce((s, a) => s + a.wer, 0) / ua.length);
+                val.innerText = prec + '% · ' + ua.length + ' sprint' + (ua.length > 1 ? 's' : '');
+                bar.style.width = Math.max(prec, 3) + '%';
+                bar.style.background = werColor(100 - prec);
+            } else { val.innerText = 'sin intentos'; bar.style.width = '0%'; }
+        }
+    });
+    const ra = $('recent-activity');
+    if (ra) {
+        if (!A.length) {
+            ra.innerHTML = '<div class="flex flex-col items-center justify-center py-10 text-center text-slate-400"><i data-lucide="inbox" class="w-8 h-8 mb-2 opacity-50"></i><p class="text-xs">Tus últimos sprints aparecerán aquí.</p></div>';
+        } else {
+            ra.innerHTML = [...A].reverse().slice(0, 8).map(a => {
+                const lv = werLevel(a.wer);
+                const cls = lv === 'ok' ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : (lv === 'mid' ? 'bg-amber-50 text-amber-700 border-amber-100' : 'bg-rose-50 text-rose-700 border-rose-100');
+                return `<div class="flex items-center justify-between gap-2 p-2.5 rounded-xl border border-slate-100 bg-slate-50/50">
+                    <div class="min-w-0">
+                        <p class="text-xs font-bold text-slate-700 truncate">Prompt #${String(a.promptId).padStart(2, '0')} · ${UNITS[a.unit] ? UNITS[a.unit].short : a.unit}</p>
+                        <p class="text-[10px] text-slate-400 font-medium">${timeAgo(a.ts)}</p>
+                    </div>
+                    <span class="text-[11px] font-bold px-2 py-1 rounded-md border shrink-0 ${cls}">WER ${a.wer}%</span>
+                </div>`;
+            }).join('');
+        }
+        lucide.createIcons();
+    }
+}
+
+/* ==========================================================================
+   12. EJERCICIO 1 · QUIZ DE OPCIÓN MÚLTIPLE
+   ========================================================================== */
+function renderGrammarQuiz() {
+    const container = $('grammar-quiz-container');
+    container.innerHTML = '';
+    $('quiz-result').classList.add('hidden');
+    $('quiz-score-chip').className = 'self-start sm:self-center text-xs font-bold bg-slate-100 text-slate-500 px-3 py-1.5 rounded-full';
+    $('quiz-score-chip').innerText = 'Sin resolver';
+    quizQuestions.forEach((q, index) => {
+        const qEl = document.createElement('div');
+        qEl.className = 'p-5 bg-slate-50 rounded-xl border border-slate-200/80 space-y-3';
+        let optionsHTML = '';
+        q.options.forEach((opt, optIdx) => {
+            optionsHTML += `<label id="qo-${q.id}-${optIdx}" class="flex items-center gap-3 p-3 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-brand-400 transition-colors">
+                <input type="radio" name="quiz-q-${q.id}" value="${optIdx}" class="accent-brand-600 h-4 w-4">
+                <span class="text-xs sm:text-sm text-slate-700 font-medium">${opt}</span></label>`;
+        });
+        qEl.innerHTML = `
+            <p class="font-bold text-sm sm:text-base text-slate-900">${index + 1}. ${q.question}</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">${optionsHTML}</div>
+            <p id="qe-${q.id}" class="hidden text-xs text-slate-500 bg-white border border-slate-100 rounded-lg p-3 leading-relaxed"></p>`;
+        container.appendChild(qEl);
+    });
+    lucide.createIcons();
+}
+function checkQuizAnswers() {
+    let correctCount = 0;
+    quizQuestions.forEach(q => {
+        const selected = document.querySelector('input[name="quiz-q-' + q.id + '"]:checked');
+        const picked = selected ? parseInt(selected.value) : -1;
+        if (picked === q.answer) correctCount++;
+        quizQuestions.forEach((_, i) => {
+            const lab = $('qo-' + q.id + '-' + i); if (!lab) return;
+            lab.classList.remove('border-slate-200');
+            if (i === q.answer) lab.classList.add('border-emerald-400', 'bg-emerald-50/60');
+            else if (i === picked) lab.classList.add('border-rose-400', 'bg-rose-50/60');
+            const radio = lab.querySelector('input'); if (radio) radio.disabled = true;
+        });
+        const ex = $('qe-' + q.id);
+        ex.classList.remove('hidden');
+        ex.innerHTML = (picked === q.answer ? '<b class="text-emerald-600">Correcto.</b> ' : (picked === -1 ? '<b class="text-slate-400">Sin responder.</b> ' : '<b class="text-rose-600">Incorrecto.</b> ')) + q.explanation;
+    });
+    const total = quizQuestions.length;
+    const chip = $('quiz-score-chip');
+    chip.innerText = correctCount + ' / ' + total + ' aciertos';
+    chip.className = 'self-start sm:self-center text-xs font-bold px-3 py-1.5 rounded-full ' + (correctCount === total ? 'bg-emerald-100 text-emerald-700' : (correctCount >= total / 2 ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'));
+    const resultDiv = $('quiz-result');
+    resultDiv.classList.remove('hidden');
+    if (correctCount === total) {
+        resultDiv.className = 'mt-5 p-4 rounded-xl text-center text-sm font-bold bg-emerald-100 text-emerald-800 border border-emerald-200';
+        resultDiv.innerHTML = '¡Excelente! Has obtenido ' + correctCount + '/' + total + ' respuestas correctas. Dominas la gramática de las 7 unidades.';
+    } else {
+        resultDiv.className = 'mt-5 p-4 rounded-xl text-center text-sm font-bold bg-amber-100 text-amber-900 border border-amber-200';
+        resultDiv.innerHTML = 'Has obtenido ' + correctCount + '/' + total + ' respuestas correctas. Revisa las reglas en la pestaña Gramática y vuelve a intentarlo.';
+    }
+    lucide.createIcons();
+}
+
+/* ==========================================================================
+   13. EJERCICIO 2 · COMPLETAR LA ORACIÓN
+   ========================================================================== */
+function normText(s) {
+    return s.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[.,!?;:¡¿'"()]/g, '').replace(/\s+/g, ' ');
+}
+function renderFill() {
+    const c = $('fill-container'); c.innerHTML = '';
+    $('fill-score-chip').innerText = '0 / ' + fillQuestions.length;
+    fillQuestions.forEach((f, i) => {
+        const row = document.createElement('div');
+        row.className = 'flex flex-wrap items-center gap-2 p-4 bg-slate-50 rounded-xl border border-slate-200/80';
+        row.innerHTML = `
+            <span class="text-[10px] font-bold text-slate-400 w-6">${i + 1}.</span>
+            <span class="text-sm font-semibold text-slate-800">${f.pre}</span>
+            <input type="text" class="fill-input" id="fill-${f.id}" data-answer="${f.answer}" placeholder="..." autocomplete="off">
+            <span class="text-sm font-semibold text-slate-800">${f.post}</span>
+            <span class="text-[10px] text-slate-400 italic ml-auto">${f.hint}</span>
+            <span id="fill-mark-${f.id}" class="hidden text-sm font-bold"></span>`;
+        c.appendChild(row);
+    });
+}
+function checkFill() {
+    let ok = 0;
+    fillQuestions.forEach(f => {
+        const input = $('fill-' + f.id);
+        const mark = $('fill-mark-' + f.id);
+        const good = normText(input.value) === normText(f.answer);
+        input.classList.remove('ok', 'bad');
+        input.classList.add(good ? 'ok' : 'bad');
+        mark.classList.remove('hidden');
+        mark.innerHTML = good ? '<span class="text-emerald-600">✓</span>' : '<span class="text-rose-600">✗</span>';
+        input.title = good ? '¡Correcto! ' + f.explain : 'Solución: ' + f.answer + ' — ' + f.explain;
+        if (good) ok++;
+    });
+    const chip = $('fill-score-chip');
+    chip.innerText = ok + ' / ' + fillQuestions.length;
+    chip.className = 'self-start sm:self-center text-xs font-bold px-3 py-1.5 rounded-full ' + (ok === fillQuestions.length ? 'bg-emerald-100 text-emerald-700' : (ok >= fillQuestions.length / 2 ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'));
+}
+function revealFill() {
+    fillQuestions.forEach(f => { const input = $('fill-' + f.id); if (!input.value) input.value = f.answer; input.title = f.explain; });
+}
+
+/* ==========================================================================
+   14. EJERCICIO 3 · ORDENA LAS PALABRAS
+   ========================================================================== */
+let orderState = [];
+function initOrderGame() {
+    orderState = orderSentences.map(s => ({ id: s.id, target: s.words, pool: shuffle(s.words.map((w, i) => ({ w, k: i }))), answer: [], done: false }));
+    $('order-score-chip').innerText = '0 / ' + orderSentences.length;
+    renderOrder();
+}
+function renderOrder() {
+    const c = $('order-container'); c.innerHTML = '';
+    orderState.forEach((st, idx) => {
+        const box = document.createElement('div');
+        box.className = 'p-5 rounded-xl border ' + (st.done ? 'bg-emerald-50/50 border-emerald-300' : 'bg-slate-50 border-slate-200/80');
+        box.id = 'order-box-' + st.id;
+        const poolHTML = st.pool.map((t, i) => `<button onclick="orderMove(${idx},${i})" class="chip-tok ${st.done || t.used ? 'used' : ''}" ${st.done || t.used ? 'disabled' : ''}>${t.w}</button>`).join('');
+        const ansHTML = st.answer.length ? st.answer.map((t, i) => `<button onclick="orderBack(${idx},${i})" class="chip-lock" ${st.done ? 'disabled' : ''}>${t.w}</button>`).join('') : '<span class="text-xs text-slate-400 italic">Toca las palabras para armar la oración…</span>';
+        box.innerHTML = `
+            <div class="flex items-center justify-between mb-3">
+                <p class="text-xs font-bold text-slate-500">${idx + 1}. ${st.done ? '<span class="text-emerald-600">¡Oración correcta!</span>' : 'Forma la oración:'}</p>
+                <div class="flex gap-2">
+                    <button onclick="orderResetOne(${idx})" class="text-[11px] font-bold text-slate-400 hover:text-slate-600 transition-colors ${st.done ? 'hidden' : ''}">↺ Reiniciar</button>
+                    <button onclick="orderCheck(${idx})" class="text-[11px] font-bold px-3 py-1 rounded-lg bg-violet-600 text-white hover:bg-violet-700 transition-all ${st.done ? 'hidden' : ''}">Comprobar</button>
+                </div>
+            </div>
+            <div class="min-h-[3rem] bg-white border-2 border-dashed border-slate-200 rounded-xl p-2 mb-3 flex flex-wrap items-center gap-1" id="order-ans-${st.id}">${ansHTML}</div>
+            <div class="flex flex-wrap gap-1.5" id="order-pool-${st.id}">${poolHTML}</div>`;
+        c.appendChild(box);
+    });
+}
+function orderMove(idx, poolIdx) {
+    const st = orderState[idx];
+    const t = st.pool[poolIdx];
+    if (!t || st.done || t.used) return;
+    t.used = true; st.answer.push(t);
+    renderOrder();
+}
+function orderBack(idx, ansIdx) {
+    const st = orderState[idx]; if (st.done) return;
+    const t = st.answer.splice(ansIdx, 1)[0];
+    if (t) t.used = false;
+    renderOrder();
+}
+function orderResetOne(idx) {
+    const st = orderState[idx]; if (st.done) return;
+    st.pool.forEach(t => t.used = false); st.answer = [];
+    renderOrder();
+}
+function orderCheck(idx) {
+    const st = orderState[idx];
+    const said = st.answer.map(t => t.w).join(' ');
+    const target = st.target.join(' ');
+    if (normText(said) === normText(target)) {
+        st.done = true;
+        playBeep(880, 0.15);
+    } else {
+        playBeep(220, 0.2, 'square');
+    }
+    const doneN = orderState.filter(s => s.done).length;
+    const chip = $('order-score-chip');
+    chip.innerText = doneN + ' / ' + orderState.length;
+    chip.className = 'self-start sm:self-center text-xs font-bold px-3 py-1.5 rounded-full ' + (doneN === orderState.length ? 'bg-emerald-100 text-emerald-700' : 'bg-violet-100 text-violet-700');
+    renderOrder();
+}
+
+/* ==========================================================================
+   15. EJERCICIO 4 · EMPAREJAR MASCULINO ⇄ FEMENINO
+   ========================================================================== */
+let matchSelM = null, matchSelF = null, matchFound = 0;
+function initMatchGame() {
+    matchSelM = null; matchSelF = null; matchFound = 0;
+    $('match-score-chip').innerText = '0 / ' + matchPairs.length + ' pares';
+    $('match-score-chip').className = 'self-start sm:self-center text-xs font-bold bg-slate-100 text-slate-500 px-3 py-1.5 rounded-full';
+    $('match-result').classList.add('hidden');
+    const L = $('match-left'), R = $('match-right');
+    L.innerHTML = shuffle(matchPairs.map((p, i) => ({ t: p.m, i }))).map(o => `<button id="ml-${o.i}" onclick="matchPick('m',${o.i})" class="chip-tok w-full text-center">${o.t}</button>`).join('');
+    R.innerHTML = shuffle(matchPairs.map((p, i) => ({ t: p.f, i }))).map(o => `<button id="mf-${o.i}" onclick="matchPick('f',${o.i})" class="chip-tok w-full text-center">${o.t}</button>`).join('');
+}
+function matchPick(side, idx) {
+    if (side === 'm') {
+        if (document.getElementById('ml-' + idx).classList.contains('matched')) return;
+        matchSelM = idx;
+        matchPairs.forEach((_, i) => $('ml-' + i).classList.remove('ring-2', 'ring-brand-400', 'border-brand-400'));
+        $('ml-' + idx).classList.add('ring-2', 'ring-brand-400', 'border-brand-400');
+    } else {
+        if (document.getElementById('mf-' + idx).classList.contains('matched')) return;
+        matchSelF = idx;
+        matchPairs.forEach((_, i) => $('mf-' + i).classList.remove('ring-2', 'ring-brand-400', 'border-brand-400'));
+        $('mf-' + idx).classList.add('ring-2', 'ring-brand-400', 'border-brand-400');
+    }
+    if (matchSelM !== null && matchSelF !== null) {
+        if (matchSelM === matchSelF) {
+            ['ml', 'mf'].forEach(pre => {
+                const el = document.getElementById(pre + '-' + matchSelM);
+                el.classList.remove('ring-2', 'ring-brand-400', 'border-brand-400', 'chip-tok');
+                el.classList.add('matched', 'bg-emerald-50', 'border-emerald-300', 'text-emerald-700', 'cursor-default');
+                el.disabled = true;
+            });
+            matchFound++;
+            playBeep(880, 0.12);
+            $('match-score-chip').innerText = matchFound + ' / ' + matchPairs.length + ' pares';
+            $('match-score-chip').className = 'self-start sm:self-center text-xs font-bold px-3 py-1.5 rounded-full ' + (matchFound === matchPairs.length ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700');
+            if (matchFound === matchPairs.length) {
+                const r = $('match-result');
+                r.classList.remove('hidden');
+                r.className = 'mt-5 p-3 rounded-xl text-center text-sm font-bold bg-emerald-100 text-emerald-800 border border-emerald-200';
+                r.innerHTML = '¡Perfecto! Emparejaste las 6 profesiones. Fíjate cómo cambian las terminaciones: -o → -a y la excepción actor → actriz.';
+            }
+        } else {
+            const lm = $('ml-' + matchSelM), lf = $('mf-' + matchSelF);
+            [lm, lf].forEach(el => { el.classList.add('border-rose-400', 'text-rose-600', 'shake'); });
+            playBeep(220, 0.18, 'square');
+            setTimeout(() => {
+                [lm, lf].forEach(el => el.classList.remove('border-rose-400', 'text-rose-600', 'shake'));
+                matchPairs.forEach((_, i) => $('ml-' + i).classList.remove('ring-2', 'ring-brand-400', 'border-brand-400'));
+                matchPairs.forEach((_, i) => $('mf-' + i).classList.remove('ring-2', 'ring-brand-400', 'border-brand-400'));
+            }, 450);
+        }
+        matchSelM = null; matchSelF = null;
+    }
+}
+
+/* ==========================================================================
+   16. EJERCICIO 5 · LECTURA VERDADERO / FALSO
+   ========================================================================== */
+let tfAnswered = {};
+function renderTF() {
+    tfAnswered = {};
+    $('tf-score-chip').innerText = '0 / ' + tfQuestions.length;
+    const c = $('tf-container'); c.innerHTML = '';
+    tfQuestions.forEach((q, i) => {
+        const row = document.createElement('div');
+        row.id = 'tf-' + q.id;
+        row.className = 'flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200/80';
+        row.innerHTML = `
+            <p class="text-sm font-semibold text-slate-800 flex-1">${i + 1}. ${q.text}</p>
+            <div class="flex gap-2 shrink-0" id="tf-btns-${q.id}">
+                <button onclick="tfPick('${q.id}',true)" class="px-4 py-2 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-600 hover:border-emerald-400 hover:text-emerald-600 transition-all">Verdadero</button>
+                <button onclick="tfPick('${q.id}',false)" class="px-4 py-2 rounded-lg bg-white border border-slate-200 text-xs font-bold text-slate-600 hover:border-rose-400 hover:text-rose-600 transition-all">Falso</button>
+            </div>`;
+        c.appendChild(row);
+    });
+}
+function tfPick(id, choice) {
+    const q = tfQuestions.find(x => x.id === id);
+    if (tfAnswered[id]) return;
+    tfAnswered[id] = choice;
+    const good = choice === q.answer;
+    const row = $('tf-' + id);
+    row.classList.remove('border-slate-200/80');
+    row.classList.add(good ? 'border-emerald-300' : 'border-rose-300', good ? 'bg-emerald-50/50' : 'bg-rose-50/50');
+    $('tf-btns-' + id).innerHTML = `<span class="text-xs font-bold px-3 py-2 rounded-lg ${good ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${good ? 'Correcto' : 'Incorrecto'}</span>`;
+    const fb = document.createElement('p');
+    fb.className = 'text-xs ' + (good ? 'text-emerald-600' : 'text-rose-600') + ' font-medium sm:basis-full';
+    fb.innerText = q.fix + ' Escucha la corrección en voz alta practicándola en la pestaña Voiz.';
+    row.appendChild(fb);
+    const n = Object.keys(tfAnswered).length;
+    const okN = tfQuestions.filter(x => tfAnswered[x.id] === x.answer).length;
+    const chip = $('tf-score-chip');
+    chip.innerText = okN + ' / ' + tfQuestions.length + (n < tfQuestions.length ? '' : ' · completo');
+    chip.className = 'self-start sm:self-center text-xs font-bold px-3 py-1.5 rounded-full ' + (okN >= tfQuestions.length - 1 ? 'bg-emerald-100 text-emerald-700' : (okN >= tfQuestions.length / 2 ? 'bg-amber-100 text-amber-700' : 'bg-rose-100 text-rose-700'));
+    if (good) playBeep(880, 0.12); else playBeep(220, 0.15, 'square');
+}
+
+/* ==========================================================================
+   17. VOIZ ENGINE · TEMPORIZADOR (10s / 20s / LIBRE)
+   ========================================================================== */
+let sprintTimer = null, sprintRunning = false;
+let secondsLeft = 10, elapsedFree = 0;
+const RING_CIRC = 263.89;
+const SRClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+const SRsupported = !!SRClass;
+
+function setTimeMode(m) {
+    if (sprintRunning) return;
+    timeMode = m;
+    [10, 20, 0].forEach(v => {
+        const b = $('timemode-' + v);
+        if (b) b.classList.toggle('seg-btn-active', v === m);
+    });
+    $('btn-start-label').innerText = m > 0 ? 'Iniciar Sprint (' + m + 's)' : 'Iniciar Sprint (libre)';
+    resetSprintUI();
+}
+function resetSprintUI() {
+    clearInterval(sprintTimer);
+    sprintRunning = false;
+    secondsLeft = timeMode > 0 ? timeMode : 0;
+    elapsedFree = 0;
+    const disp = $('timer-display'), label = $('timer-label'), circle = $('timer-progress'), wrap = $('timer-wrap');
+    if (timeMode > 0) {
+        disp.innerText = Number(timeMode).toFixed(1);
+        label.innerText = 'Segundos restantes';
+        circle.style.strokeDashoffset = 0;
+        circle.setAttribute('stroke', '#2551eb');
+        wrap.classList.remove('rec-glow');
+    } else {
+        disp.innerText = '0.0';
+        label.innerText = 'Tiempo libre · pulsa Detener al terminar';
+        circle.style.strokeDashoffset = 0;
+        circle.setAttribute('stroke', '#7c3aed');
+    }
+    const bs = $('btn-start-sprint'), bt = $('btn-stop-sprint');
+    bs.disabled = false; bs.classList.remove('opacity-50', 'cursor-not-allowed');
+    bt.disabled = true; bt.classList.add('cursor-not-allowed'); bt.classList.remove('bg-rose-600', 'text-white', 'rec-glow');
+}
+function updateTimerDisplay() {
+    const circle = $('timer-progress'), disp = $('timer-display');
+    if (timeMode > 0) {
+        disp.innerText = Math.max(secondsLeft, 0).toFixed(1);
+        const frac = secondsLeft / timeMode;
+        circle.style.strokeDashoffset = RING_CIRC - (frac * RING_CIRC);
+        circle.setAttribute('stroke', frac > .5 ? '#2551eb' : (frac > .25 ? '#f59e0b' : '#e11d48'));
+    } else {
+        disp.innerText = elapsedFree.toFixed(1);
+        circle.style.strokeDashoffset = 0;
+    }
+}
+
+/* ==========================================================================
+   18. VOIZ ENGINE · GRABACIÓN DE AUDIO
+   ========================================================================== */
+let audioMediaRecorder = null, audioChunks = [];
+async function startRecorder() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioChunks = [];
+        audioMediaRecorder = new MediaRecorder(stream);
+        audioMediaRecorder.ondataavailable = ev => { if (ev.data.size) audioChunks.push(ev.data); };
+        audioMediaRecorder.onstop = () => {
+            try {
+                const blob = new Blob(audioChunks, { type: audioMediaRecorder.mimeType || 'audio/webm' });
+                $('audio-player').src = URL.createObjectURL(blob);
+                $('audio-playback-container').classList.remove('hidden');
+                stream.getTracks().forEach(t => t.stop());
+            } catch (e) { /* noop */ }
+        };
+        audioMediaRecorder.start();
+    } catch (err) { console.warn('Micrófono no disponible para grabación.', err); }
+}
+function stopRecorder() {
+    if (audioMediaRecorder && audioMediaRecorder.state !== 'inactive') { try { audioMediaRecorder.stop(); } catch (e) { /* noop */ } }
+}
+
+/* ==========================================================================
+   19. VOIZ ENGINE · RECONOCIMIENTO DE VOZ + WER
+   ========================================================================== */
+let recognition = null, recogStopping = false, finalized = false;
+let finalText = '', interimText = '';
+let micDenied = false;
+const NUM_WORDS = { un: 1, uno: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9, diez: 10, once: 11, doce: 12, trece: 13, catorce: 14, quince: 15, dieciseis: 16, diecisiete: 17, dieciocho: 18, diecinueve: 19, veinte: 20, veintiuno: 21, veintidos: 22, veintitres: 23, veinticuatro: 24, veinticinco: 25, veintiseis: 26, veintisiete: 27, veintiocho: 28, veintinueve: 29, treinta: 30, primero: 1, segunda: 2, segundo: 2, tercer: 3, tercero: 3 };
+
+function normWord(w) {
+    let s = w.toLowerCase().trim().replace(/[.,!?;:¡¿'"«»()\-—]/g, '');
+    s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (NUM_WORDS[s] !== undefined) return String(NUM_WORDS[s]);
+    return s;
+}
+function tokenize(text) { return text.split(/\s+/).filter(Boolean); }
+function escapeHtml(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function alignTokens(target, heard) {
+    const n = target.length, m = heard.length;
+    const dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+    for (let i = 1; i <= n; i++) dp[i][0] = i;
+    for (let j = 1; j <= m; j++) dp[0][j] = j;
+    for (let i = 1; i <= n; i++) {
+        for (let j = 1; j <= m; j++) {
+            const cost = target[i - 1].norm === heard[j - 1].norm ? 0 : 1;
+            dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+        }
+    }
+    const ops = [];
+    let i = n, j = m;
+    while (i > 0 || j > 0) {
+        if (i > 0 && j > 0) {
+            const cost = target[i - 1].norm === heard[j - 1].norm ? 0 : 1;
+            if (dp[i][j] === dp[i - 1][j - 1] + cost) {
+                ops.push({ type: cost === 0 ? 'ok' : 'sub', tIdx: i - 1, heard: heard[j - 1] });
+                i--; j--; continue;
+            }
+        }
+        if (i > 0 && dp[i][j] === dp[i - 1][j] + 1) { ops.push({ type: 'del', tIdx: i - 1 }); i--; continue; }
+        if (j > 0 && dp[i][j] === dp[i][j - 1] + 1) { ops.push({ type: 'ins', heard: heard[j - 1] }); j--; continue; }
+        break;
+    }
+    return ops.reverse();
+}
+function werFromOps(ops, targetLen) {
+    let ok = 0, sub = 0, del = 0, ins = 0;
+    ops.forEach(o => { if (o.type === 'ok') ok++; else if (o.type === 'sub') sub++; else if (o.type === 'del') del++; else ins++; });
+    const wer = targetLen ? Math.min(100, Math.round(((sub + del + ins) / targetLen) * 100)) : 100;
+    return { ok, sub, del, ins, wer };
+}
+function setupRecognition() {
+    recognition = new SRClass();
+    recognition.lang = 'es-ES';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    finalText = ''; interimText = '';
+    recognition.onresult = e => {
+        let f = '', it = '';
+        for (let i = 0; i < e.results.length; i++) {
+            const r = e.results[i];
+            if (r.isFinal) f += r[0].transcript + ' ';
+            else it += r[0].transcript + ' ';
+        }
+        finalText = f; interimText = it;
+        renderLive();
+    };
+    recognition.onerror = e => {
+        if (e.error === 'not-allowed' || e.error === 'service-not-allowed') {
+            micDenied = true;
+            $('live-transcript').innerHTML = '<span class="text-rose-500 font-semibold">Permiso de micrófono denegado. Habilítalo en el navegador y vuelve a intentarlo.</span>';
+        }
+    };
+    recognition.onend = () => { if (recogStopping && !finalized) finalizeAttempt(); };
+}
+function renderLive() {
+    const box = $('live-transcript');
+    const text = (finalText + ' ' + interimText).trim();
+    const prompt = voizPrompts[activePromptIndex];
+    if (!text) return;
+    box.innerHTML = '<span class="text-slate-700">' + escapeHtml(text) + '</span><span class="inline-block w-0.5 h-5 bg-brand-500 animate-pulse align-middle ml-0.5"></span>';
+    const heard = tokenize(text).map(w => ({ raw: w, norm: normWord(w) }));
+    const target = tokenize(prompt.target).map(w => ({ raw: w, norm: normWord(w) }));
+    const ops = alignTokens(target, heard);
+    const { wer } = werFromOps(ops, target.length);
+    const pill = $('live-wer-pill'), val = $('live-wer-value');
+    pill.classList.remove('hidden'); pill.classList.add('inline-flex');
+    val.innerText = wer + '%';
+    val.style.color = werColor(wer);
+}
+
+/* --- Ciclo del sprint --- */
+async function startSprint() {
+    if (sprintRunning) return;
+    finalized = false; recogStopping = false; micDenied = false;
+    const prompt = voizPrompts[activePromptIndex];
+    $('results-panel').classList.add('hidden');
+    $('audio-playback-container').classList.add('hidden');
+    $('live-transcript').innerHTML = '<span class="text-slate-400 italic">Escuchando... lee la oración objetivo en voz alta.</span>';
+    $('live-status').classList.remove('hidden'); $('live-status').classList.add('flex');
+    $('live-eq').classList.remove('hidden'); $('live-eq').classList.add('inline-flex');
+    $('live-wer-pill').classList.add('hidden'); $('live-wer-pill').classList.remove('inline-flex');
+    $('timer-wrap').classList.add('rec-glow');
+    playBeep(880, 0.13);
+
+    startRecorder();
+    if (SRsupported) { try { setupRecognition(); recognition.start(); } catch (e) { console.warn('No se pudo iniciar el reconocimiento.', e); } }
+
+    sprintRunning = true;
+    const bs = $('btn-start-sprint'), bt = $('btn-stop-sprint');
+    bs.disabled = true; bs.classList.add('opacity-50', 'cursor-not-allowed');
+    bt.disabled = false; bt.classList.remove('cursor-not-allowed'); bt.classList.add('bg-rose-600', 'text-white', 'rec-glow');
+
+    if (timeMode > 0) {
+        secondsLeft = timeMode;
+        sprintTimer = setInterval(() => {
+            secondsLeft -= 0.1;
+            if (secondsLeft <= 3.0 && secondsLeft > 0 && Math.abs(secondsLeft % 1) < 0.12) playBeep(520, 0.08);
+            if (secondsLeft <= 0) { secondsLeft = 0; updateTimerDisplay(); stopSprint(); return; }
+            updateTimerDisplay();
+        }, 100);
+    } else {
+        elapsedFree = 0;
+        sprintTimer = setInterval(() => { elapsedFree += 0.1; updateTimerDisplay(); }, 100);
+    }
+}
+function stopSprint() {
+    if (!sprintRunning) return;
+    clearInterval(sprintTimer);
+    sprintRunning = false;
+    playBeep(988, 0.12); setTimeout(() => playBeep(1319, 0.22), 130);
+    recogStopping = true;
+    try { if (recognition) recognition.stop(); } catch (e) { /* noop */ }
+    stopRecorder();
+    $('live-status').classList.add('hidden'); $('live-status').classList.remove('flex');
+    $('live-eq').classList.add('hidden'); $('live-eq').classList.remove('inline-flex');
+    $('timer-wrap').classList.remove('rec-glow');
+    const bs = $('btn-start-sprint'), bt = $('btn-stop-sprint');
+    bs.disabled = false; bs.classList.remove('opacity-50', 'cursor-not-allowed');
+    bt.disabled = true; bt.classList.add('cursor-not-allowed'); bt.classList.remove('bg-rose-600', 'text-white', 'rec-glow');
+    if (!SRsupported) finalizeAttempt();
+    else setTimeout(() => { if (!finalized) finalizeAttempt(); }, 1200);
+}
+function finalizeAttempt() {
+    if (finalized) return;
+    finalized = true;
+    const prompt = voizPrompts[activePromptIndex];
+    const text = (finalText || interimText || '').trim();
+    const panel = $('results-panel');
+    panel.classList.remove('hidden');
+    if (!text) {
+        panel.innerHTML = `<div class="p-5 rounded-2xl border border-amber-200 bg-amber-50/70">
+            <p class="text-sm font-bold text-amber-900 flex items-center gap-2"><i data-lucide="mic-off" class="w-4 h-4"></i> No escuchamos ninguna palabra</p>
+            <p class="text-xs text-amber-800 mt-1 leading-relaxed">${micDenied ? 'El permiso del micrófono fue denegado. Habilítalo e inténtalo de nuevo.' : (SRsupported ? 'Verifica que tu micrófono funcione y habla con más volumen cerca del dispositivo.' : 'Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge para el análisis WER; mientras tanto puedes usar el temporizador y autoevaluarte con "Escuchar modelo".')}</p></div>`;
+        lucide.createIcons(); return;
+    }
+    const targetWords = tokenize(prompt.target);
+    const target = targetWords.map(w => ({ raw: w, norm: normWord(w) }));
+    const heard = tokenize(text).map(w => ({ raw: w, norm: normWord(w) }));
+    const ops = alignTokens(target, heard);
+    const { ok, sub, del, ins, wer } = werFromOps(ops, target.length);
+    const stars = werStars(wer);
+    const color = werColor(wer);
+
+    const chips = ops.map(o => {
+        if (o.type === 'ok') return `<span class="w-chip w-ok">${escapeHtml(targetWords[o.tIdx])}</span>`;
+        if (o.type === 'sub') return `<span class="w-chip w-sub" title="Escuchamos: ${escapeHtml(o.heard.raw || '')}">${escapeHtml(targetWords[o.tIdx])}<small>escuché: ${escapeHtml(o.heard.raw || o.heard.norm)}</small></span>`;
+        if (o.type === 'del') return `<span class="w-chip w-del" title="Palabra omitida">${escapeHtml(targetWords[o.tIdx])}<small>omitida</small></span>`;
+        return `<span class="w-chip w-ins" title="Palabra adicional">+ ${escapeHtml(o.heard.raw || o.heard.norm)}<small>extra</small></span>`;
+    }).join('');
+
+    const starHTML = Array.from({ length: 3 }, (_, i) => `<i data-lucide="star" class="w-4 h-4 ${i < stars ? 'fill-amber-400 text-amber-400' : 'text-slate-200 fill-slate-200'}"></i>`).join('');
+
+    panel.innerHTML = `
+    <div class="rounded-2xl border border-slate-200 overflow-hidden pop-in">
+        <div class="p-5 sm:p-6 flex flex-col sm:flex-row items-center gap-6 bg-gradient-to-br from-slate-50 to-white">
+            <div class="relative w-28 h-28 shrink-0">
+                <svg class="w-full h-full" viewBox="0 0 100 100">
+                    <circle class="circle-bg" cx="50" cy="50" r="42"></circle>
+                    <circle class="circle-progress" cx="50" cy="50" r="42" stroke="${color}" stroke-dasharray="263.89" stroke-dashoffset="${RING_CIRC - ((100 - wer) / 100) * RING_CIRC}"></circle>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <span class="text-2xl font-extrabold font-mono" style="color:${color}">${wer}%</span>
+                    <span class="text-[9px] uppercase font-bold text-slate-400 tracking-widest">WER</span>
+                </div>
+            </div>
+            <div class="flex-1 text-center sm:text-left">
+                <p class="text-lg font-display font-bold" style="color:${color}">${werLabel(wer)}</p>
+                <div class="flex items-center justify-center sm:justify-start gap-1 mt-1">${starHTML}</div>
+                <div class="flex flex-wrap justify-center sm:justify-start gap-2 mt-3 text-[11px] font-bold">
+                    <span class="px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-100">${ok} correctas</span>
+                    <span class="px-2.5 py-1 rounded-md bg-rose-50 text-rose-700 border border-rose-100">${sub} mal pronunciadas</span>
+                    <span class="px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-100">${del} omitidas</span>
+                    <span class="px-2.5 py-1 rounded-md bg-violet-50 text-violet-700 border border-violet-100">${ins} extrañas</span>
+                </div>
+            </div>
+        </div>
+        <div class="p-5 bg-white border-t border-slate-100">
+            <p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2 flex items-center gap-1.5"><i data-lucide="scan-eye" class="w-3.5 h-3.5"></i> Análisis palabra por palabra (verde correcta · roja mal pronunciada · ámbar omitida · violeta extra)</p>
+            <div class="leading-loose">${chips}</div>
+            <p class="text-[11px] text-slate-400 mt-3">Transcripción escuchada: <span class="italic text-slate-500">"${escapeHtml(text)}"</span></p>
+        </div>
+        <div class="p-4 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row gap-2.5 justify-end">
+            <button onclick="startSprint()" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 font-bold text-sm rounded-xl hover:bg-slate-100 transition-all flex items-center justify-center gap-2"><i data-lucide="rotate-ccw" class="w-4 h-4"></i> Reintentar</button>
+            <button onclick="nextPrompt()" class="px-5 py-2.5 bg-gradient-to-r from-brand-600 to-accent-600 text-white font-bold text-sm rounded-xl shadow-md hover:opacity-90 transition-all flex items-center justify-center gap-2"><i data-lucide="skip-forward" class="w-4 h-4"></i> Siguiente prompt</button>
+        </div>
+    </div>`;
+    lucide.createIcons();
+
+    progress.attempts.push({ promptId: prompt.id, unit: prompt.unit, wer, ok, sub, del, ins, ts: Date.now() });
+    saveProgress();
+    updateDashboard();
+    updateSpark();
+}
+
+/* ==========================================================================
+   20. CATÁLOGO DE PROMPTS
+   ========================================================================== */
+function renderPromptsList() {
+    const container = $('prompts-list');
+    container.innerHTML = '';
+    filteredPrompts.forEach(item => {
+        const active = voizPrompts[activePromptIndex].id === item.id;
+        const done = progress.attempts.filter(a => a.promptId === item.id);
+        const best = done.length ? Math.min(...done.map(a => a.wer)) : null;
+        const card = document.createElement('div');
+        card.onclick = () => selectPrompt(item.id);
+        card.className = 'p-3.5 rounded-xl border transition-all cursor-pointer ' + (active ? 'bg-brand-50/80 border-brand-500 shadow-sm' : 'bg-slate-50/60 border-slate-200/70 hover:bg-slate-100/80');
+        card.innerHTML = `
+            <div class="flex justify-between items-center mb-1 gap-2">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">#${String(item.id).padStart(2, '0')}</span>
+                <div class="flex items-center gap-1.5">
+                    ${best !== null ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded" style="background:${werColor(best)}1a;color:${werColor(best)}">WER ${best}%</span>` : ''}
+                    <span class="text-[10px] font-semibold px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-600">${UNITS[item.unit].short}</span>
+                </div>
+            </div>
+            <p class="text-xs font-semibold text-slate-800 line-clamp-2">${item.prompt}</p>`;
+        container.appendChild(card);
+    });
+    $('prompt-counter').innerText = `${voizPrompts[activePromptIndex].id} / ${voizPrompts.length}`;
+}
+function filterPrompts(cat) {
+    ['all', ...UNIT_KEYS].forEach(c => {
+        const btn = $('pfilter-' + c);
+        if (btn) btn.className = (c === cat)
+            ? 'px-3 py-1.5 rounded-lg bg-brand-600 text-white font-semibold shrink-0 transition-all'
+            : 'px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 font-semibold shrink-0 transition-all';
+    });
+    filteredPrompts = cat === 'all' ? [...voizPrompts] : voizPrompts.filter(p => p.unit === cat);
+    if (!filteredPrompts.some(p => p.id === voizPrompts[activePromptIndex].id)) {
+        activePromptIndex = voizPrompts.findIndex(p => p.id === filteredPrompts[0].id);
+    }
+    renderPromptsList();
+    loadPromptConsole();
+}
+function selectPrompt(promptId) {
+    const idx = voizPrompts.findIndex(p => p.id === promptId);
+    if (idx !== -1) { activePromptIndex = idx; renderPromptsList(); loadPromptConsole(); }
+}
+function nextPrompt() {
+    if (!filteredPrompts.length) return;
+    const pos = filteredPrompts.findIndex(p => p.id === voizPrompts[activePromptIndex].id);
+    const next = filteredPrompts[(pos + 1) % filteredPrompts.length];
+    selectPrompt(next.id);
+    $('prompts-list').scrollTo({ top: 0, behavior: 'smooth' });
+}
+function loadPromptConsole() {
+    const prompt = voizPrompts[activePromptIndex];
+    $('active-prompt-category').innerText = UNITS[prompt.unit].label;
+    $('active-prompt-id').innerText = 'PROMPT #' + String(prompt.id).padStart(2, '0');
+    $('active-prompt-title').innerText = prompt.prompt;
+    $('target-sentence').innerText = '“' + prompt.target + '”';
+    const vocabContainer = $('active-prompt-vocab');
+    vocabContainer.innerHTML = '';
+    prompt.vocab.forEach(v => {
+        const tag = document.createElement('span');
+        tag.className = 'px-2.5 py-1 bg-white border border-brand-200 text-brand-800 rounded-lg text-xs font-semibold';
+        tag.innerText = v;
+        vocabContainer.appendChild(tag);
+    });
+    $('benchmark-content').innerHTML = `<p>"${escapeHtml(prompt.benchmark || prompt.target)}"</p><p class="not-italic text-xs mt-2 font-semibold text-amber-700"><i data-lucide="lightbulb" class="w-3.5 h-3.5 inline mr-1"></i>Consejo Voiz: ${prompt.tip}</p>`;
+    $('benchmark-content').classList.add('hidden');
+    $('results-panel').classList.add('hidden');
+    $('audio-playback-container').classList.add('hidden');
+    $('live-transcript').innerHTML = 'Pulsa "Iniciar Sprint" y lee la oración objetivo. Aquí verás tu transcripción en tiempo real.';
+    $('live-wer-pill').classList.add('hidden'); $('live-wer-pill').classList.remove('inline-flex');
+    if (!sprintRunning) resetSprintUI();
+    lucide.createIcons();
+}
+function toggleBenchmark() {
+    const content = $('benchmark-content');
+    const chevron = $('benchmark-chevron');
+    content.classList.toggle('hidden');
+    chevron.style.transform = content.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+}
+
+/* ==========================================================================
+   21. ESTADÍSTICAS DEL GLOSARIO + INICIALIZACIÓN
+   ========================================================================== */
+function renderVocabStats() {
+    const el = $('vocab-stats');
+    const total = vocabularyData.length;
+    const chips = [
+        { icon: 'book-open', txt: total + ' términos con IPA' },
+        { icon: 'layout-grid', txt: UNIT_KEYS.length + ' unidades didácticas' },
+        { icon: 'volume-2', txt: 'Audio TTS integrado' },
+        { icon: 'briefcase', txt: '4 fichas Linguahouse integradas' }
+    ];
+    el.innerHTML = chips.map(c => `<span class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 bg-slate-50 border border-slate-100 px-2.5 py-1 rounded-lg"><i data-lucide="${c.icon}" class="w-3.5 h-3.5 text-brand-500"></i>${c.txt}</span>`).join('');
+}
+window.addEventListener('load', () => {
+    loadProgress();
+    renderVocabulary(vocabularyData);
+    renderVocabStats();
+    renderConjTable('conj-ser', CONJ.ser, 'text-indigo-600');
+    renderConjTable('conj-estar', CONJ.estar, 'text-teal-600');
+    renderConjTable('conj-vivir', CONJ.vivir, 'text-emerald-600');
+    renderConjTable('conj-tener', CONJ.tener, 'text-violet-600');
+    renderPosesivos();
+    renderGrammarQuiz();
+    renderFill();
+    initOrderGame();
+    initMatchGame();
+    renderTF();
+    renderPromptsList();
+    loadPromptConsole();
+    renderUnitCards();
+    setTimeMode(10);
+    initCharts();
+    updateDashboard();
+    $('nav-voiz-count').innerText = voizPrompts.length;
+    $('hero-prompts').innerText = voizPrompts.length;
+    $('hero-units').innerText = UNIT_KEYS.length;
+    if (!SRsupported) $('sr-warning').classList.remove('hidden');
+    lucide.createIcons();
+});
+</script>
+</body>
+</html>
