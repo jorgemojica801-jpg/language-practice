@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USED TO · Time Machine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0620; --panel:#150a35; --ink:#f2ecff; --muted:#a99fd0;
+  --pink:#ff2e88; --cyan:#22e6ff; --yellow:#ffd166; --green:#3ef2a3; --red:#ff5470;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100%}
+body{
+  font-family:"Space Grotesk","Trebuchet MS","Segoe UI",system-ui,sans-serif;
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 600px at 85% -10%, #2a1259 0%, transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, #171043 0%, transparent 55%),
+    var(--bg);
+  overflow-x:hidden;
+}
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0;background:
+  radial-gradient(1.6px 1.6px at 12% 18%, #ffffffaa, transparent 60%),
+  radial-gradient(1.4px 1.4px at 78% 12%, #ffffff88, transparent 60%),
+  radial-gradient(1.2px 1.2px at 44% 8%,  #ffd16699, transparent 60%),
+  radial-gradient(1.4px 1.4px at 90% 38%, #22e6ff99, transparent 60%),
+  radial-gradient(1.2px 1.2px at 26% 44%, #ff2e8888, transparent 60%),
+  radial-gradient(1.3px 1.3px at 62% 28%, #ffffff77, transparent 60%),
+  radial-gradient(1.1px 1.1px at 8% 62%,  #ffffff66, transparent 60%),
+  radial-gradient(1.3px 1.3px at 70% 58%, #22e6ff77, transparent 60%);}
+.gridfloor{position:fixed;left:-30%;right:-30%;bottom:-6%;height:46vh;pointer-events:none;z-index:0;opacity:.5;
+  background-image:
+    repeating-linear-gradient(to top, rgba(255,46,136,.4) 0 2px, transparent 2px 42px),
+    repeating-linear-gradient(to right, rgba(34,230,255,.3) 0 2px, transparent 2px 42px);
+  transform:perspective(430px) rotateX(63deg) scale(1.5);
+  transform-origin:bottom center;
+  -webkit-mask-image:linear-gradient(to top, rgba(0,0,0,.9), transparent 88%);
+  mask-image:linear-gradient(to top, rgba(0,0,0,.9), transparent 88%);}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:60}
+
+header{position:relative;z-index:2;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between;padding:20px clamp(14px,4vw,40px) 6px}
+.brand b{font-size:clamp(20px,3vw,30px);letter-spacing:2px;color:#fff;text-shadow:0 0 14px rgba(255,46,136,.85),0 0 44px rgba(255,46,136,.4)}
+.brand span{display:block;font-size:11px;letter-spacing:5px;color:var(--cyan);text-transform:uppercase;margin-top:3px}
+.hud{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pill{display:flex;gap:10px;align-items:center;background:rgba(20,10,50,.75);border:1px solid #31207a;border-radius:999px;padding:8px 14px;font-size:14px;position:relative}
+.pill b{color:var(--yellow)}
+.bar{width:120px;height:8px;background:#241457;border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--pink),var(--cyan));transition:width .4s}
+.btn{font-family:inherit;font-size:14px;padding:9px 16px;border-radius:12px;border:1px solid #3a2680;background:#1c1146;color:#e8e2ff;cursor:pointer;transition:.2s;letter-spacing:.5px}
+.btn:hover{transform:translateY(-2px);border-color:var(--cyan)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn.pink{background:var(--pink);border-color:var(--pink);color:#2b0311;font-weight:700;box-shadow:0 6px 20px rgba(255,46,136,.35)}
+.btn.pink:hover{border-color:var(--pink)}
+.btn.cyan{background:rgba(34,230,255,.1);border-color:var(--cyan);color:var(--cyan)}
+.btn.green{background:var(--green);border-color:var(--green);color:#062018;font-weight:700}
+.btn.green:hover{border-color:var(--green)}
+.btn.big{font-size:16px;padding:12px 22px}
+
+.brief{position:relative;z-index:2;margin:10px clamp(14px,4vw,40px) 22px;background:linear-gradient(180deg,rgba(30,16,70,.8),rgba(20,10,50,.8));border:1px solid #33217c;border-left:4px solid var(--pink);border-radius:14px;padding:16px 18px;max-width:1000px}
+.brief p{font-size:15px;line-height:1.55}
+.brief .b1{font-weight:700;color:#fff}
+.brief .b2{color:#d9d0ff}
+.ex{margin-top:12px;display:flex;gap:12px;align-items:flex-start}
+.tagex{background:var(--green);color:#06281a;font-weight:700;font-size:11px;letter-spacing:1.5px;border-radius:6px;padding:5px 10px;white-space:nowrap}
+.ex ul{list-style:none;font-size:14px;font-style:italic;color:#e3dbff}
+.ex li{margin:2px 0}
+
+main{position:relative;z-index:2;padding:0 clamp(14px,4vw,40px) 30px;display:grid;gap:28px;max-width:1080px}
+.cat h2{font-size:13px;letter-spacing:4px;color:var(--yellow);margin-bottom:12px;display:flex;gap:10px;align-items:center;text-transform:uppercase}
+.cat h2 small{color:var(--muted);letter-spacing:1px;text-transform:none;font-weight:400}
+.cat h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,#3a2680,transparent)}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.card{position:relative;display:grid;gap:8px;justify-items:center;padding:24px 14px;border-radius:16px;background:linear-gradient(180deg,#1c1146,#150b36);border:1px solid #31207a;color:var(--ink);cursor:pointer;transition:.25s;font-family:inherit}
+.card:hover{transform:translateY(-5px);border-color:var(--pink);box-shadow:0 12px 30px rgba(255,46,136,.25)}
+.card .ic{font-size:40px;filter:drop-shadow(0 0 12px rgba(34,230,255,.35))}
+.card .lb{font-size:12.5px;letter-spacing:1.5px;color:#cfc6ff;text-transform:uppercase;text-align:center}
+.card.done{border-color:rgba(62,242,163,.7);box-shadow:0 0 22px rgba(62,242,163,.12)}
+.card .tick{position:absolute;top:8px;right:11px;color:var(--green);font-weight:800}
+
+.overlay{position:fixed;inset:0;background:rgba(5,2,18,.72);backdrop-filter:blur(6px);display:none;place-items:center;z-index:50;padding:14px}
+.overlay.open{display:grid}
+.panel{position:relative;width:min(680px,96vw);max-height:92vh;overflow:auto;background:linear-gradient(180deg,#1a0f44,#120a30);border:1px solid #3a2680;border-radius:20px;padding:22px;box-shadow:0 0 0 1px #0006,0 20px 60px #000a,0 0 46px rgba(255,46,136,.14)}
+.x{position:absolute;top:10px;right:12px;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1}
+.x:hover{color:#fff}
+.ptop{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.pcat{font-size:11px;letter-spacing:3px;color:var(--pink);border:1px solid rgba(255,46,136,.5);border-radius:99px;padding:5px 12px}
+.ptopic{font-size:18px;font-weight:700;color:#fff}
+.pico{font-size:30px}
+.steps{display:flex;gap:6px;margin:14px 0 6px;flex-wrap:wrap}
+.sc{font-size:11px;letter-spacing:2px;padding:5px 11px;border-radius:99px;border:1px solid #3a2680;color:var(--muted)}
+.sc.active{color:#062018;background:var(--green);border-color:var(--green);font-weight:700}
+.sc.past{font-size:11px}
+.dial{font-size:clamp(40px,9vw,56px);font-weight:800;color:var(--cyan);text-shadow:0 0 20px rgba(34,230,255,.75),0 0 60px rgba(34,230,255,.3);letter-spacing:2px;font-variant-numeric:tabular-nums;line-height:1.1}
+.dial small{display:block;font-size:11px;letter-spacing:3px;color:var(--muted);font-weight:400}
+.dial.warping{color:var(--pink);text-shadow:0 0 24px rgba(255,46,136,.9);animation:flick .12s infinite}
+@keyframes flick{50%{opacity:.72}}
+.stitle{font-size:16px;font-weight:700;letter-spacing:1px;margin:16px 0 4px;color:#fff}
+.shelp{font-size:13.5px;color:var(--muted);margin-bottom:12px;line-height:1.5}
+.slots{min-height:58px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#0d0726;border:1px dashed #3f2b93;border-radius:12px;padding:10px}
+.slots.shake{animation:shake .45s}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.bank{display:flex;flex-wrap:wrap;gap:8px;padding:12px;background:rgba(20,10,50,.55);border:1px solid #2b1c66;border-radius:12px}
+.banklab{font-size:11px;letter-spacing:2px;color:var(--muted);margin:14px 0 8px}
+.chip{font-family:inherit;font-size:14.5px;padding:8px 13px;border-radius:999px;background:#241457;border:1px solid #4b2f9e;color:#eae4ff;cursor:pointer;transition:.15s}
+.chip:hover{border-color:var(--cyan);transform:translateY(-2px)}
+.chip.in{border-color:var(--green);background:rgba(62,242,163,.1)}
+.controls{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.model{margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(62,242,163,.08);border:1px solid rgba(62,242,163,.45);color:#dcffe9;font-size:15px;line-height:1.5}
+.model b{color:var(--green);font-size:11px;letter-spacing:2px;display:block;margin-bottom:5px}
+.sayline{margin:8px 0;padding:11px 14px;border-radius:12px;background:#0d0726;border:1px solid #31207a;font-size:15px;line-height:1.45}
+.timer{font-size:46px;font-weight:800;color:var(--yellow);text-shadow:0 0 16px rgba(255,209,102,.5);font-variant-numeric:tabular-nums}
+.timer.low{color:var(--red);text-shadow:0 0 16px rgba(255,84,112,.6)}
+
+.gt{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px}
+.gt td,.gt th{border:1px solid #2f1f73;padding:9px 11px;text-align:left;vertical-align:top}
+.gt th{background:#221356;color:var(--cyan);font-size:11.5px;letter-spacing:1.5px}
+.gt td b{color:var(--yellow)}
+.warn{margin-top:14px;display:grid;gap:8px}
+.warn li{list-style:none;font-size:13.5px;color:#ffe1ec;background:rgba(255,46,136,.07);border-left:3px solid var(--pink);padding:9px 12px;border-radius:8px;line-height:1.5}
+
+.qq{font-size:16px;margin:14px 0 12px;line-height:1.5;color:#fff}
+.qq b{color:var(--cyan)}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;width:100%;font-family:inherit;font-size:15px;padding:11px 14px;border-radius:12px;border:1px solid #3a2680;background:#1c1146;color:#e8e2ff;cursor:pointer;transition:.15s}
+.opt:hover{border-color:var(--cyan)}
+.opt.ok{border-color:var(--green);background:rgba(62,242,163,.12);color:#c9ffe2;font-weight:700}
+.opt.no{border-color:var(--red);background:rgba(255,84,112,.1);color:#ffd7de}
+.why{margin-top:12px;font-size:13.5px;color:#cfe9ff;background:#0d0726;border-left:3px solid var(--cyan);padding:10px 12px;border-radius:8px;line-height:1.5}
+.qscore{font-size:15px;color:var(--yellow);margin-top:10px}
+
+.trophy{font-size:58px;text-align:center}
+.ftitle{text-align:center;font-size:clamp(18px,4vw,24px);letter-spacing:2px;color:#fff;text-shadow:0 0 18px rgba(255,209,102,.6);margin-top:6px}
+.frank{text-align:center;font-size:14px;letter-spacing:3px;color:var(--cyan);margin-top:8px}
+.fpts{text-align:center;font-size:15px;color:var(--yellow);margin-top:6px}
+.certline{margin-top:14px;font-size:15px;color:#e6deff;text-align:center;line-height:1.6}
+.namein{background:#0d0726;border:1px solid #3a2680;color:#fff;border-radius:10px;padding:11px 13px;font-family:inherit;font-size:15px;width:100%;margin-top:12px}
+.namein:focus{outline:none;border-color:var(--cyan)}
+.center{display:flex;justify-content:center;gap:12px;margin-top:18px;flex-wrap:wrap}
+
+#toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:#1a0f44;border:1px solid var(--cyan);color:#eafcff;padding:10px 18px;border-radius:99px;opacity:0;pointer-events:none;transition:.3s;z-index:80;font-size:14px;max-width:88vw;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+.fpts-float{position:fixed;z-index:90;font-weight:800;color:var(--yellow);animation:rise 1s ease-out forwards;pointer-events:none;text-shadow:0 0 10px rgba(255,209,102,.6);font-size:18px}
+@keyframes rise{to{transform:translateY(-46px);opacity:0}}
+footer{position:relative;z-index:2;text-align:center;color:var(--muted);font-size:12px;padding:8px 16px 26px}
+@media (max-width:520px){ .bar{width:80px} .dial{font-size:38px} }
+</style>
+</head>
+<body>
+<div class="stars"></div>
+<div class="gridfloor"></div>
+<canvas id="fx"></canvas>
+
+<header>
+  <div class="brand">
+    <b>⏪ USED TO · TIME MACHINE</b>
+    <span id="subTag">pasado vs presente</span>
+  </div>
+  <div class="hud">
+    <div class="pill" id="ptsPill">⭐ <b id="pts">0</b>/420 <span id="ptsLbl">pts</span></div>
+    <div class="pill"><span id="progLbl">0/12</span><div class="bar"><i id="bar"></i></div></div>
+    <button class="btn cyan" id="btnGrammar">📘 <span id="gLbl">Gramática</span></button>
+    <button class="btn" id="btnQuiz">🔧 <span id="qLbl">Repara la máquina</span><span id="fixBadge" style="display:none"> ✓</span></button>
+    <button class="btn" id="btnSound">🔊</button>
+    <button class="btn" id="btnLang">EN</button>
+  </div>
+</header>
+
+<section class="brief">
+  <p class="b1" id="brief1"></p>
+  <p class="b2" id="brief2"></p>
+  <div class="ex">
+    <span class="tagex" id="exTag">EJEMPLO</span>
+    <ul>
+      <li>When I was a kid, we <b>used to</b> walk to school with my friends, <b>but now</b> parents drive children to school.</li>
+      <li>Children <b>used to</b> ride their bikes and take public transport.</li>
+    </ul>
+  </div>
+</section>
+
+<main id="board"></main>
+
+<!-- PORTAL -->
+<div class="overlay" id="ovPortal">
+  <div class="panel">
+    <button class="x" id="xPortal">✕</button>
+    <div class="ptop">
+      <span class="pico" id="pIcon">🚶</span>
+      <div>
+        <div class="pcat" id="pCat">EDUCATION</div>
+        <div class="ptopic" id="pTopic">Getting to school</div>
+      </div>
+    </div>
+    <div class="steps">
+      <span class="sc" id="stPast">1 · PASADO</span>
+      <span class="sc" id="stNow">2 · PRESENTE</span>
+      <span class="sc" id="stSpeak">3 · SPEAKING</span>
+    </div>
+    <div class="dial"><span id="dialYear">1985</span><small id="dialLbl">AÑO DE DESTINO</small></div>
+    <div id="pBody"></div>
+  </div>
+</div>
+
+<!-- GRAMMAR -->
+<div class="overlay" id="ovGrammar">
+  <div class="panel">
+    <button class="x" id="xGrammar">✕</button>
+    <div id="gBody"></div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="overlay" id="ovQuiz">
+  <div class="panel">
+    <button class="x" id="xQuiz">✕</button>
+    <div id="qBody"></div>
+  </div>
+</div>
+
+<!-- FINAL -->
+<div class="overlay" id="ovFinal">
+  <div class="panel">
+    <button class="x" id="xFinal">✕</button>
+    <div class="trophy">🏆⏳</div>
+    <div class="ftitle" id="fTitle"></div>
+    <div class="frank" id="fRank"></div>
+    <div class="fpts" id="fPts"></div>
+    <div class="certline" id="fCert"></div>
+    <input class="namein" id="fName" placeholder="">
+    <div class="center">
+      <button class="btn pink big" id="btnRestart"></button>
+      <button class="btn" id="btnCloseFinal"></button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<footer id="foot"></footer>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+
+/* ============ DATA ============ */
+const TOPICS=[
+ {id:"school",cat:"EDUCATION",icon:"🚶",label:"Getting to school",
+  past:["When I was a kid,","we","used to","walk","to school"],
+  now:["Nowadays,","most parents","drive","their children","to school"],
+  speak:"How did you get to school when you were 8? How do children get to school now?"},
+ {id:"equipment",cat:"EDUCATION",icon:"🖥️",label:"Equipment",
+  past:["Students","used to","write","everything","in notebooks"],
+  now:["Now,","they","do","their exercises","on laptops and tablets"],
+  speak:"What equipment did schools use before? What do they use today?"},
+ {id:"library",cat:"EDUCATION",icon:"📚",label:"Library",
+  past:["We","used to","borrow","books","from the library"],
+  now:["Today,","many people","read","e-books","on their phones"],
+  speak:"Where did you look for information before? Where do you look now?"},
+ {id:"transport",cat:"TECHNOLOGY",icon:"🚗",label:"Transport",
+  past:["People","used to","ride their bikes","and take","public transport"],
+  now:["Now,","many families","have","two cars"],
+  speak:"How did people travel in your city before? Has it changed?"},
+ {id:"phones",cat:"TECHNOLOGY",icon:"☎️",label:"Phones",
+  past:["We","used to","call our friends","on a","landline phone"],
+  now:["Now,","we","text and video-chat","all day"],
+  speak:"How did you contact your friends 20 years ago? And now?"},
+ {id:"money",cat:"TECHNOLOGY",icon:"💵",label:"Money",
+  past:["People","used to","pay for everything","in cash"],
+  now:["Now,","we","pay","with cards and mobile apps"],
+  speak:"How did people pay in the past? How do they pay now?"},
+ {id:"fashion",cat:"LIFESTYLE",icon:"👖",label:"Fashion",
+  past:["Young people","used to","wear","the same styles","for years"],
+  now:["Now,","fashion","changes","every season"],
+  speak:"What kind of clothes did people wear before? And now?"},
+ {id:"food",cat:"LIFESTYLE",icon:"🍔",label:"Food",
+  past:["Families","used to","cook","fresh food","every day"],
+  now:["Today,","many people","order","fast food","online"],
+  speak:"What did your family eat on a normal day? Is it the same today?"},
+ {id:"health",cat:"LIFESTYLE",icon:"❤️",label:"Health",
+  past:["People","used to","visit the doctor","only when they were sick"],
+  now:["Now,","we","track","our steps and sleep","with smartwatches"],
+  speak:"How did people take care of their health before? And now?"},
+ {id:"friends",cat:"FREE TIME",icon:"🧑‍🤝‍🧑",label:"Friends",
+  past:["We","used to","play in the street","until it got dark"],
+  now:["Now,","we","chat online","instead of meeting","in person"],
+  speak:"What did you do with your friends after school? Do you still do it?"},
+ {id:"movies",cat:"FREE TIME",icon:"🎬",label:"Movies",
+  past:["Families","used to","watch","the same film","on TV"],
+  now:["Now,","we","stream","whatever we want","whenever we want"],
+  speak:"How did your family watch movies before? How do you watch them now?"},
+ {id:"sport",cat:"FREE TIME",icon:"🏋️",label:"Sport",
+  past:["People","used to","do sports","only at school","or in clubs"],
+  now:["Now,","fitness apps and gyms","are","everywhere"],
+  speak:"Did people exercise much in the past? How do people keep fit today?"}
+];
+const CATS=[
+ {key:"EDUCATION",icon:"🎓"},
+ {key:"TECHNOLOGY",icon:"🔌"},
+ {key:"LIFESTYLE",icon:"🌱"},
+ {key:"FREE TIME",icon:"🎯"}
+];
+const QUIZ=[
+ {q:"I ___ to love cartoons, but now I never watch TV.",opts:["used to","use to","am used to"],a:0,
+  why:{es:"«used to» + infinitivo = costumbre pasada que ya no es verdad. «am used to» significa «estoy acostumbrado a» (otra estructura).",
+       en:"“used to” + infinitive = a past habit that is no longer true. “am used to” means “I am accustomed to” (a different structure)."}},
+ {q:"Did you ___ to have a landline phone at home?",opts:["used","use","was used"],a:1,
+  why:{es:"Después de «did» el verbo va en forma base: did you USE to…? (sin -d).",
+       en:"After “did”, the verb goes back to its base form: did you USE to…? (no -d)."}},
+ {q:"She didn't ___ to like fast food, but now she loves burgers.",opts:["used","use","using"],a:1,
+  why:{es:"Después de «didn't» también usamos la forma base: didn't USE to.",
+       en:"After “didn't” we also use the base form: didn't USE to."}},
+ {q:"There ___ to be a video-rental shop on every corner.",opts:["used","use","was"],a:0,
+  why:{es:"«there used to be» = había algo en el pasado y ya no existe.",
+       en:"“there used to be” = something existed in the past and no longer exists."}},
+ {q:"My grandfather ___ to pay for everything in cash.",opts:["is used","used","use"],a:1,
+  why:{es:"Afirmativa en pasado: sujeto + USED TO + verbo base.",
+       en:"Affirmative in the past: subject + USED TO + base verb."}},
+ {q:"People ___ use to have smartphones 20 years ago.",opts:["don't","didn't","aren't"],a:1,
+  why:{es:"Negativa en pasado: didn't use to + verbo base.",
+       en:"Negative in the past: didn't use to + base verb."}}
+];
+
+/* ============ I18N ============ */
+const I18N={
+ es:{
+  sub:"pasado vs presente",pts:"pts",gLbl:"Gramática",qLbl:"Repara la máquina",
+  brief1:"Con los años, hemos visto cambios en muchas áreas de nuestras vidas.",
+  brief2:"Elige una tarjeta, construye la frase del pasado con «used to», haz un warp al presente y remata con el reto de speaking. ¡Completa las 12 tarjetas para convertirte en Viajero del Tiempo!",
+  exTag:"EJEMPLO",
+  stPast:"1 · PASADO",stNow:"2 · PRESENTE",stSpeak:"3 · SPEAKING",
+  pastTitle:"EL PASADO · construye con USED TO",
+  pastHelp:"Toca las palabras en el orden correcto. Estructura: sujeto + used to + verbo base…",
+  nowTitle:"EL PRESENTE · construye con PRESENT SIMPLE",
+  nowHelp:"Describe el presente: toca las palabras en el orden correcto.",
+  speakTitle:"RETO DE SPEAKING · 30 segundos",
+  speakHelp:"Di tus dos frases en voz alta antes de que acabe el tiempo. Si practicas con un compañero, ¡mejor!",
+  start:"▶ Iniciar 30 s",stop:"■ Parar",iSaid:"¡Lo dije! +5",skip:"Saltar",
+  check:"Comprobar",reset:"Reiniciar",hint:"Pista",
+  bank:"Banco de palabras — toca en orden:",
+  incomplete:"Coloca todas las palabras primero.",
+  correctMsg:"¡Correcto! Frase completa.",
+  tryMsg:"Casi… revisa el orden: sujeto + used to + verbo base. 🌀",
+  model:"FRASE MODELO",
+  warp:"▶ Warp al presente",goSpeak:"🎤 Al reto de speaking",
+  dialLbl:"AÑO DE DESTINO",
+  warpMsg:"¡WARP! Viajando al presente…",
+  timeUp:"¡Tiempo!",
+  cardDone:"Tarjeta completada",
+  speakBonus:"+5 de speaking",
+  allTitle:"¡MÁQUINA DEL TIEMPO COMPLETADA!",
+  rank1:"GRAN MAESTRO DEL TIEMPO",rank2:"VIAJERO EXPERTO",rank3:"EXPLORADOR DEL TIEMPO",rank4:"APRENDIZ DE VIAJERO",
+  cert:"ha dominado «used to» y puede hablar de hábitos del pasado y del presente como un verdadero Viajero del Tiempo.",
+  namePh:"Escribe tu nombre para el certificado",
+  restart:"↻ Jugar de nuevo",close:"Cerrar",
+  quizTitle:"🔧 REPARA LA MÁQUINA · gramática exprés",
+  quizIntro:"El motor del tiempo tiene 6 averías. Elige la opción correcta para repararlo.",
+  nextQ:"Siguiente ▶",quizDone:"¡Máquina reparada!",quizScoreTxt:"averías reparadas",
+  quizBonus:"¡Bonus +20 puntos!",quizAgain:"↻ Repetir",
+  grTitle:"📘 GUÍA EXPRESS · USED TO",
+  gtH:["Forma","Estructura","Ejemplo"],
+  gtRows:[
+   ["Afirmativa","sujeto + <b>used to</b> + verbo base","I <b>used to play</b> outside every day."],
+   ["Negativa","sujeto + <b>didn't use to</b> + verbo base","She <b>didn't use to like</b> coffee."],
+   ["Pregunta","<b>Did</b> + sujeto + <b>use to</b> + verbo base?","<b>Did</b> you <b>use to walk</b> to school?"]],
+  warn:[
+   "⚠️ Después de did / didn't se escribe USE TO (sin -d).",
+   "⚠️ «Used to» solo existe en pasado: no digas ~~I use to~~ ni ~~I am used to play~~ para hábitos pasados.",
+   "💡 Compara: I <b>used to get up</b> early (costumbre pasada) ≠ I <b>am used to getting up</b> early (estoy acostumbrado)."],
+  cats:{EDUCATION:"educación",TECHNOLOGY:"tecnología",LIFESTYLE:"estilo de vida","FREE TIME":"tiempo libre"},
+  foot:"Inspirado en la ficha «USED TO» de ESL Brains · Ejercicio interactivo para practicar inglés · Past vs Present"
+ },
+ en:{
+  sub:"past vs present",pts:"pts",gLbl:"Grammar",qLbl:"Fix the machine",
+  brief1:"Over the years, we've seen changes in many areas of our lives.",
+  brief2:"Pick a card, build the past sentence with “used to”, warp to the present and finish with the speaking challenge. Complete all 12 cards to become a Time Traveler!",
+  exTag:"EXAMPLE",
+  stPast:"1 · PAST",stNow:"2 · PRESENT",stSpeak:"3 · SPEAKING",
+  pastTitle:"THE PAST · build with USED TO",
+  pastHelp:"Tap the words in the correct order. Structure: subject + used to + base verb…",
+  nowTitle:"THE PRESENT · build with PRESENT SIMPLE",
+  nowHelp:"Now describe the present: tap the words in the correct order.",
+  speakTitle:"SPEAKING CHALLENGE · 30 seconds",
+  speakHelp:"Say your two sentences out loud before the time runs out. Even better with a partner!",
+  start:"▶ Start 30 s",stop:"■ Stop",iSaid:"I said it! +5",skip:"Skip",
+  check:"Check",reset:"Reset",hint:"Hint",
+  bank:"Word bank — tap in order:",
+  incomplete:"Place all the words first.",
+  correctMsg:"Correct! Sentence complete.",
+  tryMsg:"Almost… check the order: subject + used to + base verb. 🌀",
+  model:"MODEL SENTENCE",
+  warp:"▶ Warp to the present",goSpeak:"🎤 Go to the speaking stage",
+  dialLbl:"DESTINATION YEAR",
+  warpMsg:"WARP! Traveling to the present…",
+  timeUp:"Time's up!",
+  cardDone:"Card completed",
+  speakBonus:"+5 speaking bonus",
+  allTitle:"TIME MACHINE COMPLETED!",
+  rank1:"TIME MASTER GRAND",rank2:"EXPERT TIME TRAVELER",rank3:"TIME EXPLORER",rank4:"TIME TRAVELER TRAINEE",
+  cert:"has mastered “used to” and can talk about past and present habits like a true Time Traveler.",
+  namePh:"Type your name for the certificate",
+  restart:"↻ Play again",close:"Close",
+  quizTitle:"🔧 FIX THE MACHINE · quick grammar",
+  quizIntro:"The time engine has 6 breakdowns. Choose the correct option to repair it.",
+  nextQ:"Next ▶",quizDone:"Machine repaired!",quizScoreTxt:"breakdowns fixed",
+  quizBonus:"Bonus +20 points!",quizAgain:"↻ Try again",
+  grTitle:"📘 QUICK GUIDE · USED TO",
+  gtH:["Form","Structure","Example"],
+  gtRows:[
+   ["Affirmative","subject + <b>used to</b> + base verb","I <b>used to play</b> outside every day."],
+   ["Negative","subject + <b>didn't use to</b> + base verb","She <b>didn't use to like</b> coffee."],
+   ["Question","<b>Did</b> + subject + <b>use to</b> + base verb?","<b>Did</b> you <b>use to walk</b> to school?"]],
+  warn:[
+   "⚠️ After did / didn't, write USE TO (no -d).",
+   "⚠️ “Used to” only exists in the past: don't say ~~I use to~~ or ~~I am used to play~~ for past habits.",
+   "💡 Compare: I <b>used to get up</b> early (past habit) ≠ I <b>am used to getting up</b> early (I'm accustomed to it)."],
+  cats:{EDUCATION:"",TECHNOLOGY:"",LIFESTYLE:"","FREE TIME":""},
+  foot:"Inspired by the ESL Brains worksheet “USED TO” · Interactive exercise to practise English · Past vs Present"
+ }
+};
+let lang="es";
+const t=k=>I18N[lang][k];
+
+/* ============ STATE ============ */
+let points=0, done={}, cur=null, phase="past", placed=[], bank=[], attempts=0, hints=0;
+let timerInt=null, tleft=30, quizIdx=0, quizScore=0, quizFixed=false, audioOn=true;
+const MAXPTS=420;
+
+/* ============ AUDIO ============ */
+let actx=null;
+function beep(f,d,type,vol,delay){
+  if(!audioOn)return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const o=actx.createOscillator(),g=actx.createGain();
+    const t0=actx.currentTime+(delay||0);
+    o.type=type||"sine";o.frequency.setValueAtTime(f,t0);
+    g.gain.setValueAtTime(vol||0.14,t0);
+    g.gain.exponentialRampToValueAtTime(0.001,t0+(d||0.1));
+    o.connect(g);g.connect(actx.destination);
+    o.start(t0);o.stop(t0+(d||0.1)+0.02);
+  }catch(e){}
+}
+const sfx={
+  click(){beep(520,0.05,"triangle",0.08)},
+  good(){beep(660,0.09,"sine",0.14);beep(880,0.12,"sine",0.14,0.09);beep(1100,0.16,"sine",0.12,0.18)},
+  bad(){beep(170,0.18,"sawtooth",0.1);beep(120,0.22,"sawtooth",0.1,0.08)},
+  warp(){for(let i=0;i<10;i++)beep(300+i*90,0.09,"square",0.06,i*0.07)},
+  tick(){beep(880,0.04,"square",0.05)},
+  done(){beep(660,0.1,"sine",0.14);beep(880,0.1,"sine",0.14,0.1);beep(1320,0.2,"sine",0.12,0.2)}
+};
+
+/* ============ CONFETTI ============ */
+const cv=$("#fx"),cx=cv.getContext("2d");let parts=[];
+function sizeCv(){cv.width=innerWidth;cv.height=innerHeight}
+sizeCv();addEventListener("resize",sizeCv);
+function burst(n,x,y){
+  const cols=["#ff2e88","#22e6ff","#ffd166","#3ef2a3","#ffffff","#b28dff"];
+  for(let i=0;i<n;i++){
+    const a=Math.random()*Math.PI*2,v=2+Math.random()*7;
+    parts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-3,g:0.18,c:cols[i%cols.length],s:3+Math.random()*5,l:60+Math.random()*40,rot:Math.random()*6});
+  }
+}
+function loopFx(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  parts=parts.filter(p=>p.l>0);
+  for(const p of parts){
+    p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.l--;p.rot+=0.1;
+    cx.save();cx.translate(p.x,p.y);cx.rotate(p.rot);
+    cx.fillStyle=p.c;cx.globalAlpha=Math.min(1,p.l/40);
+    cx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.7);cx.restore();
+  }
+  requestAnimationFrame(loopFx);
+}
+loopFx();
+function celebrate(big){
+  if(big){burst(120,cv.width*0.3,cv.height*0.3);burst(120,cv.width*0.7,cv.height*0.3);burst(140,cv.width*0.5,cv.height*0.42);}
+  else burst(70,cv.width*0.5,cv.height*0.4);
+}
+
+/* ============ HELPERS ============ */
+function toast(msg,ms){
+  const el=$("#toast");el.textContent=msg;el.classList.add("show");
+  clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove("show"),ms||2200);
+}
+function addPts(n){
+  points+=n;$("#pts").textContent=points;
+  const r=$("#ptsPill").getBoundingClientRect();
+  const f=document.createElement("div");f.className="fpts-float";f.textContent="+"+n;
+  f.style.left=(r.right-30)+"px";f.style.top=(r.top-6)+"px";
+  document.body.appendChild(f);setTimeout(()=>f.remove(),1000);
+}
+function refreshProgress(){
+  const n=Object.keys(done).length;
+  $("#progLbl").textContent=n+"/12";
+  $("#bar").style.width=(n/12*100)+"%";
+}
+function shuffleIdx(n){
+  const a=[...Array(n).keys()];
+  do{
+    for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  }while(a.every((v,k)=>v===k));
+  return a;
+}
+function openOv(id){$(id).classList.add("open")}
+function closeOv(id){$(id).classList.remove("open")}
+
+/* ============ BOARD ============ */
+function renderBoard(){
+  const main=$("#board");main.innerHTML="";
+  for(const c of CATS){
+    const sec=document.createElement("section");sec.className="cat";
+    const sub=t("cats")[c.key];
+    sec.innerHTML=`<h2>${c.icon} ${c.key}${sub?` <small>· ${sub}</small>`:""}</h2>`;
+    const grid=document.createElement("div");grid.className="cards";
+    for(const tp of TOPICS.filter(x=>x.cat===c.key)){
+      const b=document.createElement("button");b.className="card"+(done[tp.id]?" done":"");
+      b.innerHTML=`<span class="ic">${tp.icon}</span><span class="lb">${tp.label}</span>${done[tp.id]?'<span class="tick">✓</span>':""}`;
+      b.addEventListener("click",()=>{sfx.click();openPortal(tp.id)});
+      grid.appendChild(b);
+    }
+    sec.appendChild(grid);main.appendChild(sec);
+  }
+}
+
+/* ============ PORTAL ============ */
+function setStepChips(){
+  const map={past:"#stPast",now:"#stNow",speak:"#stSpeak"};
+  for(const k in map){
+    const el=$(map[k]);el.className="sc";
+    el.textContent=t(k==="past"?"stPast":k==="now"?"stNow":"stSpeak");
+  }
+  $(map[phase]).classList.add("active");
+}
+function openPortal(id){
+  cur=TOPICS.find(x=>x.id===id);phase="past";attempts=0;hints=0;
+  $("#pIcon").textContent=cur.icon;
+  $("#pCat").textContent=cur.cat;
+  $("#pTopic").textContent=cur.label;
+  $("#dialYear").textContent="1985";
+  openOv("#ovPortal");
+  renderStep();
+}
+function renderStep(){
+  setStepChips();
+  const body=$("#pBody");
+  if(phase==="past"||phase==="now"){
+    const key=phase==="past"?"past":"now";
+    $("#dialYear").textContent=phase==="past"?"1985":"2025";
+    body.innerHTML=`
+      <div class="stitle">${t(phase==="past"?"pastTitle":"nowTitle")}</div>
+      <div class="shelp">${t(phase==="past"?"pastHelp":"nowHelp")}</div>
+      <div class="slots" id="slots"></div>
+      <div class="banklab">${t("bank")}</div>
+      <div class="bank" id="bank"></div>
+      <div class="controls">
+        <button class="btn" id="btnHint">💡 ${t("hint")}</button>
+        <button class="btn" id="btnResetS">↻ ${t("reset")}</button>
+        <button class="btn green" id="btnCheck" disabled>✔ ${t("check")}</button>
+      </div>
+      <div id="result"></div>`;
+    bank=shuffleIdx(cur[key].length);placed=[];
+    drawBuilder(key);
+    $("#btnHint").addEventListener("click",doHint);
+    $("#btnResetS").addEventListener("click",()=>{sfx.click();attempts=0;hints=0;bank=shuffleIdx(cur[key].length);placed=[];$("#result").innerHTML="";drawBuilder(key)});
+    $("#btnCheck").addEventListener("click",()=>checkSentence(key));
+  }else{
+    $("#dialYear").textContent="2025";
+    body.innerHTML=`
+      <div class="stitle">${t("speakTitle")}</div>
+      <div class="shelp">${t("speakHelp")}</div>
+      <div class="sayline">⏪ ${cur.past.join(" ")}</div>
+      <div class="sayline">⏩ ${cur.now.join(" ")}</div>
+      <div class="shelp" style="margin-top:12px">💬 ${cur.speak}</div>
+      <div style="display:flex;gap:18px;align-items:center;margin:10px 0 6px;flex-wrap:wrap">
+        <div class="timer" id="tm">30</div>
+        <div class="controls" style="margin:0">
+          <button class="btn cyan" id="btnTm">▶ ${t("start")}</button>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="btn green" id="btnSaid">🎤 ${t("iSaid")}</button>
+        <button class="btn" id="btnSkip">${t("skip")}</button>
+      </div>`;
+    $("#btnTm").addEventListener("click",toggleTimer);
+    $("#btnSaid").addEventListener("click",()=>{stopTimer();sfx.done();addPts(5);toast(t("speakBonus"));finishTopic()});
+    $("#btnSkip").addEventListener("click",()=>{stopTimer();finishTopic()});
+  }
+}
+function drawBuilder(key){
+  const chips=cur[key];
+  const slots=$("#slots"),bankEl=$("#bank");
+  slots.innerHTML=placed.length?placed.map((i,pos)=>`<button class="chip in" data-pos="${pos}">${chips[i]}</button>`).join(""):`<span style="color:var(--muted);font-size:14px">…</span>`;
+  bankEl.innerHTML=bank.map(i=>`<button class="chip" data-idx="${i}">${chips[i]}</button>`).join("");
+  $("#btnCheck").disabled=placed.length!==chips.length;
+  slots.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{
+    const pos=+b.dataset.pos;bank.push(placed[pos]);placed.splice(pos,1);sfx.click();drawBuilder(key);
+  }));
+  bankEl.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{
+    placed.push(+b.dataset.idx);bank=bank.filter(x=>x!==+b.dataset.idx);sfx.click();drawBuilder(key);
+  }));
+}
+function doHint(){
+  const key=phase==="past"?"past":"now";
+  const need=placed.length;
+  if(bank.includes(need)){placed.push(need);bank=bank.filter(x=>x!==need);hints++;sfx.click();drawBuilder(key)}
+}
+function checkSentence(key){
+  const chips=cur[key];
+  if(placed.length!==chips.length){toast(t("incomplete"));return}
+  const ok=placed.every((v,k)=>v===k);
+  const slots=$("#slots");
+  if(ok){
+    const first=(attempts===0&&hints===0);
+    addPts(first?15:8);
+    sfx.good();
+    const correctAt=cv.width/2;
+    burst(50,correctAt,cv.height*0.35);
+    $("#result").innerHTML=`
+      <div class="model"><b>✔ ${t("model")}</b>${chips.join(" ")}</div>
+      <div class="controls"><button class="btn pink" id="btnNext">${phase==="past"?t("warp"):t("goSpeak")}</button></div>`;
+    $("#btnCheck").disabled=true;$("#btnHint").disabled=true;$("#btnResetS").disabled=true;
+    $("#btnNext").addEventListener("click",nextPhase);
+  }else{
+    attempts++;sfx.bad();
+    slots.classList.add("shake");setTimeout(()=>slots.classList.remove("shake"),500);
+    toast(t("tryMsg"));
+  }
+}
+function nextPhase(){
+  if(phase==="past"){
+    sfx.warp();toast(t("warpMsg"));
+    const dial=$("#dialYear");$("#dialYear").parentNode.classList.add("warping");
+    let y=1985;const start=Date.now();
+    const iv=setInterval(()=>{
+      const p=(Date.now()-start)/1100;
+      y=1985+Math.round(p*40);
+      dial.textContent=Math.min(y,2025);
+      if(p>=1){clearInterval(iv);$("#dialYear").parentNode.classList.remove("warping");dial.textContent="2025";phase="now";attempts=0;hints=0;renderStep();}
+    },55);
+  }else{
+    phase="speak";renderStep();
+  }
+}
+function toggleTimer(){
+  const tm=$("#tm"),btn=$("#btnTm");
+  if(timerInt){stopTimer();return}
+  tleft=30;btn.textContent=t("stop");
+  timerInt=setInterval(()=>{
+    tleft--;tm.textContent=tleft;
+    tm.classList.toggle("low",tleft<=10);
+    if(tleft<=5&&tleft>0)sfx.tick();
+    if(tleft<=0){stopTimer();toast(t("timeUp"));}
+  },1000);
+}
+function stopTimer(){
+  if(timerInt){clearInterval(timerInt);timerInt=null}
+  const tm=$("#tm"),btn=$("#btnTm");
+  if(tm&&btn){btn.textContent="▶ "+t("start");tm.classList.remove("low")}
+}
+function finishTopic(){
+  stopTimer();
+  done[cur.id]=true;
+  refreshProgress();
+  closeOv("#ovPortal");
+  toast("✔ "+t("cardDone")+" "+cur.icon);
+  renderBoard();
+  if(Object.keys(done).length===12){
+    setTimeout(()=>{celebrate(true);sfx.done();openFinal()},700);
+  }else{
+    celebrate(false);
+  }
+}
+
+/* ============ FINAL ============ */
+function openFinal(){
+  $("#fTitle").textContent=t("allTitle");
+  const r=points>=380?t("rank1"):points>=300?t("rank2"):points>=200?t("rank3"):t("rank4");
+  $("#fRank").textContent="★ "+r+" ★";
+  $("#fPts").textContent="⭐ "+points+" / "+MAXPTS+" "+t("pts");
+  $("#fName").placeholder=t("namePh");
+  $("#btnRestart").textContent=t("restart");
+  $("#btnCloseFinal").textContent=t("close");
+  updateCert();
+  openOv("#ovFinal");
+}
+function updateCert(){
+  const name=$("#fName").value.trim();
+  $("#fCert").innerHTML=(name?`<b style="color:var(--yellow)">${name}</b> `:"")+t("cert");
+}
+
+/* ============ GRAMMAR ============ */
+function renderGrammar(){
+  $("#gBody").innerHTML=`
+    <div class="stitle">${t("grTitle")}</div>
+    <table class="gt">
+      <tr><th>${t("gtH")[0]}</th><th>${t("gtH")[1]}</th><th>${t("gtH")[2]}</th></tr>
+      ${t("gtRows").map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}
+    </table>
+    <ul class="warn">${t("warn").map(w=>`<li>${w}</li>`).join("")}</ul>`;
+}
+
+/* ============ QUIZ ============ */
+function openQuiz(){
+  quizIdx=0;quizScore=0;
+  renderQuiz();
+  openOv("#ovQuiz");
+}
+function renderQuiz(){
+  const body=$("#qBody");
+  if(quizIdx>=QUIZ.length){
+    const fixed=quizScore>=5;
+    if(fixed&&!quizFixed){quizFixed=true;addPts(20);$("#fixBadge").style.display="inline";sfx.done();}
+    body.innerHTML=`
+      <div class="stitle">${fixed?"🔧 "+t("quizDone"):"🌀 "+quizScore+"/6"}</div>
+      <div class="shelp">${t("quizScoreTxt")}: <b style="color:var(--yellow)">${quizScore}/6</b>${fixed?" · "+t("quizBonus"):""}</div>
+      <div class="center"><button class="btn cyan" id="btnQA">${t("quizAgain")}</button></div>`;
+    $("#btnQA").addEventListener("click",()=>{quizIdx=0;quizScore=0;renderQuiz()});
+    return;
+  }
+  const q=QUIZ[quizIdx];
+  body.innerHTML=`
+    <div class="stitle">${t("quizTitle")}</div>
+    <div class="shelp">${t("quizIntro")} · <b style="color:var(--yellow)">${quizIdx+1}/6</b> · ✔ ${quizScore}</div>
+    <div class="qq">${q.q.replace("___",'<b>___</b>')}</div>
+    <div class="opts">${q.opts.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join("")}</div>
+    <div id="qWhy"></div>
+    <div class="controls"><button class="btn pink" id="btnQNext" style="display:none">${t("nextQ")}</button></div>`;
+  body.querySelectorAll(".opt").forEach(b=>b.addEventListener("click",()=>{
+    const i=+b.dataset.i;
+    body.querySelectorAll(".opt").forEach(x=>x.disabled=true);
+    body.querySelectorAll(".opt")[q.a].classList.add("ok");
+    if(i===q.a){quizScore++;sfx.good();}
+    else{b.classList.add("no");sfx.bad();}
+    $("#qWhy").innerHTML=`<div class="why">💡 ${q.why[lang]}</div>`;
+    $("#btnQNext").style.display="inline-block";
+  }));
+  $("#btnQNext").addEventListener("click",()=>{quizIdx++;renderQuiz()});
+}
+
+/* ============ STATIC TEXT ============ */
+function applyLang(){
+  document.documentElement.lang=lang;
+  $("#subTag").textContent=t("sub");
+  $("#ptsLbl").textContent=t("pts");
+  $("#gLbl").textContent=t("gLbl");
+  $("#qLbl").textContent=t("qLbl");
+  $("#brief1").textContent=t("brief1");
+  $("#brief2").textContent=t("brief2");
+  $("#exTag").textContent=t("exTag");
+  $("#foot").textContent=t("foot");
+  $("#btnLang").textContent=lang==="es"?"EN":"ES";
+  refreshProgress();
+  renderBoard();
+  if($("#ovPortal").classList.contains("open"))renderStep();
+}
+
+/* ============ EVENTS ============ */
+$("#xPortal").addEventListener("click",()=>{stopTimer();closeOv("#ovPortal")});
+$("#xGrammar").addEventListener("click",()=>closeOv("#ovGrammar"));
+$("#xQuiz").addEventListener("click",()=>closeOv("#ovQuiz"));
+$("#xFinal").addEventListener("click",()=>closeOv("#ovFinal"));
+$("#btnGrammar").addEventListener("click",()=>{sfx.click();renderGrammar();openOv("#ovGrammar")});
+$("#btnQuiz").addEventListener("click",()=>{sfx.click();openQuiz()});
+$("#btnSound").addEventListener("click",()=>{audioOn=!audioOn;$("#btnSound").textContent=audioOn?"🔊":"🔇"});
+$("#btnLang").addEventListener("click",()=>{lang=lang==="es"?"en":"es";applyLang()});
+$("#fName").addEventListener("input",updateCert);
+$("#btnRestart").addEventListener("click",()=>{
+  points=0;done={};$("#pts").textContent="0";$("#fixBadge").style.display="none";
+  refreshProgress();renderBoard();closeOv("#ovFinal");
+});
+$("#btnCloseFinal").addEventListener("click",()=>closeOv("#ovFinal"));
+addEventListener("keydown",e=>{
+  if(e.key==="Escape"){
+    ["#ovPortal","#ovGrammar","#ovQuiz","#ovFinal"].forEach(id=>{
+      if($(id).classList.contains("open")){if(id==="#ovPortal")stopTimer();closeOv(id)}
+    });
+  }
+});
+
+/* ============ INIT ============ */
+applyLang();
+</script>
+</body>
+</html>
