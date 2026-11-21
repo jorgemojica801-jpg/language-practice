@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#39A900">
+<meta name="description" content="Sena - Test de Lubricación: evaluación interactiva de lubricación de maquinaria con puntaje sobre 100 puntos, cronómetro y descarga del resultado.">
+<title>Sena - Test de Lubricación</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2339A900'/%3E%3Cpath d='M32 12s14 15.2 14 24a14 14 0 1 1-28 0c0-8.8 14-24 14-24z' fill='white'/%3E%3C/svg%3E">
+<style>
+:root{
+  --verde:#39A900; --verde-2:#2E8B00; --verde-3:#256F00;
+  --verde-suave:#EAF6E0; --verde-suave-2:#F4FAEF; --verde-borde:#CBE7B6;
+  --tinta:#17281B; --t2:#4C5D50; --t3:#7E8D81;
+  --linea:#E1EEDB; --error:#C62828; --error-bg:#FDECEA;
+  --ok:#2E7D32; --ok-bg:#E7F4E7;
+  --sombra:0 6px 26px rgba(24,84,8,.09);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color:var(--tinta);line-height:1.5;min-height:100vh;min-height:100dvh;
+  background-color:#F8FBF5;
+  background-image:radial-gradient(900px 400px at 88% -8%,rgba(57,169,0,.10),transparent 62%),radial-gradient(680px 360px at -8% 6%,rgba(57,169,0,.07),transparent 55%);
+  background-attachment:fixed;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+svg{display:block;flex:none}
+
+/* ---------- Pantallas ---------- */
+.pantalla{display:none;min-height:100vh;min-height:100dvh;flex-direction:column}
+.pantalla.activa{display:flex;animation:aparecer .38s ease}
+@keyframes aparecer{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.wrap{width:100%;max-width:600px;margin:0 auto;padding:18px 18px 30px}
+
+/* ---------- Registro ---------- */
+.marca{display:flex;align-items:center;gap:13px;justify-content:center;margin-top:clamp(10px,4.5vh,44px)}
+.insignia{width:62px;height:62px;border-radius:18px;background:linear-gradient(140deg,#47B526,#2B7F00);display:grid;place-items:center;color:#fff;box-shadow:0 10px 24px rgba(46,139,0,.28)}
+.marca-txt{font-weight:800;font-size:1.02rem;color:var(--verde-3);letter-spacing:.02em}
+h1.titulo{font-size:clamp(1.55rem,6vw,2.05rem);font-weight:800;letter-spacing:-.02em;text-align:center;margin-top:18px}
+.subtitulo{text-align:center;color:var(--t2);margin-top:7px;font-size:.96rem}
+.chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--verde-borde);color:#2B6B12;font-weight:700;font-size:.8rem;padding:8px 13px;border-radius:999px;box-shadow:0 2px 10px rgba(24,84,8,.05)}
+.chip svg{color:var(--verde)}
+
+.banner-reanudar{margin-top:20px;background:#FFF8E8;border:1.5px solid #F2D48A;border-radius:16px;padding:15px 16px;animation:aparecer .3s ease}
+.banner-reanudar .br-tit{font-weight:800;color:#7A5200;display:flex;align-items:center;gap:8px;font-size:.94rem}
+.banner-reanudar .br-info{color:#8A6A1F;font-size:.85rem;margin:6px 0 12px}
+.br-acciones{display:flex;gap:10px}
+.br-acciones .btn{min-height:46px;font-size:.9rem}
+
+.tarjeta{background:#fff;border:1px solid var(--linea);border-radius:20px;box-shadow:var(--sombra);padding:24px 20px;margin-top:22px}
+.tarjeta-rotulo{font-size:.78rem;font-weight:800;letter-spacing:.09em;color:var(--t3);text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.tarjeta-rotulo::after{content:"";flex:1;height:1px;background:var(--linea)}
+.campo{margin-top:18px}
+.campo label{display:block;font-weight:700;font-size:.9rem;color:var(--tinta);margin-bottom:7px}
+.campo input{
+  width:100%;min-height:52px;font-size:1rem;padding:13px 15px;border-radius:14px;
+  border:1.6px solid #DCE9D4;background:#FBFDF8;color:var(--tinta);transition:border-color .2s,box-shadow .2s,background .2s;
+  appearance:none;-webkit-appearance:none;
+}
+.campo input::placeholder{color:#9FAD9F}
+.campo input:focus{border-color:var(--verde);background:#fff;box-shadow:0 0 0 4px rgba(57,169,0,.13);outline:none}
+.aviso-error{display:none;margin-top:12px;background:var(--error-bg);color:var(--error);font-size:.86rem;font-weight:600;padding:10px 13px;border-radius:12px}
+.aviso-error.visible{display:flex;align-items:center;gap:8px;animation:temblor .4s ease}
+@keyframes temblor{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.nota-form{text-align:center;color:var(--t3);font-size:.8rem;margin-top:14px}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:54px;
+  border-radius:15px;font-weight:800;font-size:1rem;letter-spacing:.01em;
+  transition:transform .14s ease,box-shadow .25s ease,background .2s ease,opacity .2s;
+  user-select:none;-webkit-user-select:none;touch-action:manipulation;
+}
+.btn:active{transform:scale(.975)}
+.btn:focus-visible{outline:3px solid rgba(57,169,0,.4);outline-offset:2px}
+.btn-primario{background:linear-gradient(135deg,#47B526,#2E8B00);color:#fff;box-shadow:0 9px 22px rgba(46,139,0,.32)}
+.btn-borde{background:#fff;color:#2B7A00;border:1.6px solid var(--verde-borde)}
+.btn-fantasma{background:transparent;color:var(--t2);border:1.6px solid var(--linea)}
+.btn-margen{margin-top:22px}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.btn-final{background:linear-gradient(135deg,#2E8B00,#1F6600)}
+
+/* ---------- Examen: cabecera ---------- */
+.cab-examen{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.93);-webkit-backdrop-filter:saturate(1.5) blur(14px);backdrop-filter:saturate(1.5) blur(14px);border-bottom:1px solid var(--linea)}
+.cab-fila{max-width:600px;margin:0 auto;padding:11px 16px 9px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.marca-mini{display:flex;align-items:center;gap:9px;min-width:0}
+.marca-mini .escudo{width:36px;height:36px;border-radius:11px;background:linear-gradient(140deg,#47B526,#2B7F00);display:grid;place-items:center;color:#fff}
+.marca-mini .mm-t1{font-weight:800;font-size:.92rem;line-height:1.15}
+.marca-mini .mm-t2{font-size:.72rem;color:var(--t3);font-weight:600}
+.reloj{display:inline-flex;gap:7px;align-items:center;font-weight:800;color:#236B00;background:#EFF8E7;border:1px solid var(--verde-borde);padding:9px 13px;border-radius:13px;font-variant-numeric:tabular-nums;font-size:.95rem}
+.progreso-zona{max-width:600px;margin:0 auto;padding:2px 16px 12px}
+.progreso-fila{display:flex;justify-content:space-between;align-items:baseline;font-size:.8rem;font-weight:700;color:var(--t2);margin-bottom:7px;gap:8px}
+.barra{height:10px;background:#E6F1DC;border-radius:999px;overflow:hidden}
+.barra>span{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#5BC424,#2E8B00);transition:width .45s ease}
+
+/* ---------- Examen: pregunta ---------- */
+.tarjeta-q{background:#fff;border:1px solid var(--linea);border-radius:20px;box-shadow:var(--sombra);padding:20px 18px;margin-top:18px;animation:aparecer .3s ease}
+.q-chips{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.q-chip-bloque{display:inline-flex;align-items:center;gap:6px;background:var(--verde-suave);color:#256B00;border:1px solid var(--verde-borde);font-weight:700;font-size:.76rem;padding:6px 11px;border-radius:999px}
+.q-chip-pts{display:inline-flex;align-items:center;background:#fff;border:1px dashed var(--verde-borde);color:#2B6B12;font-weight:800;font-size:.76rem;padding:6px 11px;border-radius:999px}
+.enunciado{margin-top:15px;font-size:1.09rem;font-weight:650;line-height:1.55}
+.ops{display:grid;gap:10px;margin-top:18px}
+.op{
+  display:flex;gap:12px;align-items:center;width:100%;text-align:left;
+  background:#fff;border:1.6px solid #DFEBD6;border-radius:15px;padding:13px 14px;min-height:58px;
+  transition:border-color .18s,background .18s,box-shadow .18s,transform .12s;touch-action:manipulation;
+}
+.op:active{transform:scale(.99)}
+.op:focus-visible{outline:3px solid rgba(57,169,0,.4);outline-offset:2px}
+.op .letra{flex:none;width:33px;height:33px;border-radius:10px;background:#F1F8EA;color:#2E7D00;font-weight:800;display:grid;place-items:center;font-size:.95rem;transition:background .18s,color .18s}
+.op .op-txt{font-weight:600;font-size:.98rem;line-height:1.4}
+.op.sel{border-color:var(--verde);background:#F3FAEC;box-shadow:0 0 0 3px rgba(57,169,0,.14)}
+.op.sel .letra{background:var(--verde);color:#fff}
+.ops-vf{grid-template-columns:1fr 1fr}
+.op-vf{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  background:#fff;border:1.6px solid #DFEBD6;border-radius:16px;min-height:86px;
+  transition:border-color .18s,background .18s,box-shadow .18s,transform .12s;touch-action:manipulation;
+}
+.op-vf:active{transform:scale(.98)}
+.op-vf:focus-visible{outline:3px solid rgba(57,169,0,.4);outline-offset:2px}
+.op-vf .icono{color:#8CA08E;transition:color .18s}
+.op-vf .vf-txt{font-weight:800;font-size:.98rem;color:var(--t2)}
+.op-vf.sel{border-color:var(--verde);background:#F3FAEC;box-shadow:0 0 0 3px rgba(57,169,0,.14)}
+.op-vf.sel .icono{color:var(--verde-2)}
+.op-vf.sel .vf-txt{color:#256B00}
+.q-pie{text-align:center;color:var(--t3);font-size:.78rem;margin-top:16px}
+
+/* ---------- Examen: navegación inferior ---------- */
+.nav-examen{position:sticky;bottom:0;z-index:30;margin-top:auto;background:rgba(255,255,255,.95);-webkit-backdrop-filter:saturate(1.5) blur(14px);backdrop-filter:saturate(1.5) blur(14px);border-top:1px solid var(--linea);padding:12px 16px calc(12px + env(safe-area-inset-bottom))}
+.nav-fila{max-width:600px;margin:0 auto;display:flex;gap:10px}
+.nav-fila .btn{flex:1;min-height:52px;font-size:.95rem}
+
+/* ---------- Resultados ---------- */
+.hero-res{background:#fff;border:1px solid var(--linea);border-radius:22px;box-shadow:var(--sombra);padding:26px 20px 22px;margin-top:18px;text-align:center}
+.res-rotulo{font-size:.78rem;font-weight:800;letter-spacing:.12em;color:var(--t3);text-transform:uppercase}
+.anillo-caja{position:relative;width:196px;height:196px;margin:18px auto 6px}
+.anillo-caja svg{width:100%;height:100%;transform:rotate(-90deg)}
+.anillo-caja .anillo-fondo{fill:none;stroke:#E7F1DC;stroke-width:11}
+.anillo-caja .anillo-frente{fill:none;stroke:url(#gradAnillo);stroke-width:11;stroke-linecap:round;stroke-dasharray:326.7;stroke-dashoffset:326.7;transition:stroke-dashoffset .2s linear}
+.anillo-centro{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.anillo-num{font-size:3.4rem;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--verde-2);font-variant-numeric:tabular-nums}
+.anillo-sub{font-size:.85rem;color:var(--t3);font-weight:700;margin-top:5px}
+.res-nombre{display:inline-flex;align-items:center;gap:9px;font-weight:800;font-size:1.14rem;margin-top:12px;max-width:100%}
+.res-nombre svg{color:var(--verde)}
+.mini-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+.mini{background:#F7FBF2;border:1px solid var(--linea);border-radius:15px;padding:13px 8px;text-align:center;min-width:0}
+.mini .eti{font-size:.64rem;font-weight:800;color:var(--t3);letter-spacing:.08em}
+.mini .val{font-weight:800;font-size:.98rem;margin-top:5px;display:flex;align-items:center;justify-content:center;gap:6px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mini .val svg{color:var(--verde-2)}
+.seccion-rev{margin-top:26px}
+.seccion-rev h3{font-size:1.05rem;font-weight:800;display:flex;align-items:center;gap:9px}
+.seccion-rev h3 svg{color:var(--verde-2)}
+.contador-rev{font-size:.82rem;color:var(--t3);font-weight:600;margin-top:3px}
+.lista-rev{margin-top:14px}
+.rev{display:flex;gap:12px;padding:13px 14px;border:1px solid var(--linea);border-radius:15px;background:#fff;margin-bottom:10px;border-left-width:4px}
+.rev.ok{border-left-color:var(--ok)} .rev.mal{border-left-color:var(--error)}
+.rev-num{flex:none;width:31px;height:31px;border-radius:999px;display:grid;place-items:center;font-weight:800;font-size:.86rem}
+.rev.ok .rev-num{background:var(--ok-bg);color:var(--ok)}
+.rev.mal .rev-num{background:var(--error-bg);color:var(--error)}
+.rev-cuerpo{min-width:0;flex:1}
+.rev-txt{font-size:.92rem;font-weight:650;line-height:1.45}
+.rev-linea{font-size:.82rem;margin-top:6px;color:var(--t2)}
+.r-ok{color:var(--ok);font-weight:800}
+.r-mal{color:var(--error);font-weight:800}
+.r-neutral{color:var(--t3);font-weight:700}
+.acciones-res{display:grid;gap:10px;margin-top:24px}
+.acciones-fila{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nota-descarga{text-align:center;color:var(--t3);font-size:.78rem;margin-top:12px}
+
+/* ---------- Modal ---------- */
+.fondo-modal{position:fixed;inset:0;background:rgba(14,32,8,.5);display:none;place-items:center;z-index:100;padding:20px}
+.fondo-modal.abierto{display:grid;animation:aparecer .2s ease}
+.modal{background:#fff;border-radius:22px;max-width:430px;width:100%;padding:24px 20px;box-shadow:0 24px 60px rgba(0,0,0,.25);animation:pop .25s ease}
+@keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+.modal-tit{font-weight:800;font-size:1.08rem;display:flex;align-items:center;gap:9px}
+.modal-tit svg{color:#B8860B}
+.modal-sub{color:var(--t2);font-size:.9rem;margin-top:8px}
+.pildoras{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px;max-height:180px;overflow-y:auto}
+.pildora{min-width:46px;height:46px;padding:0 10px;background:#FFF7E6;border:1.6px solid #EFC968;color:#7A5200;font-weight:800;border-radius:13px;font-variant-numeric:tabular-nums;touch-action:manipulation}
+.pildora:active{transform:scale(.94)}
+.modal-acciones{display:grid;gap:9px;margin-top:18px}
+
+/* ---------- Toast ---------- */
+.toast{position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#1F3D10;color:#fff;font-weight:700;font-size:.9rem;padding:13px 20px;border-radius:999px;box-shadow:0 14px 34px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;z-index:200;max-width:88vw;text-align:center}
+.toast.visible{opacity:1;transform:translate(-50%,0)}
+
+.pie-app{text-align:center;color:var(--t3);font-size:.76rem;margin-top:26px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+@media (min-width:640px){ .wrap{padding-top:26px} }
+</style>
+</head>
+<body>
+
+<!-- ================= PANTALLA 1 · REGISTRO ================= -->
+<section id="scr-registro" class="pantalla activa" aria-label="Registro del estudiante">
+  <div class="wrap">
+    <div class="marca">
+      <div class="insignia" aria-hidden="true">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7s6.6 7.2 6.6 11.5a6.6 6.6 0 1 1-13.2 0C5.4 9.9 12 2.7 12 2.7z"/><path d="M9.2 14.5a2.9 2.9 0 0 0 2.8 2.9"/></svg>
+      </div>
+      <div class="marca-txt">Evaluación interactiva</div>
+    </div>
+
+    <h1 class="titulo">Sena - Test de Lubricación</h1>
+    <p class="subtitulo">Evaluación de conocimientos sobre lubricación de maquinaria</p>
+
+    <div class="chips">
+      <span class="chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>24 preguntas</span>
+      <span class="chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"/><polyline points="8.2 13.9 7 23 12 20 17 23 15.8 13.9"/></svg>100 puntos</span>
+      <span class="chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>Cronómetro ascendente</span>
+    </div>
+
+    <div id="banner-reanudar" class="banner-reanudar" hidden>
+      <div class="br-tit">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10"/></svg>
+        Tienes un examen en curso
+      </div>
+      <p class="br-info" id="br-info">Pregunta 1 de 24</p>
+      <div class="br-acciones">
+        <button type="button" id="btn-continuar" class="btn btn-primario">Continuar</button>
+        <button type="button" id="btn-reiniciar-banner" class="btn btn-borde">Reiniciar</button>
+      </div>
+    </div>
+
+    <form id="form-registro" class="tarjeta" novalidate>
+      <div class="tarjeta-rotulo">Registro del estudiante</div>
+      <div class="campo">
+        <label for="in-nombres">Nombres</label>
+        <input id="in-nombres" name="nombres" type="text" placeholder="Ej.: Juan Esteban" autocomplete="given-name" autocapitalize="words" enterkeyhint="next">
+      </div>
+      <div class="campo">
+        <label for="in-apellidos">Apellidos</label>
+        <input id="in-apellidos" name="apellidos" type="text" placeholder="Ej.: Martínez Gómez" autocomplete="family-name" autocapitalize="words" enterkeyhint="done">
+      </div>
+      <div id="aviso-registro" class="aviso-error" role="alert">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>Por favor completa nombres y apellidos para comenzar.</span>
+      </div>
+      <button type="submit" class="btn btn-primario btn-margen" id="btn-comenzar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+        Comenzar examen
+      </button>
+      <p class="nota-form">El cronómetro se activa al presionar «Comenzar examen».</p>
+    </form>
+
+    <p class="pie-app">Sena - Test de Lubricación · Resultado con puntaje sobre 100 puntos</p>
+  </div>
+</section>
+
+<!-- ================= PANTALLA 2 · EXAMEN ================= -->
+<section id="scr-examen" class="pantalla" aria-label="Examen">
+  <header class="cab-examen">
+    <div class="cab-fila">
+      <div class="marca-mini">
+        <div class="escudo" aria-hidden="true">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7s6.6 7.2 6.6 11.5a6.6 6.6 0 1 1-13.2 0C5.4 9.9 12 2.7 12 2.7z"/></svg>
+        </div>
+        <div>
+          <div class="mm-t1">Sena - Test de Lubricación</div>
+          <div class="mm-t2" id="cab-estado">Examen en curso</div>
+        </div>
+      </div>
+      <div class="reloj" id="reloj-caja" title="Tiempo transcurrido">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg>
+        <span id="reloj" aria-label="Tiempo transcurrido">00:00</span>
+      </div>
+    </div>
+    <div class="progreso-zona">
+      <div class="progreso-fila">
+        <span id="pro-num">Pregunta 1 de 24</span>
+        <span id="pro-res">Respondidas 0 de 24</span>
+      </div>
+      <div class="barra" role="progressbar" aria-valuemin="0" aria-valuemax="24" aria-valuenow="0" id="barra-aria">
+        <span id="barra-fill"></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap" style="flex:1">
+    <article class="tarjeta-q">
+      <div class="q-chips">
+        <span class="q-chip-bloque" id="q-chip-bloque">Bloque 1</span>
+        <span class="q-chip-pts" id="q-chip-pts">Vale 4 pts</span>
+      </div>
+      <h2 class="enunciado" id="q-enunciado">…</h2>
+      <div id="q-ops" class="ops"></div>
+      <p class="q-pie">Selecciona una respuesta y presiona «Siguiente».</p>
+    </article>
+  </main>
+
+  <nav class="nav-examen" aria-label="Navegación del examen">
+    <div class="nav-fila">
+      <button type="button" class="btn btn-borde" id="btn-ant">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Anterior
+      </button>
+      <button type="button" class="btn btn-primario" id="btn-sig">Siguiente</button>
+    </div>
+  </nav>
+</section>
+
+<!-- ================= PANTALLA 3 · RESULTADOS ================= -->
+<section id="scr-resultados" class="pantalla" aria-label="Resultados">
+  <div class="wrap">
+    <div class="hero-res">
+      <div class="res-rotulo">Resultado del examen</div>
+      <div class="anillo-caja">
+        <svg viewBox="0 0 120 120" aria-hidden="true">
+          <defs>
+            <linearGradient id="gradAnillo" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#5BC424"/><stop offset="1" stop-color="#2E8B00"/>
+            </linearGradient>
+          </defs>
+          <circle class="anillo-fondo" cx="60" cy="60" r="52"/>
+          <circle class="anillo-frente" id="anillo-frente" cx="60" cy="60" r="52"/>
+        </svg>
+        <div class="anillo-centro">
+          <div class="anillo-num" id="anillo-num">0</div>
+          <div class="anillo-sub">de 100 puntos</div>
+        </div>
+      </div>
+      <div class="res-nombre">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span id="res-nombre">—</span>
+      </div>
+      <div class="mini-stats">
+        <div class="mini">
+          <div class="eti">ACIERTOS</div>
+          <div class="val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span id="res-aciertos">—</span></div>
+        </div>
+        <div class="mini">
+          <div class="eti">TIEMPO</div>
+          <div class="val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg><span id="res-tiempo">—</span></div>
+        </div>
+        <div class="mini">
+          <div class="eti">FECHA</div>
+          <div class="val"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span id="res-fecha">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="seccion-rev">
+      <h3>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+        Revisión de respuestas
+      </h3>
+      <p class="contador-rev" id="contador-rev"></p>
+      <div class="lista-rev" id="lista-rev"></div>
+    </div>
+
+    <div class="acciones-res">
+      <button type="button" class="btn btn-primario" id="btn-png">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Descargar imagen (PNG)
+      </button>
+      <div class="acciones-fila">
+        <button type="button" class="btn btn-borde" id="btn-jpg">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Descargar JPG
+        </button>
+        <button type="button" class="btn btn-borde" id="btn-compartir" hidden>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+          Compartir
+        </button>
+      </div>
+      <button type="button" class="btn btn-fantasma" id="btn-nuevo">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10"/></svg>
+        Presentar de nuevo
+      </button>
+      <p class="nota-descarga">La imagen del resultado se genera en tu dispositivo y no se envía a ningún servidor.</p>
+    </div>
+
+    <p class="pie-app">Sena - Test de Lubricación · 24 preguntas · 100 puntos</p>
+  </div>
+</section>
+
+<!-- ================= MODAL: preguntas pendientes ================= -->
+<div class="fondo-modal" id="modal-pendientes" role="dialog" aria-modal="true" aria-labelledby="mp-tit">
+  <div class="modal">
+    <div class="modal-tit" id="mp-tit">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Faltan preguntas por responder
+    </div>
+    <p class="modal-sub" id="mp-sub"></p>
+    <div class="pildoras" id="mp-pildoras"></div>
+    <div class="modal-acciones">
+      <button type="button" class="btn btn-primario" id="mp-ir">Ir a la primera pendiente</button>
+      <button type="button" class="btn btn-fantasma" id="mp-cerrar">Seguir revisando</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL: confirmar reinicio ================= -->
+<div class="fondo-modal" id="modal-reinicio" role="dialog" aria-modal="true" aria-labelledby="mr-tit">
+  <div class="modal">
+    <div class="modal-tit" id="mr-tit">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.5 15a9 9 0 1 0 2.1-9.4L1 10"/></svg>
+      ¿Presentar el examen de nuevo?
+    </div>
+    <p class="modal-sub">Se borrarán las respuestas y el resultado actual. Esta acción no se puede deshacer.</p>
+    <div class="modal-acciones">
+      <button type="button" class="btn btn-borde" id="mr-cancelar">Cancelar</button>
+      <button type="button" class="btn btn-primario" id="mr-confirmar">Sí, nuevo intento</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<canvas id="lienzo" width="1080" height="1440" hidden aria-hidden="true"></canvas>
+
+<script>
+'use strict';
+/* =====================================================================
+   Sena - Test de Lubricación
+   Banco de preguntas: manual "Lubricación de Maquinaria" (4 autocontroles)
+   Claves según las hojas de respuestas oficiales del documento.
+   Puntaje: 16 + 32 + 20 + 32 = 100 puntos exactos.
+   ===================================================================== */
+var BLOQUES = [
+  {n:1, t:'Fricción y lubricación'},
+  {n:2, t:'Propiedades de los lubricantes'},
+  {n:3, t:'Lubricantes sólidos y aditivos'},
+  {n:4, t:'Sistemas de lubricación y engrase'}
+];
+var PREGUNTAS = [
+  /* Bloque 1 · Fricción y lubricación — 4 pts c/u (Autocontrol No. 1) */
+  {b:0, tipo:'mc', pts:4, q:'La fuerza que se opone a que un cuerpo se deslice sobre otro, se denomina:', ops:['Fricción','Tensión','Interferencia','Compresión'], ok:0},
+  {b:0, tipo:'mc', pts:4, q:'¿Cómo es la fricción de rodadura en relación con la fricción por deslizamiento?', ops:['Igual','Menor','Dos veces mayor','1,5 mayor'], ok:1},
+  {b:0, tipo:'mc', pts:4, q:'La ventaja más importante de la lubricación es:', ops:['Ahorro de energía','Reduce el desgaste','Facilita el movimiento','Reduce el ruido'], ok:1},
+  {b:0, tipo:'mc', pts:4, q:'Según la naturaleza del lubricante, en la industria se utilizan más los de origen:', ops:['Vegetal','Animal','Sintético','Mineral'], ok:3},
+  /* Bloque 2 · Propiedades de los lubricantes — 4 pts c/u (Autocontrol No. 2) */
+  {b:1, tipo:'vf', pts:4, q:'Con el aumento de la temperatura se aumenta la viscosidad de un aceite y viceversa.', ok:'F'},
+  {b:1, tipo:'vf', pts:4, q:'La viscosidad de un lubricante es su resistencia a fluir libremente.', ok:'V'},
+  {b:1, tipo:'vf', pts:4, q:'El índice de viscosidad es el valor que indica la variación de la viscosidad de un aceite frente a la acción de la temperatura.', ok:'V'},
+  {b:1, tipo:'vf', pts:4, q:'Se entiende por untuosidad la adherencia del aceite a las superficies a lubricar.', ok:'V'},
+  {b:1, tipo:'vf', pts:4, q:'Las sustancias que contienen de 10 a 14 pH se les considera ácidos enérgicos.', ok:'F'},
+  {b:1, tipo:'vf', pts:4, q:'Cuando existe una carga pesada, esta tiende a unir a las dos superficies en movimiento y el lubricante debe ser de baja viscosidad.', ok:'F'},
+  {b:1, tipo:'vf', pts:4, q:'Al seleccionar el lubricante deberá tenerse en cuenta la temperatura de operación.', ok:'V'},
+  {b:1, tipo:'vf', pts:4, q:'Las grasas lubricantes son aceites vegetales espesados con jabón.', ok:'F'},
+  /* Bloque 3 · Lubricantes sólidos y aditivos — 5 pts c/u (Autocontrol No. 3) */
+  {b:2, tipo:'mc', pts:5, q:'En la fabricación de lubricantes sólidos, un elemento muy utilizado por sus propiedades es el:', ops:['Calcio','Molibdeno','Azufre','Óxido de zinc'], ok:1},
+  {b:2, tipo:'mc', pts:5, q:'El lubricante seco solamente se utiliza con resultados satisfactorios por razones de:', ops:['Extremas temperaturas','Baja velocidad','Alta velocidad','Trabajo a la intemperie'], ok:0},
+  {b:2, tipo:'mc', pts:5, q:'Las sustancias que se adicionan a los lubricantes para mejorar algunas de sus características son:', ops:['Benzonita','Óxido de zinc','Mica','Un aditivo'], ok:3},
+  {b:2, tipo:'mc', pts:5, q:'El tipo de aditivo se selecciona teniendo en cuenta:', ops:['El tipo de aceite','Motivos para su uso','Periodicidad de lubricación','Tiempo de trabajo de la máquina'], ok:1},
+  /* Bloque 4 · Sistemas de lubricación y engrase — 4 pts c/u (Autocontrol No. 4) */
+  {b:3, tipo:'vf', pts:4, q:'Cuando un mecanismo lubricado por mecha se para, el flujo de aceite no debe suspenderse.', ok:'V'},
+  {b:3, tipo:'vf', pts:4, q:'La lubricación por goteo requiere considerable atención en el llenado y regulación del flujo de aceite.', ok:'V'},
+  {b:3, tipo:'vf', pts:4, q:'En la lubricación por anillos debe tenerse en cuenta que el diámetro del anillo es muy superior al diámetro del eje.', ok:'V'},
+  {b:3, tipo:'vf', pts:4, q:'En la lubricación por baño, el cojinete está girando en contacto con el eje en un baño de aceite.', ok:'V'},
+  {b:3, tipo:'vf', pts:4, q:'Los costos de mantenimiento del sistema de lubricación forzada son muy altos.', ok:'F'},
+  {b:3, tipo:'vf', pts:4, q:'Una ventaja del engrasado manual es que, por su forma de aplicación, no se desperdicia la grasa.', ok:'F'},
+  {b:3, tipo:'vf', pts:4, q:'El sistema automático de engrase es generalmente empleado donde los cojinetes tienen altas temperaturas y presiones.', ok:'V'},
+  {b:3, tipo:'vf', pts:4, q:'El sistema manual de engrase se usa cuando los cojinetes requieren más de dos lubricadas en una jornada de operación.', ok:'F'}
+];
+var LETRAS = ['A','B','C','D'];
+var CLAVE_LS = 'senaTestLubricacion.v1';
+var TITULO_APP = 'Sena - Test de Lubricación';
+
+function $(s){ return document.querySelector(s); }
+function nuevoEstado(){
+  return {paso:'registro', nombre:'', apellido:'', idx:0,
+          respuestas:new Array(PREGUNTAS.length).fill(null),
+          tInicio:null, tFin:null, res:null};
+}
+var S = nuevoEstado();
+
+/* ---------- Persistencia local (permite reanudar si se cierra la app) ---------- */
+function guardar(){ try{ localStorage.setItem(CLAVE_LS, JSON.stringify(S)); }catch(e){} }
+function cargarGuardado(){
+  try{
+    var raw = localStorage.getItem(CLAVE_LS);
+    if(!raw) return null;
+    var d = JSON.parse(raw);
+    if(!d || !Array.isArray(d.respuestas) || d.respuestas.length !== PREGUNTAS.length) return null;
+    return d;
+  }catch(e){ return null; }
+}
+
+/* ---------- Utilidades ---------- */
+var ICON_CHECK = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+var ICON_CHEV = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>';
+var ICON_OK_C = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>';
+var ICON_NO_C = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+
+function fmtTiempo(seg){
+  var h = Math.floor(seg/3600), m = Math.floor((seg%3600)/60), s = seg%60;
+  var mm = String(m).padStart(2,'0'), ss = String(s).padStart(2,'0');
+  return h > 0 ? h+':'+mm+':'+ss : mm+':'+ss;
+}
+function fmtFechaCorta(d){
+  var dd = String(d.getDate()).padStart(2,'0');
+  var mm = String(d.getMonth()+1).padStart(2,'0');
+  return dd+'/'+mm+'/'+d.getFullYear();
+}
+function fmtFechaLarga(d){
+  try{ return d.toLocaleDateString('es-CO',{day:'numeric',month:'short',year:'numeric'}) + ' · ' +
+              d.toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'}); }
+  catch(e){ return fmtFechaCorta(d); }
+}
+function textoResp(P, r){
+  if(r === null || r === undefined) return 'Sin responder';
+  return P.tipo === 'vf' ? (r === 'V' ? 'Verdadero' : 'Falso') : LETRAS[r]+'. '+P.ops[r];
+}
+var toastTimer = null;
+function toast(msg){
+  var t = $('#toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('visible'); }, 2600);
+}
+
+/* ---------- Pantallas ---------- */
+function activar(paso){
+  S.paso = paso; guardar();
+  var pantallas = document.querySelectorAll('.pantalla');
+  for(var i=0;i<pantallas.length;i++) pantallas[i].classList.remove('activa');
+  $('#scr-'+paso).classList.add('activa');
+  window.scrollTo(0,0);
+}
+
+/* ---------- Cronómetro ---------- */
+var relojId = null;
+function detenerReloj(){ if(relojId){ clearInterval(relojId); relojId = null; } }
+function pintarReloj(){
+  if(!S.tInicio) return;
+  var fin = (S.tFin !== null && S.tFin !== undefined) ? S.tFin : Date.now();
+  $('#reloj').textContent = fmtTiempo(Math.max(0, Math.floor((fin - S.tInicio)/1000)));
+}
+function arrancarReloj(){ detenerReloj(); pintarReloj(); relojId = setInterval(pintarReloj, 500); }
+
+/* ---------- Registro ---------- */
+var guardado = cargarGuardado();
+if(guardado && guardado.paso === 'resultados' && guardado.res){
+  S = guardado;
+  activar('resultados');
+  pintarResultados(false);
+}else if(guardado && guardado.paso === 'examen'){
+  var segs = guardado.tInicio ? Math.floor((Date.now()-guardado.tInicio)/1000) : 0;
+  var resp = guardado.respuestas.filter(function(r){ return r !== null; }).length;
+  $('#br-info').textContent = 'Vas por la pregunta ' + (guardado.idx+1) + ' de ' + PREGUNTAS.length +
+    ' · ' + resp + ' respondidas · ' + fmtTiempo(segs) + ' transcurridos';
+  $('#banner-reanudar').hidden = false;
+  $('#btn-continuar').addEventListener('click', function(){
+    S = guardado;
+    $('#banner-reanudar').hidden = true;
+    renderPregunta(); activar('examen'); arrancarReloj();
+  });
+  $('#btn-reiniciar-banner').addEventListener('click', function(){
+    S = nuevoEstado(); guardar();
+    $('#banner-reanudar').hidden = true;
+    toast('Listo, puedes comenzar un examen nuevo');
+  });
+}
+
+$('#form-registro').addEventListener('submit', function(ev){
+  ev.preventDefault();
+  var n = $('#in-nombres').value.trim().replace(/\s+/g,' ');
+  var a = $('#in-apellidos').value.trim().replace(/\s+/g,' ');
+  if(!n || !a){
+    var av = $('#aviso-registro');
+    av.classList.remove('visible');
+    void av.offsetWidth;
+    av.classList.add('visible');
+    (!n ? $('#in-nombres') : $('#in-apellidos')).focus();
+    return;
+  }
+  $('#aviso-registro').classList.remove('visible');
+  S = nuevoEstado();
+  S.nombre = n; S.apellido = a; S.tInicio = Date.now();
+  guardar();
+  renderPregunta();
+  activar('examen');
+  arrancarReloj();
+});
+$('#in-apellidos').addEventListener('input', function(){ $('#aviso-registro').classList.remove('visible'); });
+$('#in-nombres').addEventListener('input', function(){ $('#aviso-registro').classList.remove('visible'); });
+
+/* ---------- Examen ---------- */
+function renderPregunta(){
+  var i = S.idx, P = PREGUNTAS[i], B = BLOQUES[P.b];
+  $('#q-chip-bloque').textContent = 'Bloque ' + B.n + ' · ' + B.t;
+  $('#q-chip-pts').textContent = 'Vale ' + P.pts + (P.pts === 1 ? ' pt' : ' pts');
+  $('#q-enunciado').textContent = P.q;
+
+  var cont = $('#q-ops');
+  cont.innerHTML = '';
+  if(P.tipo === 'mc'){
+    cont.className = 'ops';
+    P.ops.forEach(function(op, ix){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'op' + (S.respuestas[i] === ix ? ' sel' : '');
+      b.setAttribute('aria-pressed', S.respuestas[i] === ix ? 'true' : 'false');
+      var l = document.createElement('span'); l.className = 'letra'; l.textContent = LETRAS[ix];
+      var t = document.createElement('span'); t.className = 'op-txt'; t.textContent = op;
+      b.appendChild(l); b.appendChild(t);
+      b.addEventListener('click', function(){ S.respuestas[i] = ix; guardar(); renderPregunta(); });
+      cont.appendChild(b);
+    });
+  }else{
+    cont.className = 'ops ops-vf';
+    [['V','Verdadero',ICON_OK_C],['F','Falso',ICON_NO_C]].forEach(function(par){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'op-vf' + (S.respuestas[i] === par[0] ? ' sel' : '');
+      b.setAttribute('aria-pressed', S.respuestas[i] === par[0] ? 'true' : 'false');
+      var ic = document.createElement('span'); ic.className = 'icono'; ic.innerHTML = par[2];
+      var tx = document.createElement('span'); tx.className = 'vf-txt'; tx.textContent = par[1];
+      b.appendChild(ic); b.appendChild(tx);
+      b.addEventListener('click', function(){ S.respuestas[i] = par[0]; guardar(); renderPregunta(); });
+      cont.appendChild(b);
+    });
+  }
+
+  var resp = S.respuestas.filter(function(r){ return r !== null; }).length;
+  $('#pro-num').textContent = 'Pregunta ' + (i+1) + ' de ' + PREGUNTAS.length;
+  $('#pro-res').textContent = 'Respondidas ' + resp + ' de ' + PREGUNTAS.length;
+  var pct = Math.round(resp / PREGUNTAS.length * 100);
+  $('#barra-fill').style.width = pct + '%';
+  $('#barra-aria').setAttribute('aria-valuenow', resp);
+
+  $('#btn-ant').disabled = (i === 0);
+  var esUlt = (i === PREGUNTAS.length - 1);
+  var bs = $('#btn-sig');
+  bs.innerHTML = esUlt ? (ICON_CHECK + '<span>Finalizar examen</span>') : ('<span>Siguiente</span>' + ICON_CHEV);
+  bs.classList.toggle('btn-final', esUlt);
+}
+
+$('#btn-ant').addEventListener('click', function(){
+  if(S.idx > 0){ S.idx--; guardar(); renderPregunta(); window.scrollTo({top:0, behavior:'smooth'}); }
+});
+$('#btn-sig').addEventListener('click', function(){
+  if(S.idx < PREGUNTAS.length - 1){
+    S.idx++; guardar(); renderPregunta(); window.scrollTo({top:0, behavior:'smooth'});
+  }else{
+    intentarFinalizar();
+  }
+});
+
+/* ---------- Finalización ---------- */
+var faltanActual = [];
+function intentarFinalizar(){
+  var faltan = [];
+  for(var i=0;i<PREGUNTAS.length;i++) if(S.respuestas[i] === null) faltan.push(i);
+  if(faltan.length){ abrirModalPendientes(faltan); return; }
+  finalizar();
+}
+function abrirModalPendientes(faltan){
+  faltanActual = faltan;
+  $('#mp-sub').textContent = 'Te faltan ' + faltan.length + ' de ' + PREGUNTAS.length +
+    ' preguntas. Toca un número para ir directamente a esa pregunta.';
+  var caja = $('#mp-pildoras');
+  caja.innerHTML = '';
+  faltan.forEach(function(i){
+    var p = document.createElement('button');
+    p.type = 'button'; p.className = 'pildora'; p.textContent = (i+1);
+    p.addEventListener('click', function(){
+      cerrarModal('modal-pendientes');
+      S.idx = i; guardar(); renderPregunta();
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+    caja.appendChild(p);
+  });
+  $('#modal-pendientes').classList.add('abierto');
+}
+function cerrarModal(id){ $('#'+id).classList.remove('abierto'); }
+$('#mp-ir').addEventListener('click', function(){
+  if(faltanActual.length){
+    cerrarModal('modal-pendientes');
+    S.idx = faltanActual[0]; guardar(); renderPregunta();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+});
+$('#mp-cerrar').addEventListener('click', function(){ cerrarModal('modal-pendientes'); });
+
+function finalizar(){
+  S.tFin = Date.now();
+  detenerReloj();
+  var correctas = 0, puntos = 0;
+  for(var i=0;i<PREGUNTAS.length;i++){
+    if(S.respuestas[i] === PREGUNTAS[i].ok){ correctas++; puntos += PREGUNTAS[i].pts; }
+  }
+  S.res = {
+    puntos: puntos,
+    correctas: correctas,
+    seg: Math.max(1, Math.floor((S.tFin - S.tInicio)/1000)),
+    fechaIso: new Date(S.tFin).toISOString()
+  };
+  guardar();
+  activar('resultados');
+  pintarResultados(true);
+}
+
+/* ---------- Resultados ---------- */
+var CIRC = 2 * Math.PI * 52;
+function pintarResultados(animar){
+  var r = S.res; if(!r) return;
+  $('#res-nombre').textContent = (S.nombre + ' ' + S.apellido).trim();
+  $('#res-aciertos').textContent = r.correctas + ' de ' + PREGUNTAS.length;
+  $('#res-tiempo').textContent = fmtTiempo(r.seg);
+  $('#res-fecha').textContent = fmtFechaCorta(new Date(r.fechaIso));
+  var malas = PREGUNTAS.length - r.correctas;
+  $('#contador-rev').textContent = r.correctas + (r.correctas === 1 ? ' correcta' : ' correctas') + ' · ' + malas + (malas === 1 ? ' incorrecta' : ' incorrectas');
+
+  var frente = $('#anillo-frente');
+  var num = $('#anillo-num');
+  frente.style.strokeDasharray = CIRC;
+  frente.style.strokeDashoffset = CIRC;
+  var pct = r.puntos / 100;
+  var t0 = performance.now(), dur = animar ? 1300 : 1;
+  function paso(t){
+    var k = Math.min(1, (t - t0)/dur);
+    var e = 1 - Math.pow(1-k, 3);
+    frente.style.strokeDashoffset = CIRC * (1 - pct*e);
+    num.textContent = Math.round(r.puntos * e);
+    if(k < 1) requestAnimationFrame(paso);
+  }
+  requestAnimationFrame(paso);
+
+  var lista = $('#lista-rev');
+  lista.innerHTML = '';
+  PREGUNTAS.forEach(function(P, i){
+    var bien = (S.respuestas[i] === P.ok);
+    var fila = document.createElement('div');
+    fila.className = 'rev ' + (bien ? 'ok' : 'mal');
+    var n = document.createElement('div');
+    n.className = 'rev-num';
+    n.textContent = bien ? '✓' : '✕';
+    var cuerpo = document.createElement('div');
+    cuerpo.className = 'rev-cuerpo';
+    var tx = document.createElement('div');
+    tx.className = 'rev-txt';
+    tx.textContent = (i+1) + '. ' + P.q;
+    var li = document.createElement('div');
+    li.className = 'rev-linea';
+    li.innerHTML = 'Tu respuesta: <span class="' + (bien ? 'r-ok' : 'r-mal') + '"></span>';
+    li.querySelector('span').textContent = textoResp(P, S.respuestas[i]);
+    cuerpo.appendChild(tx); cuerpo.appendChild(li);
+    if(!bien){
+      var lb = document.createElement('div');
+      lb.className = 'rev-linea';
+      lb.innerHTML = 'Respuesta correcta: <span class="r-ok"></span>';
+      lb.querySelector('span').textContent = textoResp(P, P.ok);
+      cuerpo.appendChild(lb);
+    }
+    fila.appendChild(n); fila.appendChild(cuerpo);
+    lista.appendChild(fila);
+  });
+}
+
+/* ---------- Imagen del resultado (Canvas, sin dependencias) ---------- */
+function rr(c, x, y, w, h, r){
+  r = Math.min(r, w/2, h/2);
+  c.beginPath();
+  c.moveTo(x+r, y);
+  c.arcTo(x+w, y, x+w, y+h, r);
+  c.arcTo(x+w, y+h, x, y+h, r);
+  c.arcTo(x, y+h, x, y, r);
+  c.arcTo(x, y, x+w, y, r);
+  c.closePath();
+}
+var F_TIPO = '"Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+var C_VERDE = '#39A900', C_VERDE2 = '#2E8B00', C_TINTA = '#17281B',
+    C_GRIS = '#6E7D70', C_LINEA = '#DFEED4', C_SUAVE = '#F5FAF0', C_SUAVE2 = '#EAF5E0';
+
+function dibujarImagen(){
+  var r = S.res; if(!r) return null;
+  var c = $('#lienzo');
+  var x = c.getContext('2d');
+  var W = c.width, H = c.height;
+
+  x.fillStyle = '#FFFFFF'; x.fillRect(0, 0, W, H);
+
+  /* Banda superior */
+  var g = x.createLinearGradient(0, 0, W, 240);
+  g.addColorStop(0, '#47B526'); g.addColorStop(1, '#267300');
+  x.fillStyle = g; x.fillRect(0, 0, W, 240);
+  x.fillStyle = 'rgba(255,255,255,.16)';
+  rr(x, W/2-190, 40, 380, 44, 22); x.fill();
+  x.fillStyle = '#FFFFFF';
+  x.font = 'bold 21px ' + F_TIPO;
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillText('EVALUACIÓN DE LUBRICACIÓN', W/2, 63);
+  x.font = 'bold 52px ' + F_TIPO;
+  x.fillText(TITULO_APP, W/2, 126);
+  x.fillStyle = 'rgba(255,255,255,.88)';
+  x.font = '26px ' + F_TIPO;
+  x.fillText('Resultado de la evaluación', W/2, 180);
+
+  /* Nombre del estudiante */
+  x.fillStyle = C_GRIS;
+  x.font = 'bold 22px ' + F_TIPO;
+  x.fillText('ESTUDIANTE', W/2, 306);
+  var nombre = (S.nombre + ' ' + S.apellido).trim();
+  var tam = 46;
+  x.font = 'bold ' + tam + 'px ' + F_TIPO;
+  while(x.measureText(nombre).width > W - 120 && tam > 26){
+    tam -= 2; x.font = 'bold ' + tam + 'px ' + F_TIPO;
+  }
+  x.fillStyle = C_TINTA;
+  x.fillText(nombre, W/2, 356);
+
+  /* Puntaje */
+  var pct = Math.round(r.puntos);
+  x.textAlign = 'left'; x.textBaseline = 'alphabetic';
+  x.font = 'bold 158px ' + F_TIPO;
+  var wNum = x.measureText(String(pct)).width;
+  x.font = 'bold 54px ' + F_TIPO;
+  var wSub = x.measureText('/ 100').width;
+  var xIni = (W - (wNum + wSub + 14)) / 2;
+  x.fillStyle = C_VERDE2;
+  x.font = 'bold 158px ' + F_TIPO;
+  x.fillText(String(pct), xIni, 555);
+  x.fillStyle = C_GRIS;
+  x.font = 'bold 54px ' + F_TIPO;
+  x.fillText('/ 100', xIni + wNum + 14, 555);
+
+  /* Barra de aprovechamiento */
+  x.fillStyle = '#E7F1DC'; rr(x, 190, 592, 700, 20, 10); x.fill();
+  var gb = x.createLinearGradient(190, 0, 890, 0);
+  gb.addColorStop(0, '#5BC424'); gb.addColorStop(1, '#2E8B00');
+  x.fillStyle = gb; rr(x, 190, 592, Math.max(20, 700*pct/100), 20, 10); x.fill();
+  x.textAlign = 'center'; x.fillStyle = C_GRIS;
+  x.font = '26px ' + F_TIPO;
+  x.fillText(pct + '% de aprovechamiento · ' + r.correctas + ' de ' + PREGUNTAS.length + ' respuestas correctas', W/2, 668);
+
+  /* Tarjetas de datos */
+  var fecha = new Date(r.fechaIso);
+  var datos = [
+    ['ACIERTOS', r.correctas + '/' + PREGUNTAS.length],
+    ['TIEMPO', fmtTiempo(r.seg)],
+    ['FECHA', fmtFechaCorta(fecha)]
+  ];
+  var cw = 312, ch = 178, gap = 24, x0 = (W - (3*cw + 2*gap)) / 2, y0 = 730;
+  datos.forEach(function(d, i){
+    var cx = x0 + i*(cw + gap);
+    x.fillStyle = C_SUAVE; rr(x, cx, y0, cw, ch, 24); x.fill();
+    x.strokeStyle = C_LINEA; x.lineWidth = 2; rr(x, cx, y0, cw, ch, 24); x.stroke();
+    x.fillStyle = C_GRIS;
+    x.font = 'bold 21px ' + F_TIPO;
+    x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText(d[0], cx + cw/2, y0 + 56);
+    x.fillStyle = C_TINTA;
+    var vt = d[1], vfz = 40;
+    x.font = 'bold ' + vfz + 'px ' + F_TIPO;
+    while(x.measureText(vt).width > cw - 30 && vfz > 24){ vfz -= 2; x.font = 'bold ' + vfz + 'px ' + F_TIPO; }
+    x.fillText(vt, cx + cw/2, y0 + 108);
+  });
+
+  /* Resumen */
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.fillStyle = C_GRIS;
+  x.font = '26px ' + F_TIPO;
+  x.fillText('Evaluación: Lubricación de Maquinaria · 24 preguntas · 100 puntos', W/2, 1000);
+
+  /* Pie */
+  x.strokeStyle = C_LINEA; x.lineWidth = 2;
+  x.beginPath(); x.moveTo(60, 1330); x.lineTo(W-60, 1330); x.stroke();
+  x.fillStyle = '#2E7D00';
+  x.font = 'bold 30px ' + F_TIPO;
+  x.fillText(TITULO_APP, W/2, 1372);
+  x.fillStyle = C_GRIS;
+  x.font = '22px ' + F_TIPO;
+  x.fillText('Documento generado automáticamente · ' + fmtFechaCorta(fecha) + ' ' +
+    ('0'+fecha.getHours()).slice(-2) + ':' + ('0'+fecha.getMinutes()).slice(-2), W/2, 1408);
+
+  return c;
+}
+function nombreArchivo(){
+  var base = (S.nombre + '_' + S.apellido).trim().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+  return 'Resultado-Test-Lubricacion-' + (base || 'Estudiante');
+}
+function descargarImagen(tipo){
+  var c = dibujarImagen(); if(!c) return;
+  try{
+    var url = tipo === 'jpg' ? c.toDataURL('image/jpeg', 0.92) : c.toDataURL('image/png');
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = nombreArchivo() + '.' + tipo;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    toast('Imagen ' + tipo.toUpperCase() + ' descargada');
+  }catch(e){ toast('No fue posible generar la imagen'); }
+}
+$('#btn-png').addEventListener('click', function(){ descargarImagen('png'); });
+$('#btn-jpg').addEventListener('click', function(){ descargarImagen('jpg'); });
+
+/* Compartir (Android/iOS) si el navegador lo permite */
+if(navigator.share && navigator.canShare){
+  $('#btn-compartir').hidden = false;
+}
+$('#btn-compartir').addEventListener('click', function(){
+  var c = dibujarImagen(); if(!c) return;
+  c.toBlob(function(blob){
+    if(!blob){ toast('No fue posible generar la imagen'); return; }
+    var archivo = new File([blob], nombreArchivo() + '.png', {type:'image/png'});
+    if(navigator.canShare({files:[archivo]})){
+      navigator.share({files:[archivo], title: TITULO_APP,
+        text: 'Mi resultado: ' + S.res.puntos + ' / 100 puntos'}).catch(function(){});
+    }else{
+      toast('Compartir no está disponible; usa «Descargar»');
+    }
+  }, 'image/png');
+});
+
+/* ---------- Nuevo intento ---------- */
+$('#btn-nuevo').addEventListener('click', function(){ $('#modal-reinicio').classList.add('abierto'); });
+$('#mr-cancelar').addEventListener('click', function(){ cerrarModal('modal-reinicio'); });
+$('#mr-confirmar').addEventListener('click', function(){
+  cerrarModal('modal-reinicio');
+  detenerReloj();
+  S = nuevoEstado();
+  try{ localStorage.removeItem(CLAVE_LS); }catch(e){}
+  guardar();
+  $('#in-nombres').value = ''; $('#in-apellidos').value = '';
+  activar('registro');
+  toast('Puedes presentar el examen nuevamente');
+});
+
+/* Atajos de teclado en el examen (accesibilidad) */
+document.addEventListener('keydown', function(ev){
+  if(S.paso !== 'examen') return;
+  if(ev.key === 'ArrowRight'){ $('#btn-sig').click(); }
+  if(ev.key === 'ArrowLeft'){ $('#btn-ant').click(); }
+});
+</script>
+</body>
+</html>
