@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0284c7">
+    <title>GBS Language Training — Listening Exam · B1 Week 22</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff', 100: '#e0effe', 200: '#bae0fd', 500: '#0284c7',
+                            600: '#0265d2', 700: '#034ea2', 800: '#073b7a', 900: '#0c3161',
+                        }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- html2canvas (para descargar el resultado en JPG) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* ===== PROTECCIÓN DE CONTENIDO ===== */
+        * {
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            user-select: none !important;
+            -webkit-touch-callout: none;
+        }
+        input, textarea, select {
+            -webkit-user-select: text !important;
+            user-select: text !important;
+        }
+        img, svg { -webkit-user-drag: none; }
+        @media print {
+            html, body { display: none !important; }
+        }
+        body { font-family: 'Inter', sans-serif; }
+
+        /* Marca de agua dinámica */
+        #watermark {
+            position: fixed; inset: 0; z-index: 55;
+            pointer-events: none;
+            background-repeat: repeat;
+        }
+        /* Capa de bloqueo al salir de la ventana */
+        #lock-overlay { position: fixed; inset: 0; z-index: 50; }
+        /* Aviso rojo de protección */
+        #flash-lock {
+            position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+            z-index: 60; opacity: 0; pointer-events: none;
+            transition: opacity .25s ease;
+        }
+        #flash-lock.show { opacity: 1; }
+
+        /* Opciones de respuesta */
+        .opt { transition: all .18s cubic-bezier(.4,0,.2,1); }
+        .opt:hover { border-color: #0284c7; background: #f0f7ff; }
+        .opt.selected {
+            border-color: #0284c7 !important;
+            background: #e0effe !important;
+            box-shadow: 0 4px 14px -4px rgba(2,132,199,.35);
+        }
+        .opt.selected .opt-letter { background: #0265d2; color: #fff; border-color: #0265d2; }
+        .opt.selected .opt-check { display: block !important; }
+
+        /* Dot de navegación */
+        .qdot { transition: all .15s ease; }
+        .qdot.answered { background: #0265d2 !important; color: #fff !important; border-color: #0265d2 !important; }
+        .qdot.current { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #0284c7; }
+
+        /* Timer en alerta */
+        .timer-warn { color: #fbbf24 !important; }
+        .timer-crit { color: #fb7185 !important; animation: critPulse 1s ease-in-out infinite; }
+        @keyframes critPulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+
+        /* Pulso al reproducir audio */
+        .playing { animation: playPulse 1.1s ease-in-out infinite; }
+        @keyframes playPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(2,132,199,.45); } 50% { box-shadow: 0 0 0 12px rgba(2,132,199,0); } }
+
+        .fade-in { animation: fadeIn .35s ease both; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+        /* Anillo de progreso del resultado */
+        .ring-anim { transition: stroke-dashoffset 1s ease; transform: rotate(-90deg); transform-origin: 50% 50%; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- ================= CAPAS DE PROTECCIÓN ================= -->
+    <div id="watermark" class="hidden"></div>
+    <div id="lock-overlay" class="hidden bg-slate-950/95 backdrop-blur-md flex items-center justify-center">
+        <div class="text-center px-6 max-w-md">
+            <div class="w-20 h-20 mx-auto rounded-2xl bg-rose-500/15 text-rose-400 flex items-center justify-center text-4xl">
+                <i class="fa-solid fa-eye-slash"></i>
+            </div>
+            <h2 class="mt-5 text-2xl font-extrabold text-white">Vista protegida</h2>
+            <p class="mt-2 text-sm text-slate-300 leading-relaxed">Saliste de la ventana del examen. Regresa para continuar.<br>El cronómetro <strong class="text-rose-400">sigue corriendo</strong>.</p>
+            <p class="mt-4 text-xs font-bold text-slate-500 uppercase tracking-wider">GBS Language Training · Sistema anti-fraude activo</p>
+        </div>
+    </div>
+    <div id="flash-lock" class="bg-rose-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2">
+        <i class="fa-solid fa-shield-halved"></i><span>Contenido protegido — copiado o captura bloqueada</span>
+    </div>
+
+    <!-- ================= HEADER ================= -->
+    <header class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-30">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-gradient-to-br from-brand-600 to-brand-800 text-white p-2.5 rounded-xl shadow-md">
+                        <i class="fa-solid fa-headphones text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold tracking-tight text-slate-900 leading-tight">GBS <span class="text-brand-600">Language Training</span></h1>
+                        <p class="text-[11px] text-slate-500 font-medium">Listening Exam · B1 Week 22 · VOIZ System</p>
+                    </div>
+                </div>
+                <span class="text-[10px] font-bold uppercase tracking-wider bg-brand-50 text-brand-700 border border-brand-200 px-2.5 py-1 rounded-full">Comprensión auditiva</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-10 flex-grow w-full">
+
+        <!-- ================= PANTALLA 1: REGISTRO ================= -->
+        <section id="screen-register" class="fade-in">
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                <div class="bg-gradient-to-r from-brand-600 to-brand-800 text-white p-6 md:p-8">
+                    <h2 class="text-2xl md:text-3xl font-extrabold">Examen de Listening — B1</h2>
+                    <p class="text-brand-100 text-sm mt-1.5">Lección: <strong>“Are we running out of things?”</strong> (Supply chains &amp; business) · 20 preguntas · 30 minutos</p>
+                </div>
+                <div class="p-6 md:p-8 space-y-5">
+                    <div class="flex items-start gap-3 bg-brand-50 border border-brand-100 rounded-xl p-4">
+                        <i class="fa-solid fa-circle-info text-brand-600 mt-0.5"></i>
+                        <p class="text-sm text-slate-600 leading-relaxed">Ingresa tus datos para registrar tu intento. El examen tiene <strong>un solo intento</strong>: al entregarlo queda bloqueado en este navegador. Todo el contenido está <strong>protegido contra copia y capturas</strong>.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="reg-name" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Nombre completo *</label>
+                            <input id="reg-name" type="text" autocomplete="name" placeholder="Ej: Ana María Rodríguez"
+                                class="mt-1.5 w-full px-4 py-3 border border-slate-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                        </div>
+                        <div>
+                            <label for="reg-email" class="text-xs font-bold text-slate-500 uppercase tracking-wider">Correo electrónico *</label>
+                            <input id="reg-email" type="email" autocomplete="email" placeholder="Ej: ana.rodriguez@correo.com"
+                                class="mt-1.5 w-full px-4 py-3 border border-slate-300 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500">
+                        </div>
+                    </div>
+                    <p id="reg-error" class="hidden text-sm font-semibold text-rose-600 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-exclamation"></i><span id="reg-error-text"></span>
+                    </p>
+                    <label class="flex items-start gap-3 cursor-pointer p-3 rounded-xl border border-slate-200 hover:border-brand-300 transition-colors">
+                        <input id="reg-accept" type="checkbox" class="mt-1 w-4 h-4 accent-sky-600">
+                        <span class="text-xs text-slate-500 leading-relaxed">Acepto que este es un examen individual: no usaré ayuda externa, IA, traductores ni comunicaré el contenido a otras personas. Entiendo que los intentos de copia, captura y cambio de ventana se registran en el resultado.</span>
+                    </label>
+                    <button id="btn-continue" onclick="submitRegistration()"
+                        class="w-full md:w-auto bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-8 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-arrow-right"></i><span>Continuar</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PANTALLA 2: REGLAS ================= -->
+        <section id="screen-rules" class="hidden fade-in">
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
+                <div class="p-6 md:p-8 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center text-xl"><i class="fa-solid fa-clipboard-list"></i></div>
+                        <div>
+                            <h2 class="text-xl font-extrabold text-slate-900">Instrucciones del examen</h2>
+                            <p class="text-xs text-slate-500 font-semibold">Estudiante: <span id="rules-student" class="text-brand-600"></span></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                        <i class="fa-solid fa-volume-high text-brand-600 mt-1"></i>
+                        <div>
+                            <p class="text-sm font-bold text-slate-800">La pregunta solo se ESCUCHA</p>
+                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">Una voz en inglés lee el prompt de la lección. El texto de la pregunta <strong>no aparece escrito</strong>. Las 4 opciones de respuesta sí están visibles.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                        <i class="fa-solid fa-repeat text-brand-600 mt-1"></i>
+                        <div>
+                            <p class="text-sm font-bold text-slate-800">Audio ilimitado</p>
+                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">Puedes reproducir cada audio las veces que necesites, en velocidad normal o lenta. El límite real es el reloj.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                        <i class="fa-solid fa-lightbulb text-amber-500 mt-1"></i>
+                        <div>
+                            <p class="text-sm font-bold text-slate-800">Pista en cada pregunta</p>
+                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">Cada pregunta incluye una pista (hint) con una idea de cómo enfocar la respuesta. Léela antes de escuchar.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                        <i class="fa-solid fa-stopwatch text-rose-500 mt-1"></i>
+                        <div>
+                            <p class="text-sm font-bold text-slate-800">30 minutos exactos</p>
+                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">Cronómetro visible en todo momento. Al llegar a 00:00 el examen se entrega automáticamente.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                        <i class="fa-solid fa-percent text-emerald-500 mt-1"></i>
+                        <div>
+                            <p class="text-sm font-bold text-slate-800">Mínimo aprobatorio: 80%</p>
+                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">20 preguntas, 5 puntos c/u. Calificación en porcentaje; necesitas al menos 80% para aprobar.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                        <i class="fa-solid fa-lock text-slate-500 mt-1"></i>
+                        <div>
+                            <p class="text-sm font-bold text-slate-800">Un solo intento</p>
+                            <p class="text-xs text-slate-500 mt-1 leading-relaxed">Puedes navegar y cambiar respuestas libremente <strong>antes</strong> de entregar. Después, el examen queda bloqueado (solo el docente puede reabrirlo).</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="tts-status" class="mx-6 md:mx-8 mb-4"></div>
+                <div class="px-6 md:px-8 pb-8 flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+                    <button onclick="showScreen('screen-register')" class="text-sm font-semibold text-slate-400 hover:text-slate-600 flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i> Corregir mis datos
+                    </button>
+                    <button id="btn-start" onclick="startExam()" class="bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-10 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-play"></i><span>Iniciar examen</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PANTALLA 3: EXAMEN ================= -->
+        <section id="screen-exam" class="hidden">
+            <!-- Barra superior del examen -->
+            <div class="sticky top-16 z-20 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+                <div class="max-w-5xl mx-auto flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <span id="exam-student" class="hidden sm:inline-flex items-center gap-2 text-xs font-bold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-full truncate max-w-[220px]">
+                            <i class="fa-solid fa-user text-brand-600"></i><span class="truncate" id="exam-student-name"></span>
+                        </span>
+                        <span class="text-xs font-bold text-brand-700 bg-brand-50 border border-brand-200 px-3 py-1.5 rounded-full whitespace-nowrap">
+                            Pregunta <span id="q-current">1</span> de <span id="q-total">20</span>
+                        </span>
+                    </div>
+                    <div id="timer-box" class="flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-xl shadow-md">
+                        <i class="fa-solid fa-stopwatch text-brand-400"></i>
+                        <span id="timer-display" class="text-lg font-extrabold tabular-nums tracking-wide">30:00</span>
+                    </div>
+                    <button onclick="openSubmitModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow transition-colors flex items-center gap-2 whitespace-nowrap">
+                        <i class="fa-solid fa-flag-checkered"></i><span class="hidden sm:inline">Entregar</span>
+                    </button>
+                </div>
+                <div class="max-w-5xl mx-auto mt-2.5 flex items-center gap-3">
+                    <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div id="exam-progress" class="h-full bg-brand-500 rounded-full transition-all duration-300" style="width:0%"></div>
+                    </div>
+                    <span id="answered-count" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">0 respondidas</span>
+                </div>
+            </div>
+
+            <!-- Tarjeta de pregunta -->
+            <div id="question-card" class="mt-6 bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 md:p-7 space-y-5 fade-in">
+                <!-- Audio -->
+                <div class="bg-gradient-to-r from-brand-50 to-slate-50 border border-brand-100 rounded-2xl p-5">
+                    <div class="flex items-center justify-between flex-wrap gap-3">
+                        <span class="text-[11px] font-bold text-brand-700 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-headphones"></i> Pregunta de audio (voz en inglés)
+                        </span>
+                        <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Reproducciones ilimitadas</span>
+                    </div>
+                    <div class="mt-4 flex items-center gap-4 flex-wrap">
+                        <button id="btn-play" onclick="playAudio()" class="w-16 h-16 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-2xl shadow-lg transition-all flex items-center justify-center" title="Reproducir la pregunta">
+                            <i id="btn-play-icon" class="fa-solid fa-play"></i>
+                        </button>
+                        <div class="flex flex-col gap-2">
+                            <div class="flex gap-2">
+                                <button onclick="playAudio(1)" class="text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-600 hover:border-brand-400 hover:text-brand-600 transition-colors" title="Reproducir a velocidad normal">
+                                    <i class="fa-solid fa-volume-high mr-1"></i>Normal
+                                </button>
+                                <button onclick="playAudio(0.72)" class="text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-600 hover:border-brand-400 hover:text-brand-600 transition-colors" title="Reproducir a velocidad lenta">
+                                    <i class="fa-solid fa-snail mr-1"></i>Lenta
+                                </button>
+                                <button onclick="stopAudio()" class="text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-rose-500 hover:border-rose-300 transition-colors" title="Detener audio">
+                                    <i class="fa-solid fa-stop mr-1"></i>Stop
+                                </button>
+                            </div>
+                            <p class="text-[11px] text-slate-400 leading-snug">La pregunta NO está escrita. Escúchala con atención tantas veces como necesites.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hint -->
+                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex gap-3">
+                    <i class="fa-solid fa-lightbulb text-amber-500 mt-0.5 text-lg"></i>
+                    <div>
+                        <p class="text-[11px] font-bold text-amber-600 uppercase tracking-wider">Pista — cómo enfocar esta pregunta</p>
+                        <p id="q-hint" class="text-sm text-amber-900 leading-relaxed mt-1"></p>
+                    </div>
+                </div>
+
+                <!-- Opciones -->
+                <div>
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">Selecciona la respuesta que responde correctamente a lo que escuchaste:</p>
+                    <div id="options-box" class="space-y-3"></div>
+                </div>
+
+                <!-- Navegación -->
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+                    <button id="btn-prev" onclick="navQuestion(-1)" class="px-4 py-2.5 border border-slate-300 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left"></i><span>Anterior</span>
+                    </button>
+                    <!-- Dots -->
+                    <div id="dots-box" class="flex flex-wrap justify-center gap-1.5 max-w-[60%]"></div>
+                    <button id="btn-next" onclick="navQuestion(1)" class="px-4 py-2.5 bg-brand-600 text-white rounded-xl text-sm font-semibold hover:bg-brand-700 transition-colors flex items-center gap-2">
+                        <span>Siguiente</span><i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <p class="mt-4 text-center text-[11px] text-slate-400 font-medium">
+                <i class="fa-solid fa-shield-halved mr-1 text-brand-400"></i>Contenido protegido · Tus respuestas se guardan automáticamente · Un solo intento
+            </p>
+        </section>
+
+        <!-- ================= PANTALLA 4: RESULTADOS ================= -->
+        <section id="screen-results" class="hidden fade-in">
+            <div id="lock-banner" class="hidden bg-rose-50 border border-rose-200 rounded-xl p-3.5 mb-5 flex items-center gap-3">
+                <i class="fa-solid fa-lock text-rose-500"></i>
+                <p class="text-xs text-rose-700 font-semibold leading-relaxed">Examen bloqueado: ya realizaste este intento en este navegador. Solo el docente puede habilitar un nuevo intento con su clave.</p>
+            </div>
+
+            <!-- Tarjeta del resultado (esta es la que se descarga en JPG) -->
+            <div id="result-card" class="bg-white rounded-2xl border border-slate-200/80 shadow-md overflow-hidden">
+                <div class="bg-gradient-to-r from-brand-600 to-brand-800 text-white p-6 md:p-7">
+                    <div class="flex justify-between items-start gap-4 flex-wrap">
+                        <div>
+                            <h2 class="text-xl md:text-2xl font-extrabold">Resultado del Examen de Listening</h2>
+                            <p class="text-brand-100 text-xs font-semibold mt-1">GBS Language Training · B1 Week 22 · “Are we running out of things?” (VOIZ)</p>
+                        </div>
+                        <span id="badge-timedout" class="hidden text-[10px] font-bold uppercase tracking-wider bg-rose-500 text-white px-2.5 py-1 rounded-full">Tiempo agotado</span>
+                    </div>
+                </div>
+                <div class="p-6 md:p-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                        <!-- Anillo -->
+                        <div class="flex flex-col items-center">
+                            <div class="relative w-44 h-44">
+                                <svg class="w-full h-full" viewBox="0 0 120 120">
+                                    <circle cx="60" cy="60" r="52" stroke="#e2e8f0" stroke-width="10" fill="none"></circle>
+                                    <circle id="result-ring" class="ring-anim" cx="60" cy="60" r="52" stroke="#10b981" stroke-width="10" fill="none"
+                                        stroke-linecap="round" stroke-dasharray="326.73" stroke-dashoffset="326.73"></circle>
+                                </svg>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span id="result-pct" class="text-4xl font-extrabold text-slate-900">0%</span>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Calificación</span>
+                                </div>
+                            </div>
+                            <span id="result-badge" class="mt-4 text-sm font-extrabold px-5 py-2 rounded-full flex items-center gap-2"></span>
+                        </div>
+                        <!-- Datos -->
+                        <div class="md:col-span-2 space-y-4">
+                            <div class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                                <div class="w-10 h-10 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center"><i class="fa-solid fa-user"></i></div>
+                                <div class="min-w-0">
+                                    <p id="result-name" class="text-sm font-extrabold text-slate-800 truncate"></p>
+                                    <p id="result-email" class="text-xs text-slate-500 truncate"></p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                <div class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-100 text-center">
+                                    <p id="stat-correct" class="text-2xl font-extrabold text-emerald-600">0</p>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Correctas</p>
+                                </div>
+                                <div class="p-3.5 rounded-xl bg-rose-50 border border-rose-100 text-center">
+                                    <p id="stat-wrong" class="text-2xl font-extrabold text-rose-600">0</p>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Incorrectas</p>
+                                </div>
+                                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-center">
+                                    <p id="stat-blank" class="text-2xl font-extrabold text-slate-600">0</p>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Sin responder</p>
+                                </div>
+                                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-center">
+                                    <p id="stat-time" class="text-2xl font-extrabold text-slate-700">0:00</p>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tiempo usado</p>
+                                </div>
+                                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-center">
+                                    <p id="stat-switch" class="text-2xl font-extrabold text-amber-600">0</p>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Cambios de ventana</p>
+                                </div>
+                                <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-center">
+                                    <p id="stat-copy" class="text-2xl font-extrabold text-rose-500">0</p>
+                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Intentos de copia</p>
+                                </div>
+                            </div>
+                            <div class="flex flex-wrap justify-between gap-2 text-[11px] text-slate-400 font-medium pt-1">
+                                <span id="result-passline">Nota mínima aprobatoria: 80%</span>
+                                <span id="result-date"></span>
+                            </div>
+                            <p class="text-[10px] text-slate-300 font-semibold uppercase tracking-wider pt-1 border-t border-slate-100">Documento generado automáticamente · GBS Voiz System · Examen individual</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones (fuera de la tarjeta capturada) -->
+            <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+                <button id="btn-download" onclick="downloadResult()" class="bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 px-8 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-file-image"></i><span>Descargar resultado (JPG)</span>
+                </button>
+                <button onclick="toggleTeacher()" class="border border-slate-300 hover:bg-slate-50 text-slate-500 font-semibold py-3.5 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-key"></i><span>Modo docente</span>
+                </button>
+            </div>
+            <div id="teacher-box" class="hidden mt-4 max-w-md mx-auto bg-white border border-slate-200 rounded-xl p-4 flex gap-2 items-center">
+                <input id="teacher-code" type="password" placeholder="Clave docente" class="flex-1 px-3 py-2.5 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+                <button onclick="tryUnlock()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold px-4 py-2.5 rounded-lg">Desbloquear</button>
+            </div>
+            <p id="unlock-msg" class="hidden mt-2 text-center text-xs font-semibold"></p>
+        </section>
+
+    </main>
+
+    <!-- ================= MODAL DE ENTREGA ================= -->
+    <div id="submit-modal" class="hidden fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 fade-in">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center text-xl"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <h3 class="text-lg font-extrabold text-slate-900">Entregar examen</h3>
+            </div>
+            <p id="submit-modal-text" class="mt-4 text-sm text-slate-600 leading-relaxed"></p>
+            <p class="mt-2 text-xs font-bold text-rose-600 flex items-center gap-2"><i class="fa-solid fa-lock"></i> Esta acción es definitiva: el examen quedará bloqueado.</p>
+            <div class="mt-5 flex gap-3">
+                <button onclick="closeSubmitModal()" class="flex-1 border border-slate-300 text-slate-600 font-semibold py-3 rounded-xl hover:bg-slate-50 transition-colors text-sm">Seguir resolviendo</button>
+                <button onclick="submitExam(false)" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-check"></i> Entregar ahora
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white border-t border-slate-200 py-4 mt-8">
+        <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400 font-medium">
+            <p>GBS Language Training &copy; 2026 · Listening Exam basado en los 30 prompts VOIZ · Lección “Are we running out of things?”</p>
+            <p class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-brand-400"></i>Sistema anti-fraude activo</p>
+        </div>
+    </footer>
+
+    <noscript>
+        <div style="position:fixed;inset:0;background:#fff;z-index:9999;padding:40px;text-align:center;font-family:sans-serif">
+            <h2>Este examen requiere JavaScript</h2>
+            <p>Habilita JavaScript y abre el archivo en Google Chrome o Microsoft Edge.</p>
+        </div>
+    </noscript>
+
+<script>
+/* =====================================================================
+   CONFIGURACIÓN DEL EXAMEN
+   ===================================================================== */
+const EXAM = {
+    minutes: 30,           // Tiempo total en minutos
+    passPct: 80,           // Nota mínima aprobatoria (%)
+    teacherCode: 'GBS2026' // Clave docente para desbloquear un nuevo intento
+};
+
+/* =====================================================================
+   BANCO DE PREGUNTAS (20 seleccionadas de los 30 prompts VOIZ)
+   audio: texto que lee la voz (el prompt original de la lección, en inglés)
+   options: 4 posibles respuestas (1 correcta; se mezclan en cada intento)
+   correct: índice de la respuesta correcta dentro de `options`
+   hint: pista en español sobre cómo enfocar la respuesta
+   ===================================================================== */
+const BANK = [
+    { id: 1,
+      audio: "Give your opinion: is it fair to raise taxi prices when there is a surge in demand?",
+      options: [
+        "Yes, it is fair, because taxi drivers spend much more on fuel when demand is high.",
+        "No, it is not fair: customers already wait longer when demand is high, so charging them extra feels unfair.",
+        "Yes, it is fair, because a surge in demand means the taxi company is losing money.",
+        "No, because taxi companies should pay drivers extra during a surge in demand."
+      ],
+      correct: 1,
+      hint: "Es una pregunta de OPINIÓN. Primero detecta si el hablante cree que subir precios es justo o injusto, y después conecta la razón con la experiencia del cliente durante la alta demanda." },
+    { id: 2,
+      audio: "Explain why there is rarely a shortage of goods these days.",
+      options: [
+        "Because factories produce twice as much as people can consume, just in case.",
+        "Because companies predict demand well, so their supply always meets the demand.",
+        "Because there is less demand for goods than in the past, so shops never run out of anything.",
+        "Because governments store extra goods and give them to shops during shortages."
+      ],
+      correct: 1,
+      hint: "Escucha la CAUSA. La respuesta correcta explica por qué casi nunca falta mercancía hoy; fíjate en el verbo relacionado con anticipar o predecir la demanda." },
+    { id: 4,
+      audio: "Discuss automation in warehouses: is it good for workers and companies?",
+      options: [
+        "It is good for everybody: workers get better jobs and companies save money with fewer mistakes.",
+        "It is bad for both sides: automated supply chains are slower and make more mistakes.",
+        "It is bad for many workers because it makes them unemployed, but an automated supply chain is faster and makes fewer mistakes.",
+        "It is good for workers because they no longer need to work, and bad for companies because it is expensive."
+      ],
+      correct: 2,
+      hint: "La respuesta tiene DOS lados: algo negativo para un grupo y algo positivo para otro. Descarta las opciones que solo presentan ventajas o solo desventajas." },
+    { id: 5,
+      audio: "Talk about a profession that is in high demand in your country.",
+      options: [
+        "There is a high demand for IT professionals, because universities graduate too few specialists and companies suffer a real shortage of qualified workers.",
+        "There is a high demand for taxi drivers, because universities graduate too few specialists.",
+        "There is a high demand for teachers, because too many companies need English classes.",
+        "There is a high demand for doctors, because hospitals have excess supplies of medicine."
+      ],
+      correct: 0,
+      hint: "Identifica el área profesional que menciona la voz y la razón por la que las empresas no consiguen suficiente personal cualificado." },
+    { id: 6,
+      audio: "Is excess of some goods no better for the economy than a shortage? Explain your view.",
+      options: [
+        "Yes, excess is better for the economy because companies can sell their extra stock cheaply.",
+        "No: excess wastes money and space, while a shortage means customers cannot buy what they need.",
+        "No, because excess is much worse for the economy than a shortage.",
+        "Yes, because a shortage only affects small shops, not the whole economy."
+      ],
+      correct: 1,
+      hint: "La voz compara dos problemas opuestos (exceso y escasez). La opción correcta explica por qué NINGUNO de los dos es bueno para la economía." },
+    { id: 7,
+      audio: "Explain the difference between supply and demand with your own examples.",
+      options: [
+        "Supply is the need for goods, and demand is the stock of goods available; when supply is higher than demand, prices go up.",
+        "Supply and demand mean the same thing, so prices never change.",
+        "Supply is a stock of goods available for use, and demand is the need for goods to be sold; when demand is higher than supply, prices normally go up.",
+        "Supply is the money companies invest, and demand is the profit they expect; both depend on the government."
+      ],
+      correct: 2,
+      hint: "La opción correcta define los DOS conceptos sin confundirlos. Cuidado con las opciones que intercambian las definiciones de uno y otro." },
+    { id: 8,
+      audio: "Explain the difference between a spike and a surge in demand.",
+      options: [
+        "Both mean a sudden increase, but a spike is short and sharp, while a surge can last longer, like the demand for masks during the pandemic.",
+        "Both mean a sudden increase, but a surge is short and sharp, while a spike lasts for months or years.",
+        "A spike means demand falls suddenly, and a surge means it rises slowly.",
+        "They are identical: both describe a slow and small increase in demand."
+      ],
+      correct: 0,
+      hint: "Ambas palabras significan un aumento repentino; la diferencia está en la DURACIÓN de cada una. Escucha el ejemplo que da la voz: tiene que ver con la pandemia." },
+    { id: 9,
+      audio: "Explain the difference between stock and a warehouse.",
+      options: [
+        "A warehouse is the goods you sell, and stock is the building where you keep them.",
+        "Stock means available goods or supplies, while a warehouse is a place to store goods; a warehouse full of stock costs the company money every day.",
+        "Stock is the money a company saves, and a warehouse is the tax it pays for storing goods.",
+        "There is no difference: stock and warehouse both mean the same storage area."
+      ],
+      correct: 1,
+      hint: "Uno de los dos es la MERCANCÍA y el otro es el LUGAR donde se guarda. Escucha también qué consecuencia tiene para la empresa cuando ese lugar está lleno." },
+    { id: 11,
+      audio: "Retell the story of Toyota and the just-in-time system.",
+      options: [
+        "Toyota executive Taiichi Ohno devised a plan to order only what was needed, so parts arrived just in time and the company freed up the money spent on expensive warehousing.",
+        "Toyota's CEO invented the just-in-case system to store extra parts in big warehouses.",
+        "Toyota copied the system from Tesla: it stored all its parts in advance to never stop production.",
+        "Toyota devised a plan to buy more warehouses and store parts for future demand."
+      ],
+      correct: 0,
+      hint: "Escucha un NOMBRE PROPIO (un ejecutivo) y la idea central de su plan: se relaciona con pedir solo lo necesario, no con almacenar de más." },
+    { id: 12,
+      audio: "Explain why storing excess parts cost Toyota money.",
+      options: [
+        "Because excess parts were sold to other companies cheaply, at a loss.",
+        "Because expensive warehousing consumed the company's budget; when Toyota reduced its stock, it freed up money to expand the business.",
+        "Because workers had to be paid extra to move the parts between factories.",
+        "Because the parts expired, and Toyota had to buy them again."
+      ],
+      correct: 1,
+      hint: "Conecta el exceso de piezas con un COSTO de almacenamiento. Escucha también qué pudo hacer Toyota con el dinero liberado al reducir inventario." },
+    { id: 14,
+      audio: "What two things make a just-in-time system fragile?",
+      options: [
+        "High taxes and expensive international transport make the system fragile.",
+        "First, if a problem occurs anywhere in the supply chain and materials do not arrive, production stops; second, if there is a spike in demand, businesses cannot respond because they have no excess supplies.",
+        "First, workers demand higher salaries; second, companies cannot predict the weather.",
+        "First, suppliers deliver parts too early; second, customers order too little."
+      ],
+      correct: 1,
+      hint: "La respuesta enumera DOS riesgos: uno sobre una interrupción en la cadena de suministro y otro sobre un pico de demanda sin inventario extra." },
+    { id: 15,
+      audio: "Why do shops run out of toilet paper whenever there is a spike in demand?",
+      options: [
+        "Because toilet paper is a bulky and low-profit item, so supermarkets do not want to store a lot of it.",
+        "Because people always buy toilet paper in enormous quantities for parties.",
+        "Because the government limits how much toilet paper each shop can keep.",
+        "Because toilet paper is expensive to produce, and shops prefer to sell other products."
+      ],
+      correct: 0,
+      hint: "Escucha DOS características del producto (una física y una de ganancia) y cómo determinan lo que los supermercados deciden guardar." },
+    { id: 16,
+      audio: "Why are spending sprees problematic on a global scale?",
+      options: [
+        "Because people spend too much money and become poor very quickly.",
+        "Because the shipping industry is dominated by the just-in-time system, so any spike in demand might stall the whole system.",
+        "Because shops close earlier during holidays and nobody can buy anything.",
+        "Because spending sprees increase taxes in every country at the same time."
+      ],
+      correct: 1,
+      hint: "Conecta las compras masivas con el transporte mundial: la respuesta menciona un sistema logístico dominante y qué le pasaría durante un pico de demanda." },
+    { id: 17,
+      audio: "Describe an example of a just-in-time supply chain and explain how it works.",
+      options: [
+        "Raw materials leave Australia and are supplied to China for refining; then they travel to Germany for manufacturing and finally reach retailers all around the world, including Australia again.",
+        "Raw materials are refined in Germany, manufactured in China, and sold only in Australia.",
+        "Materials are manufactured in Australia, refined in Japan, and shipped to the United States only.",
+        "All products are made and sold inside one country to avoid delays."
+      ],
+      correct: 0,
+      hint: "Escucha la SECUENCIA de países y etapas: materias primas, refinación, fabricación y minoristas. Descarta las opciones que cambien el orden de los países." },
+    { id: 18,
+      audio: "What real problems have recently occurred in global supply chains?",
+      options: [
+        "Ports closed in China during the pandemic, and after Brexit companies had to fill out more forms, which caused delays and shortages of goods.",
+        "All the trains in Europe stopped working during the pandemic for two years.",
+        "Companies stopped using ships because planes became cheaper after Brexit.",
+        "A fire destroyed all the ports in Germany, so nothing could be exported."
+      ],
+      correct: 0,
+      hint: "Son DOS eventos reales: uno sobre puertos en Asia y otro sobre formularios y aduanas en Europa. Ambos terminan provocando lo mismo: escasez." },
+    { id: 19,
+      audio: "Think about other areas of life where just-in-time systems might be problematic.",
+      options: [
+        "Tourism, restaurants and sports, because they depend on entertainment supplies.",
+        "The military, medicine and job recruitment; for example, a shortage of protective equipment in a hospital can put lives in danger.",
+        "Only farming, because crops depend on the weather.",
+        "Education, because schools never need supplies."
+      ],
+      correct: 1,
+      hint: "La respuesta menciona TRES áreas críticas donde la falta de suministros puede costar vidas, con un ejemplo hospitalario. Descarta las áreas de entretenimiento." },
+    { id: 20,
+      audio: "Have you heard about just-in-case and just-in-time systems before? Which one do you prefer?",
+      options: [
+        "Just-in-case companies store extra goods in case of problems, while just-in-time companies order only what they need; I prefer just-in-time to save money, but only when the supply chain is reliable.",
+        "Just-in-time companies store extra goods, while just-in-case companies order only what they need; I prefer just-in-case.",
+        "Both systems store extra goods, so I prefer the one that costs more money.",
+        "Just-in-case means never storing anything, and just-in-time means full warehouses; I prefer just-in-time."
+      ],
+      correct: 0,
+      hint: "La opción correcta diferencia bien los dos sistemas y termina con una preferencia personal. No confundas cuál guarda excedentes y cuál pide solo lo necesario." },
+    { id: 23,
+      audio: "Can a just-in-time system be applied to areas of life other than manufacturing?",
+      options: [
+        "No, it only works in factories with complex machines.",
+        "Yes: restaurants and delivery apps cook food only when customers order, so they meet demand without excess meals; the risk is that a sudden surge in orders makes delivery times much longer.",
+        "Yes: hospitals keep huge warehouses of medicine to serve everyone instantly.",
+        "Yes: supermarkets prepare food weeks in advance to avoid problems."
+      ],
+      correct: 1,
+      hint: "Escucha el ejemplo del mundo de la comida a domicilio: qué hacen los restaurantes y qué riesgo aparece con los tiempos de entrega cuando los pedidos se disparan." },
+    { id: 25,
+      audio: "Have you ever experienced a shortage of some goods? Tell us about it.",
+      options: [
+        "During the pandemic, shops in my town ran out of flour, pasta and toilet paper; new stock arrived only once a week, so people bought everything early in the morning.",
+        "During the pandemic, shops had too much flour and pasta and had to sell everything cheaply.",
+        "During a holiday week, all the electronics stores closed and nobody could buy laptops.",
+        "During the pandemic, prices fell so much that people bought everything online."
+      ],
+      correct: 0,
+      hint: "Identifica la época, los productos que faltaron y con qué frecuencia llegaba el inventario nuevo." },
+    { id: 28,
+      audio: "Use the first conditional to predict what will happen if demand spikes.",
+      options: [
+        "If there is a spike in demand, shops would run out of stock quickly if they stored excess supplies.",
+        "If demand spikes, nothing happens, because shops always keep excess supplies.",
+        "If there is a spike in demand, shops will run out of stock quickly; and if companies do not store excess supplies, they will not be able to respond to the surge.",
+        "If shops store excess supplies, demand will spike and prices will fall."
+      ],
+      correct: 2,
+      hint: "Es una predicción de futuro (If + presente simple, will + verbo). Escucha qué pasará con el inventario de las tiendas y con las empresas que no guardan excedentes." }
+];
+
+/* =====================================================================
+   ESTADO GLOBAL
+   ===================================================================== */
+let student = { name: '', email: '' };
+let state = {
+    phase: 'idle',          // idle | exam | results
+    order: [],              // orden (mezclado) de índices del BANK
+    optionOrder: [],        // por pregunta: orden mezclado de opciones
+    answers: [],            // por pregunta: índice de opción mostrada elegida o null
+    current: 0,
+    remaining: EXAM.minutes * 60,
+    switches: 0,
+    copyAttempts: 0,
+    timedOut: false,
+    startedAt: null
+};
+let timerId = null;
+let speaking = false;
+let speakSafety = null;
+let wmTimer = null;
+const TOTAL = BANK.length;
+const RING_C = 326.73;
+
+/* =====================================================================
+   UTILIDADES
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+function fmtTime(sec) {
+    const m = Math.floor(sec / 60), s = sec % 60;
+    return m + ':' + String(s).padStart(2, '0');
+}
+function fmtClock(sec) {
+    const m = Math.floor(sec / 60), s = sec % 60;
+    return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+function slug(t) {
+    return (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]+/g, '_').replace(/^_+|_+$/g, '').toLowerCase() || 'estudiante';
+}
+function esc(t) {
+    return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function showScreen(id) {
+    ['screen-register', 'screen-rules', 'screen-exam', 'screen-results'].forEach(s => $(s).classList.add('hidden'));
+    $(id).classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* =====================================================================
+   PROTECCIÓN ANTI-COPIA / ANTI-CAPTURA
+   ===================================================================== */
+['contextmenu', 'copy', 'cut', 'paste', 'selectstart', 'dragstart'].forEach(ev => {
+    document.addEventListener(ev, e => {
+        if (state.phase === 'exam' || state.phase === 'results') { e.preventDefault(); countCopyAttempt(ev); }
+    });
+});
+function countCopyAttempt(ev) {
+    if (ev === 'contextmenu') return; // el clic derecho no cuenta como intento de copia
+    state.copyAttempts++;
+    flashLock();
+}
+function flashLock() {
+    const f = $('flash-lock');
+    f.classList.add('show');
+    setTimeout(() => f.classList.remove('show'), 1600);
+}
+document.addEventListener('keydown', e => {
+    if (state.phase !== 'exam' && state.phase !== 'results') return;
+    const target = e.target || {};
+    const isField = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
+    const k = (e.key || '').toLowerCase();
+    if ((e.ctrlKey || e.metaKey) && ['c', 'x', 's', 'u', 'p'].includes(k) && !isField) { e.preventDefault(); state.copyAttempts++; flashLock(); }
+    if ((e.ctrlKey || e.metaKey) && k === 'a' && !isField) e.preventDefault();
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && ['i', 'j', 'c'].includes(k)) { e.preventDefault(); state.copyAttempts++; flashLock(); }
+    if (k === 'f12') { e.preventDefault(); state.copyAttempts++; flashLock(); }
+    if (k === 'printscreen') { e.preventDefault(); overwriteClipboard(); state.copyAttempts++; flashLock(); }
+});
+document.addEventListener('keyup', e => {
+    if ((e.key || '') === 'PrintScreen' && (state.phase === 'exam' || state.phase === 'results')) {
+        overwriteClipboard(); state.copyAttempts++; flashLock();
+    }
+});
+function overwriteClipboard() {
+    try {
+        if (navigator.clipboard && navigator.clipboard.writeText)
+            navigator.clipboard.writeText('Contenido protegido — GBS Language Training Listening Exam');
+    } catch (err) {}
+}
+window.addEventListener('beforeprint', () => { document.body.style.visibility = 'hidden'; });
+window.addEventListener('afterprint', () => { document.body.style.visibility = 'visible'; });
+window.addEventListener('beforeunload', e => {
+    if (state.phase === 'exam') { e.preventDefault(); e.returnValue = ''; }
+});
+
+/* Cambio de ventana / pestaña durante el examen */
+let overlayOn = false;
+function showLockOverlay() {
+    if (overlayOn) return;
+    overlayOn = true;
+    $('lock-overlay').classList.remove('hidden');
+    if (state.phase === 'exam') { state.switches++; saveState(); stopAudio(); }
+}
+function hideLockOverlay() {
+    overlayOn = false;
+    $('lock-overlay').classList.add('hidden');
+}
+document.addEventListener('visibilitychange', () => {
+    if (state.phase !== 'exam') return;
+    if (document.hidden) showLockOverlay(); else hideLockOverlay();
+});
+window.addEventListener('blur', () => { if (state.phase === 'exam') showLockOverlay(); });
+window.addEventListener('focus', () => { if (state.phase === 'exam') hideLockOverlay(); });
+
+/* Marca de agua con los datos del estudiante */
+function buildWatermark() {
+    if (!student.name) return;
+    const stamp = new Date().toLocaleString('es', { dateStyle: 'short', timeStyle: 'short' });
+    const text = (student.name + ' · ' + student.email + ' · ' + stamp)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const svg = "<svg xmlns='http://www.w3.org/2000/svg' width='460' height='280'><text x='30' y='140' font-size='15' font-family='Arial, sans-serif' fill='rgba(100,116,139,0.13)' transform='rotate(-24 30 140)'>" + text + "</text></svg>";
+    $('watermark').style.backgroundImage = 'url("data:image/svg+xml;utf8,' + encodeURIComponent(svg) + '")';
+    $('watermark').classList.remove('hidden');
+}
+
+/* =====================================================================
+   SÍNTESIS DE VOZ (Web Speech API — voz en inglés)
+   ===================================================================== */
+let englishVoices = [];
+function loadVoices() {
+    if (!('speechSynthesis' in window)) return;
+    englishVoices = window.speechSynthesis.getVoices().filter(v => /^en([-_]|$)/i.test(v.lang));
+}
+if ('speechSynthesis' in window) {
+    loadVoices();
+    window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+function pickVoice() {
+    if (!englishVoices.length) loadVoices();
+    return englishVoices.find(v => /Google US English/i.test(v.name))
+        || englishVoices.find(v => /en[-_]US/i.test(v.lang))
+        || englishVoices.find(v => /Microsoft (Aria|Zira|Jenny|Guy|David)/i.test(v.name))
+        || englishVoices.find(v => /Samantha|Daniel|Karen|Moira/i.test(v.name))
+        || englishVoices[0] || null;
+}
+function speak(text, rate) {
+    if (!('speechSynthesis' in window)) { setPlayUI(false); return; }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    u.rate = rate || 0.95;
+    u.pitch = 1;
+    const v = pickVoice();
+    if (v) u.voice = v;
+    u.onstart = () => setPlayUI(true);
+    u.onend = () => setPlayUI(false);
+    u.onerror = () => setPlayUI(false);
+    window.speechSynthesis.speak(u);
+    // Red de seguridad por si la voz nunca dispara onend
+    clearTimeout(speakSafety);
+    speakSafety = setTimeout(() => setPlayUI(false), 30000);
+}
+function setPlayUI(on) {
+    speaking = on;
+    const btn = $('btn-play'), icon = $('btn-play-icon');
+    if (!btn || !icon) return;
+    if (on) {
+        icon.className = 'fa-solid fa-stop';
+        btn.classList.add('playing');
+    } else {
+        icon.className = 'fa-solid fa-play';
+        btn.classList.remove('playing');
+        clearTimeout(speakSafety);
+    }
+}
+function playAudio(rate) {
+    if (state.phase !== 'exam') return;
+    if (speaking) { window.speechSynthesis.cancel(); setPlayUI(false); return; }
+    const q = BANK[state.order[state.current]];
+    speak(q.audio, rate);
+}
+function stopAudio() {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    setPlayUI(false);
+}
+
+/* =====================================================================
+   REGISTRO Y REGLAS
+   ===================================================================== */
+function submitRegistration() {
+    const name = $('reg-name').value.trim().replace(/\s+/g, ' ');
+    const email = $('reg-email').value.trim();
+    const err = $('reg-error'), errText = $('reg-error-text');
+    err.classList.add('hidden');
+    if (name.length < 3 || !name.includes(' ')) {
+        errText.textContent = 'Ingresa tu nombre completo (nombre y apellido).';
+        err.classList.remove('hidden'); return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+        errText.textContent = 'Ingresa un correo electrónico válido.';
+        err.classList.remove('hidden'); return;
+    }
+    if (!$('reg-accept').checked) {
+        errText.textContent = 'Debes aceptar las reglas del examen para continuar.';
+        err.classList.remove('hidden'); return;
+    }
+    student = { name, email };
+    $('rules-student').textContent = name + ' · ' + email;
+    $('exam-student-name').textContent = name;
+    checkTts();
+    showScreen('screen-rules');
+    buildWatermark();
+    if (wmTimer) clearInterval(wmTimer);
+    wmTimer = setInterval(buildWatermark, 60000);
+}
+function checkTts() {
+    const box = $('tts-status');
+    if (!('speechSynthesis' in window)) {
+        box.innerHTML = '<div class="rounded-xl p-4 bg-rose-50 border border-rose-200 flex gap-3 items-start">' +
+            '<i class="fa-solid fa-circle-exclamation text-rose-500 mt-0.5"></i>' +
+            '<p class="text-xs text-rose-700 leading-relaxed"><strong>Tu navegador no soporta síntesis de voz.</strong> El examen necesita escuchar las preguntas. Abre el archivo en <strong>Google Chrome, Microsoft Edge o Safari</strong> actualizados.</p></div>';
+        $('btn-start').disabled = true;
+        $('btn-start').classList.add('opacity-50', 'cursor-not-allowed');
+        return;
+    }
+    setTimeout(() => {
+        loadVoices();
+        if (!englishVoices.length) {
+            box.innerHTML = '<div class="rounded-xl p-4 bg-amber-50 border border-amber-200 flex gap-3 items-start">' +
+                '<i class="fa-solid fa-triangle-exclamation text-amber-500 mt-0.5"></i>' +
+                '<p class="text-xs text-amber-800 leading-relaxed"><strong>No se detectaron voces instaladas todavía.</strong> El sistema intentará usar la voz predeterminada. Si al iniciar no escuchas nada, verifica el volumen o instala voces en inglés en tu sistema.</p></div>';
+        } else {
+            box.innerHTML = '<div class="rounded-xl p-4 bg-emerald-50 border border-emerald-200 flex gap-3 items-center">' +
+                '<i class="fa-solid fa-circle-check text-emerald-500"></i>' +
+                '<p class="text-xs text-emerald-700 font-semibold">Audio listo: ' + englishVoices.length + ' voz(es) en inglés disponibles en este dispositivo.</p></div>';
+        }
+    }, 700);
+}
+
+/* =====================================================================
+   LÓGICA DEL EXAMEN
+   ===================================================================== */
+function startExam() {
+    stopAudio();
+    state = {
+        phase: 'exam',
+        order: shuffle(BANK.map((_, i) => i)),
+        optionOrder: BANK.map(() => shuffle([0, 1, 2, 3])),
+        answers: BANK.map(() => null),
+        current: 0,
+        remaining: EXAM.minutes * 60,
+        switches: 0,
+        copyAttempts: 0,
+        timedOut: false,
+        startedAt: Date.now()
+    };
+    $('q-total').textContent = TOTAL;
+    buildDots();
+    renderQuestion();
+    showScreen('screen-exam');
+    startTimer();
+    saveState();
+}
+function startTimer() {
+    clearInterval(timerId);
+    timerId = setInterval(() => {
+        if (state.phase !== 'exam') { clearInterval(timerId); return; }
+        state.remaining--;
+        updateTimerUI();
+        if (state.remaining % 5 === 0) saveState();
+        if (state.remaining <= 0) {
+            clearInterval(timerId);
+            state.timedOut = true;
+            submitExam(true);
+        }
+    }, 1000);
+    updateTimerUI();
+}
+function updateTimerUI() {
+    const d = $('timer-display');
+    d.textContent = fmtClock(Math.max(0, state.remaining));
+    d.classList.remove('timer-warn', 'timer-crit');
+    if (state.remaining <= 120) d.classList.add('timer-crit');
+    else if (state.remaining <= 300) d.classList.add('timer-warn');
+}
+function buildDots() {
+    const box = $('dots-box');
+    box.innerHTML = '';
+    for (let i = 0; i < TOTAL; i++) {
+        const b = document.createElement('button');
+        b.className = 'qdot w-7 h-7 rounded-full border border-slate-300 bg-white text-[10px] font-bold text-slate-500 hover:border-brand-400';
+        b.textContent = i + 1;
+        b.title = 'Pregunta ' + (i + 1);
+        b.onclick = () => { state.current = i; renderQuestion(); };
+        box.appendChild(b);
+    }
+    refreshDots();
+}
+function refreshDots() {
+    const dots = document.querySelectorAll('.qdot');
+    dots.forEach((d, i) => {
+        d.classList.toggle('answered', state.answers[i] !== null);
+        d.classList.toggle('current', i === state.current);
+    });
+}
+function renderQuestion() {
+    const qi = state.order[state.current];
+    const q = BANK[qi];
+    $('q-current').textContent = state.current + 1;
+    $('q-hint').textContent = q.hint;
+
+    // Opciones en el orden mezclado de esta pregunta
+    const box = $('options-box');
+    box.innerHTML = '';
+    const letters = ['A', 'B', 'C', 'D'];
+    state.optionOrder[qi].forEach((optIdx, pos) => {
+        const btn = document.createElement('button');
+        btn.className = 'opt w-full text-left flex items-start gap-3.5 p-4 rounded-xl border-2 border-slate-200 bg-white';
+        btn.innerHTML = '<span class="opt-letter shrink-0 w-8 h-8 rounded-lg border-2 border-slate-200 bg-slate-50 text-slate-500 text-sm font-extrabold flex items-center justify-center">' + letters[pos] + '</span>' +
+            '<span class="opt-text text-sm leading-relaxed text-slate-700 flex-1 pt-1">' + esc(q.options[optIdx]) + '</span>' +
+            '<i class="opt-check fa-solid fa-circle-check text-brand-600 text-lg mt-0.5 hidden"></i>';
+        btn.onclick = () => selectOption(pos);
+        if (state.answers[qi] === pos) btn.classList.add('selected');
+        box.appendChild(btn);
+    });
+
+    // Navegación
+    $('btn-prev').disabled = state.current === 0;
+    $('btn-prev').classList.toggle('opacity-40', state.current === 0);
+    $('btn-next').disabled = state.current === TOTAL - 1;
+    $('btn-next').classList.toggle('opacity-40', state.current === TOTAL - 1);
+
+    // Progreso
+    const answered = state.answers.filter(a => a !== null).length;
+    $('exam-progress').style.width = (answered / TOTAL * 100) + '%';
+    $('answered-count').textContent = answered + ' respondidas';
+    refreshDots();
+    stopAudio();
+
+    // Re-render con animación
+    const card = $('question-card');
+    card.classList.remove('fade-in');
+    void card.offsetWidth;
+    card.classList.add('fade-in');
+}
+function selectOption(pos) {
+    const qi = state.order[state.current];
+    state.answers[qi] = (state.answers[qi] === pos) ? null : pos;
+    saveState();
+    renderQuestion();
+}
+function navQuestion(dir) {
+    const next = state.current + dir;
+    if (next < 0 || next >= TOTAL) return;
+    state.current = next;
+    saveState();
+    renderQuestion();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* =====================================================================
+   ENTREGA Y RESULTADOS
+   ===================================================================== */
+function openSubmitModal() {
+    const answered = state.answers.filter(a => a !== null).length;
+    const blank = TOTAL - answered;
+    $('submit-modal-text').innerHTML = answered === TOTAL
+        ? 'Has respondido las <strong>' + TOTAL + ' preguntas</strong>. Al entregar verás tu calificación inmediatamente.'
+        : 'Llevas <strong>' + answered + ' de ' + TOTAL + '</strong> preguntas respondidas. Hay <strong>' + blank + ' sin responder</strong> (contarán como incorrectas). ¿Deseas revisarlas antes de entregar?';
+    $('submit-modal').classList.remove('hidden');
+}
+function closeSubmitModal() {
+    $('submit-modal').classList.add('hidden');
+}
+function submitExam(auto) {
+    if (state.phase !== 'exam') return;
+    closeSubmitModal();
+    stopAudio();
+    clearInterval(timerId);
+    const correct = state.answers.reduce((acc, a, i) => acc + (a !== null && state.optionOrder[i][a] === BANK[i].correct ? 1 : 0), 0);
+    const wrong = state.answers.reduce((acc, a, i) => acc + (a !== null && state.optionOrder[i][a] !== BANK[i].correct ? 1 : 0), 0);
+    const blank = state.answers.filter(a => a === null).length;
+    const pct = Math.round(correct / TOTAL * 100);
+    const passed = pct >= EXAM.passPct;
+    const timeUsed = EXAM.minutes * 60 - Math.max(0, state.remaining);
+    const record = {
+        name: student.name, email: student.email,
+        correct, wrong, blank, total: TOTAL, pct, passed,
+        timeUsed, switches: state.switches, copyAttempts: state.copyAttempts,
+        timedOut: state.timedOut || !!auto,
+        date: new Date().toLocaleString('es', { dateStyle: 'long', timeStyle: 'short' })
+    };
+    state.phase = 'results';
+    try {
+        localStorage.setItem('gbs_w22_listening_done', JSON.stringify(record));
+        sessionStorage.removeItem('gbs_w22_listening_state');
+    } catch (e) {}
+    // Ocultar restos del modo docente de intentos anteriores
+    $('unlock-msg').classList.add('hidden');
+    $('teacher-box').classList.add('hidden');
+    $('teacher-code').value = '';
+    renderResults(record, false);
+    showScreen('screen-results');
+    buildWatermark();
+    setTimeout(() => {
+        const ring = $('result-ring');
+        ring.style.strokeDashoffset = RING_C * (1 - record.pct / 100);
+        ring.setAttribute('stroke', record.passed ? '#10b981' : '#e11d48');
+    }, 150);
+}
+function renderResults(r, fromLock) {
+    $('badge-timedout').classList.toggle('hidden', !r.timedOut);
+    $('result-pct').textContent = r.pct + '%';
+    const ring = $('result-ring');
+    ring.style.strokeDashoffset = RING_C * (1 - r.pct / 100);
+    ring.setAttribute('stroke', r.passed ? '#10b981' : '#e11d48');
+    const badge = $('result-badge');
+    badge.className = 'mt-4 text-sm font-extrabold px-5 py-2 rounded-full flex items-center gap-2 ' +
+        (r.passed ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' : 'bg-rose-100 text-rose-700 border border-rose-300');
+    badge.innerHTML = r.passed
+        ? '<i class="fa-solid fa-circle-check"></i> APROBADO'
+        : '<i class="fa-solid fa-circle-xmark"></i> NO APROBADO';
+    $('result-name').textContent = r.name;
+    $('result-email').textContent = r.email;
+    $('stat-correct').textContent = r.correct;
+    $('stat-wrong').textContent = r.wrong;
+    $('stat-blank').textContent = r.blank;
+    $('stat-time').textContent = fmtTime(r.timeUsed);
+    $('stat-switch').textContent = r.switches;
+    $('stat-copy').textContent = r.copyAttempts;
+    $('result-date').textContent = 'Fecha del intento: ' + r.date;
+    $('result-passline').textContent = 'Nota mínima aprobatoria: ' + EXAM.passPct + '% · ' + r.correct + '/' + r.total + ' correctas';
+    $('lock-banner').classList.toggle('hidden', !fromLock);
+}
+
+/* =====================================================================
+   DESCARGA DEL RESULTADO EN JPG
+   ===================================================================== */
+async function downloadResult() {
+    const btn = $('btn-download');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Generando imagen…</span>';
+    try {
+        let done = false;
+        if (window.html2canvas) {
+            try {
+                const node = $('result-card');
+                const canvas = await html2canvas(node, { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false });
+                triggerDownload(canvas, 0.93);
+                done = true;
+            } catch (err) { done = false; }
+        }
+        if (!done) {
+            const canvas = drawFallbackCard();
+            triggerDownload(canvas, 0.92);
+        }
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-file-image"></i><span>Descargar resultado (JPG)</span>';
+    }
+}
+function triggerDownload(canvas, q) {
+    const data = canvas.toDataURL('image/jpeg', q);
+    const a = document.createElement('a');
+    a.href = data;
+    a.download = 'resultado_listening_' + slug(student.name || $('result-name').textContent) + '_' + new Date().toISOString().slice(0, 10) + '.jpg';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+}
+/* Tarjeta dibujada a mano (respaldo si html2canvas no carga) */
+function drawFallbackCard() {
+    const r = {
+        name: $('result-name').textContent, email: $('result-email').textContent,
+        pct: parseInt($('result-pct').textContent) || 0,
+        correct: $('stat-correct').textContent, wrong: $('stat-wrong').textContent,
+        blank: $('stat-blank').textContent, time: $('stat-time').textContent,
+        switches: $('stat-switch').textContent, copy: $('stat-copy').textContent,
+        date: $('result-date').textContent,
+        passed: $('result-badge').textContent.indexOf('APROBADO') === 0
+    };
+    const W = 1080, H = 1320;
+    const c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    const x = c.getContext('2d');
+    // Fondo
+    x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, H);
+    // Encabezado
+    const grad = x.createLinearGradient(0, 0, W, 0);
+    grad.addColorStop(0, '#0265d2'); grad.addColorStop(1, '#073b7a');
+    x.fillStyle = grad; x.fillRect(0, 0, W, 170);
+    x.fillStyle = '#ffffff';
+    x.font = 'bold 40px Arial'; x.fillText('GBS Language Training', 60, 72);
+    x.font = '26px Arial'; x.fillStyle = '#dbeafe';
+    x.fillText('Listening Exam · B1 Week 22 · "Are we running out of things?"', 60, 116);
+    x.font = '20px Arial'; x.fillStyle = '#bfdbfe';
+    x.fillText('Resultado oficial del examen de comprensión auditiva', 60, 148);
+    // Anillo de calificación
+    const cx = 260, cy = 420, R = 130;
+    x.lineWidth = 26; x.strokeStyle = '#e2e8f0';
+    x.beginPath(); x.arc(cx, cy, R, 0, Math.PI * 2); x.stroke();
+    x.strokeStyle = r.passed ? '#10b981' : '#e11d48';
+    x.lineCap = 'round';
+    x.beginPath(); x.arc(cx, cy, R, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * r.pct / 100); x.stroke();
+    x.fillStyle = '#0f172a'; x.font = 'bold 84px Arial'; x.textAlign = 'center';
+    x.fillText(r.pct + '%', cx, cy + 16);
+    x.font = '20px Arial'; x.fillStyle = '#94a3b8';
+    x.fillText('CALIFICACIÓN', cx, cy + 56);
+    x.textAlign = 'left';
+    // Insignia
+    x.font = 'bold 30px Arial';
+    x.fillStyle = r.passed ? '#065f46' : '#9f1239';
+    x.fillText(r.passed ? 'APROBADO' : 'NO APROBADO', 180, 640);
+    // Datos del estudiante
+    x.fillStyle = '#0f172a'; x.font = 'bold 30px Arial';
+    x.fillText('Estudiante: ' + r.name, 60, 740);
+    x.fillStyle = '#475569'; x.font = '24px Arial';
+    x.fillText('Correo: ' + r.email, 60, 780);
+    // Estadísticas
+    const rows = [
+        ['Preguntas correctas', r.correct + ' / 20'],
+        ['Preguntas incorrectas', r.wrong],
+        ['Sin responder', r.blank],
+        ['Tiempo empleado', r.time],
+        ['Cambios de ventana', r.switches],
+        ['Intentos de copia / captura', r.copy]
+    ];
+    let y = 860;
+    rows.forEach(row => {
+        x.fillStyle = '#f8fafc'; x.fillRect(60, y - 34, W - 120, 52);
+        x.fillStyle = '#334155'; x.font = '24px Arial';
+        x.fillText(row[0], 80, y);
+        x.fillStyle = '#0265d2'; x.font = 'bold 24px Arial'; x.textAlign = 'right';
+        x.fillText(String(row[1]), W - 80, y);
+        x.textAlign = 'left';
+        y += 62;
+    });
+    // Pie
+    x.fillStyle = '#64748b'; x.font = '20px Arial';
+    x.fillText('Nota mínima aprobatoria: 80% · ' + r.date, 60, H - 70);
+    x.fillStyle = '#94a3b8'; x.font = '18px Arial';
+    x.fillText('Documento generado automáticamente · GBS Voiz System · Examen individual', 60, H - 40);
+    return c;
+}
+
+/* =====================================================================
+   BLOQUEO POR UN SOLO INTENTO + MODO DOCENTE
+   ===================================================================== */
+function checkLocked() {
+    try {
+        const saved = localStorage.getItem('gbs_w22_listening_done');
+        if (saved) {
+            const r = JSON.parse(saved);
+            student = { name: r.name, email: r.email };
+            $('exam-student-name').textContent = r.name;
+            renderResults(r, true);
+            showScreen('screen-results');
+            buildWatermark();
+            if (wmTimer) clearInterval(wmTimer);
+            wmTimer = setInterval(buildWatermark, 60000);
+            return true;
+        }
+    } catch (e) {}
+    return false;
+}
+function toggleTeacher() {
+    $('teacher-box').classList.toggle('hidden');
+}
+function tryUnlock() {
+    const msg = $('unlock-msg');
+    msg.classList.remove('hidden');
+    if ($('teacher-code').value === EXAM.teacherCode) {
+        try {
+            localStorage.removeItem('gbs_w22_listening_done');
+            sessionStorage.removeItem('gbs_w22_listening_state');
+        } catch (e) {}
+        msg.textContent = 'Examen desbloqueado. Ya se puede realizar un nuevo intento.';
+        msg.className = 'mt-2 text-center text-xs font-bold text-emerald-600';
+        setTimeout(() => {
+            $('watermark').classList.add('hidden');
+            $('reg-name').value = ''; $('reg-email').value = ''; $('reg-accept').checked = false;
+            showScreen('screen-register');
+        }, 900);
+    } else {
+        msg.textContent = 'Clave incorrecta. Solicita la clave al docente.';
+        msg.className = 'mt-2 text-center text-xs font-bold text-rose-600';
+    }
+}
+
+/* =====================================================================
+   PERSISTENCIA DE SESIÓN (recargar la página no reinicia el intento)
+   ===================================================================== */
+function saveState() {
+    if (state.phase !== 'exam') return;
+    try {
+        sessionStorage.setItem('gbs_w22_listening_state', JSON.stringify({
+            student: student,
+            state: {
+                order: state.order, optionOrder: state.optionOrder, answers: state.answers,
+                current: state.current, remaining: state.remaining,
+                switches: state.switches, copyAttempts: state.copyAttempts,
+                timedOut: state.timedOut, startedAt: state.startedAt
+            }
+        }));
+    } catch (e) {}
+}
+function tryResume() {
+    try {
+        const raw = sessionStorage.getItem('gbs_w22_listening_state');
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        if (!data || !data.state) return false;
+        student = data.student || student;
+        state = Object.assign({ phase: 'exam' }, data.state);
+        state.phase = 'exam';
+        $('rules-student').textContent = student.name + ' · ' + student.email;
+        $('exam-student-name').textContent = student.name;
+        $('q-total').textContent = TOTAL;
+        buildDots();
+        renderQuestion();
+        showScreen('screen-exam');
+        startTimer();
+        buildWatermark();
+        if (wmTimer) clearInterval(wmTimer);
+        wmTimer = setInterval(buildWatermark, 60000);
+        return true;
+    } catch (e) { return false; }
+}
+
+/* =====================================================================
+   INICIO
+   ===================================================================== */
+window.addEventListener('load', () => {
+    if (checkLocked()) return;      // intento ya realizado → resultados bloqueados
+    if (tryResume()) return;        // examen en curso (recarga de página)
+    showScreen('screen-register');  // flujo normal
+});
+</script>
+</body>
+</html>
